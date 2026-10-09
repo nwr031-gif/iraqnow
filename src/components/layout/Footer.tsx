@@ -1,15 +1,19 @@
 import Link from 'next/link'
-import { Send, MessageSquare, Rss, Globe, Mail, Shield, Scale } from 'lucide-react'
+import { Send, MessageSquare, Rss, Globe, Mail, Shield, Scale, MapPin, Phone, ArrowUp } from 'lucide-react'
+import { Logo, IshtarStar, CuneiformDivider, CuneiformBand } from '@/components/brand/Brand'
 
-const footerData = {
+type Locale = 'ar' | 'ku' | 'en'
+
+const FOOTER_DATA: Record<Locale, any> = {
   ar: {
-    description: 'منصة إخبارية عراقية شاملة متعددة اللغات تقدم الأخبار بمصداقية وسرعة، مع خرائط تفاعلية وبحث متقدم.',
+    description: 'منصة إخبارية عراقية مستقلة متعددة اللغات، تقدم تغطية شاملة ومصداقية من قلب بغداد إلى أربيل والبصرة والموصل. صوت العراق الحقيقي، بثلاث لغات.',
+    tagline: 'من قلب بلاد الرافدين، إلى العالم',
     sections: {
       navigation: {
-        title: 'تنقل سريع',
+        title: 'التنقل',
         links: [
           { label: 'الرئيسية', href: '/' },
-          { label: 'الأقسام', href: '/category/politics' },
+          { label: 'آخر الأخبار', href: '/latest' },
           { label: 'الخريطة التفاعلية', href: '/map' },
           { label: 'صحافة البيانات', href: '/data' },
           { label: 'البودكاست', href: '/podcasts' },
@@ -17,64 +21,42 @@ const footerData = {
         ],
       },
       about: {
-        title: 'من نحن',
+        title: 'المؤسسة',
         links: [
-          { label: 'عن IraqNow', href: '/about' },
-          { label: 'فريق العمل', href: '/team' },
-          { label: 'المنهجية التحريرية', href: '/editorial-policy' },
-          { label: 'التحقق من الحقائق', href: '/fact-check' },
+          { label: 'عن العراق الآن', href: '/about' },
+          { label: 'فريق التحرير', href: '/team' },
+          { label: 'السياسة التحريرية', href: '/editorial-policy' },
+          { label: 'التحقق من المعلومات', href: '/fact-check' },
           { label: 'فرص العمل', href: '/careers' },
           { label: 'اتصل بنا', href: '/contact' },
-        ],
-      },
-      legal: {
-        title: 'سياسات',
-        links: [
-          { label: 'سياسة الخصوصية', href: '/privacy' },
-          { label: 'شروط الاستخدام', href: '/terms' },
-          { label: 'سياسة الكوكيز', href: '/cookies' },
-          { label: 'إرشادات المجتمع', href: '/community-guidelines' },
-          { label: 'تصحيح الأخطاء', href: '/corrections' },
-          { label: 'إمكانية الوصول', href: '/accessibility' },
         ],
       },
       services: {
         title: 'خدمات',
         links: [
           { label: 'النشرة البريدية', href: '/newsletter' },
-          { label: 'التطبيق', href: '/app' },
-          { label: 'API للمطورين', href: '/developers' },
-          { label: 'الإعلان معنا', href: '/advertise' },
+          { label: 'تطبيق الجوال', href: '/app' },
+          { label: 'واجهة API', href: '/developers' },
+          { label: 'أعلن معنا', href: '/advertise' },
           { label: 'الشراكات', href: '/partnerships' },
-          { label: 'رخص المحتوى', href: '/licensing' },
+          { label: 'ترخيص المحتوى', href: '/licensing' },
         ],
       },
     },
-    social: [
-      { icon: Send, href: 'https://t.me/iraqnow', label: 'تيليجرام' },
-      { icon: MessageSquare, href: 'https://whatsapp.com/channel/iraqnow', label: 'واتساب' },
-      { icon: Rss, href: '/rss', label: 'RSS' },
-      { icon: Globe, href: 'https://twitter.com/iraqnow', label: 'تويتر' },
-      { icon: Globe, href: 'https://youtube.com/iraqnow', label: 'يوتيوب' },
-      { icon: Globe, href: 'https://instagram.com/iraqnow', label: 'إنستغرام' },
-    ],
-    bottom: {
-      copyright: '© 2026 IraqNow. جميع الحقوق محفوظة.',
-      trustBadges: [
-        { icon: Shield, text: 'محتوى موثوق' },
-        { icon: Scale, text: 'تحرير مستقل' },
-        { icon: Globe, text: 'تغطية شاملة' },
-      ],
-    },
+    trustBadges: ['محتوى موثّق', 'تحرير مستقل', 'تغطية شاملة'],
+    copyright: '© 2026 العراق الآن — Iraq Now. جميع الحقوق محفوظة.',
+    madeIn: 'صُنع في بغداد بكل فخر',
+    address: 'بغداد، العراق',
   },
   ku: {
-    description: 'پلاتفۆرمێکی هاوین لێوانەوە بۆ هەواڵەکانی عێراق بە سێ زمان (عەرەبی، کوردی، ئینگلیزی) بە ڕاستی و خێرایی، بە نەخشەی بەراوەر و گەڕانێکی سەرنجڕاکێش.',
+    description: 'پلاتفۆرمێکی هەواڵی سەربەخۆی عێراقی بە چەند زمان، پەرپێدانی گشتگیر و باوەڕپێکراو لە دڵی بەغدادەوە بۆ هەولێر و بەسرە و موسڵ.',
+    tagline: 'لە دڵی میزۆپۆتامیاوە، بۆ جیهان',
     sections: {
       navigation: {
-        title: 'ناوەڕۆک',
+        title: 'ناڤیگەیشن',
         links: [
           { label: 'سەرەکی', href: '/' },
-          { label: 'بەشەکان', href: '/category/politics' },
+          { label: 'دوایین هەواڵەکان', href: '/latest' },
           { label: 'نەخشەی بەراوەر', href: '/map' },
           { label: 'رۆژنامەوانی داتا', href: '/data' },
           { label: 'پۆدکاست', href: '/podcasts' },
@@ -82,64 +64,42 @@ const footerData = {
         ],
       },
       about: {
-        title: 'دەربارەی ئێمە',
+        title: 'دەربارە',
         links: [
-          { label: 'دەربارەی IraqNow', href: '/about' },
-          { label: 'تێم', href: '/team' },
-          { label: 'مێتۆدۆلۆژیای ڕۆژنامەوانی', href: '/editorial-policy' },
-          { label: 'پاکی راستی', href: '/fact-check' },
-          { label: 'بۆشایی کاردەست', href: '/careers' },
+          { label: 'دەربارەی عێراق ئێستا', href: '/about' },
+          { label: 'تیمی ڕۆژنامەوانی', href: '/team' },
+          { label: 'سیاسەتی ڕۆژنامەوانی', href: '/editorial-policy' },
+          { label: 'پشکنینی زانیاری', href: '/fact-check' },
+          { label: 'هەلی کار', href: '/careers' },
           { label: 'پەیوەندی', href: '/contact' },
         ],
       },
-      legal: {
-        title: 'سیاسەتەکان',
-        links: [
-          { label: 'سیاسەتی تایبەتێتی', href: '/privacy' },
-          { label: 'مەرجەکانی بەکارهێنان', href: '/terms' },
-          { label: 'سیاسەتی کوکی', href: '/cookies' },
-          { label: 'ڕێنمایی کۆمەڵگە', href: '/community-guidelines' },
-          { label: 'چاککردنەوەی ھەڵەکان', href: '/corrections' },
-          { label: 'دەسەڵاتدانی', href: '/accessibility' },
-        ],
-      },
       services: {
-        title: 'خزمەتگوزاریەکان',
+        title: 'خزمەتگوزاری',
         links: [
-          { label: 'نیوزلێتەر', href: '/newsletter' },
-          { label: 'ئەپلیکەیشن', href: '/app' },
-          { label: 'API بۆ پەرەپێدەران', href: '/developers' },
-          { label: ' ڕیکلام بە مێمەوە', href: '/advertise' },
-          { label: 'هاوپێچەکان', href: '/partnerships' },
+          { label: 'نامەی هەواڵ', href: '/newsletter' },
+          { label: 'ئەپی مۆبایل', href: '/app' },
+          { label: 'API', href: '/developers' },
+          { label: 'ڕیکلام', href: '/advertise' },
+          { label: 'هاوبەشی', href: '/partnerships' },
           { label: 'مۆڵەتی ناوەڕۆک', href: '/licensing' },
         ],
       },
     },
-    social: [
-      { icon: Send, href: 'https://t.me/iraqnow', label: 'تێلێگرام' },
-      { icon: MessageSquare, href: 'https://whatsapp.com/channel/iraqnow', label: 'واتساپ' },
-      { icon: Rss, href: '/rss', label: 'RSS' },
-      { icon: Globe, href: 'https://twitter.com/iraqnow', label: 'تویتەر' },
-      { icon: Globe, href: 'https://youtube.com/iraqnow', label: 'یۆتوب' },
-      { icon: Globe, href: 'https://instagram.com/iraqnow', label: 'ئینستاگرام' },
-    ],
-    bottom: {
-      copyright: '© 2026 IraqNow. ھەموو مافەکان پارێزراوە.',
-      trustBadges: [
-        { icon: Shield, text: 'ناوەڕۆکی باوەڕپێکراو' },
-        { icon: Scale, text: 'ڕۆژنامەوانی سەربەخۆ' },
-        { icon: Globe, text: 'پەرەپێدانی گشتگیر' },
-      ],
-    },
+    trustBadges: ['ناوەڕۆکی باوەڕپێکراو', 'سەربەخۆیی', 'پەرپێدانی گشتگیر'],
+    copyright: '© 2026 عێراق ئێستا — Iraq Now. هەموو مافەکان پارێزراون.',
+    madeIn: 'بە فەخری لە بەغداد دروستکراوە',
+    address: 'بەغداد، عێراق',
   },
   en: {
-    description: 'A comprehensive Iraqi multilingual news platform delivering credible, fast news with interactive maps and advanced search.',
+    description: 'An independent Iraqi multilingual news platform delivering comprehensive, credible coverage from the heart of Baghdad to Erbil, Basra, and Mosul. The true voice of Iraq, in three languages.',
+    tagline: 'From Mesopotamia to the World',
     sections: {
       navigation: {
-        title: 'Quick Navigation',
+        title: 'Navigation',
         links: [
           { label: 'Home', href: '/' },
-          { label: 'Sections', href: '/category/politics' },
+          { label: 'Latest News', href: '/latest' },
           { label: 'Interactive Map', href: '/map' },
           { label: 'Data Journalism', href: '/data' },
           { label: 'Podcasts', href: '/podcasts' },
@@ -147,25 +107,14 @@ const footerData = {
         ],
       },
       about: {
-        title: 'About Us',
+        title: 'Company',
         links: [
-          { label: 'About IraqNow', href: '/about' },
-          { label: 'Our Team', href: '/team' },
+          { label: 'About Iraq Now', href: '/about' },
+          { label: 'Editorial Team', href: '/team' },
           { label: 'Editorial Policy', href: '/editorial-policy' },
           { label: 'Fact Checking', href: '/fact-check' },
           { label: 'Careers', href: '/careers' },
-          { label: 'Contact', href: '/contact' },
-        ],
-      },
-      legal: {
-        title: 'Policies',
-        links: [
-          { label: 'Privacy Policy', href: '/privacy' },
-          { label: 'Terms of Service', href: '/terms' },
-          { label: 'Cookie Policy', href: '/cookies' },
-          { label: 'Community Guidelines', href: '/community-guidelines' },
-          { label: 'Corrections', href: '/corrections' },
-          { label: 'Accessibility', href: '/accessibility' },
+          { label: 'Contact Us', href: '/contact' },
         ],
       },
       services: {
@@ -180,90 +129,131 @@ const footerData = {
         ],
       },
     },
-    social: [
-      { icon: Send, href: 'https://t.me/iraqnow', label: 'Telegram' },
-      { icon: MessageSquare, href: 'https://whatsapp.com/channel/iraqnow', label: 'WhatsApp' },
-      { icon: Rss, href: '/rss', label: 'RSS' },
-      { icon: Globe, href: 'https://twitter.com/iraqnow', label: 'Twitter' },
-      { icon: Globe, href: 'https://youtube.com/iraqnow', label: 'YouTube' },
-      { icon: Globe, href: 'https://instagram.com/iraqnow', label: 'Instagram' },
-    ],
-    bottom: {
-      copyright: '© 2026 IraqNow. All rights reserved.',
-      trustBadges: [
-        { icon: Shield, text: 'Trusted Content' },
-        { icon: Scale, text: 'Independent Journalism' },
-        { icon: Globe, text: 'Comprehensive Coverage' },
-      ],
-    },
+    trustBadges: ['Verified Content', 'Independent', 'Comprehensive'],
+    copyright: '© 2026 Iraq Now. All rights reserved.',
+    madeIn: 'Proudly Made in Baghdad',
+    address: 'Baghdad, Iraq',
   },
 }
 
-export function Footer({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
-  const data = footerData[locale]
+export function Footer({ locale }: { locale: Locale }) {
+  const data = FOOTER_DATA[locale]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
 
+  const socials = [
+    { Icon: Send, href: 'https://t.me/iraqnow', label: 'Telegram' },
+    { Icon: MessageSquare, href: 'https://wa.me/iraqnow', label: 'WhatsApp' },
+    { Icon: Globe, href: 'https://x.com/iraqnow', label: 'X' },
+    { Icon: Rss, href: '/rss', label: 'RSS' },
+    { Icon: Mail, href: 'mailto:info@iraqnow.iq', label: 'Email' },
+  ]
+
   return (
-    <footer className="border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950" dir={dir}>
-      <div className="container-main py-12 lg:py-16">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <Link href={`/${locale}`} className="flex items-center gap-2 mb-4" aria-label="IraqNow Home">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
-                <span className="text-xl font-bold text-white">IQ</span>
-              </div>
-              <span className="font-kufi font-bold text-2xl text-primary">IraqNow</span>
-            </Link>
-            <p className="max-w-xs text-sm text-gray-600 dark:text-gray-400 mb-6">{data.description}</p>
-            <div className="flex flex-wrap gap-3">
-              {data.social.map((item) => (
+    <footer className="relative overflow-hidden bg-lapis-950 text-sand-100" dir={dir}>
+      {/* خلفية زخرفية */}
+      <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute -top-40 start-1/2 h-80 w-[600px] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
+        style={{ background: 'radial-gradient(circle, #d4af37 0%, transparent 70%)' }}
+        aria-hidden="true"
+      />
+
+      <CuneiformBand />
+
+      <div className="container-main relative py-14 lg:py-20">
+        <div className="grid gap-10 lg:grid-cols-12">
+          {/* العمود الأول - الهوية */}
+          <div className="lg:col-span-4">
+            <Logo locale={locale} variant="light" showTagline />
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-sand-100/70">
+              {data.description}
+            </p>
+
+            <p className="mt-4 flex items-center gap-2 text-xs font-medium text-gold-400/90">
+              <IshtarStar size={14} />
+              {data.tagline}
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {socials.map(({ Icon, href, label }) => (
                 <a
-                  key={item.label}
-                  href={item.href}
+                  key={label}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors hover:bg-accent hover:text-white dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-accent"
-                  aria-label={item.label}
+                  aria-label={label}
+                  className="group flex h-10 w-10 items-center justify-center rounded-xl border border-sand-100/10 bg-white/5 text-sand-100/60 transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/50 hover:bg-gold-500/15 hover:text-gold-400"
                 >
-                  <item.icon className="h-5 w-5" />
+                  <Icon className="h-4.5 w-4.5" />
                 </a>
               ))}
             </div>
-          </div>
 
-          {Object.entries(data.sections).map(([key, section]) => (
-            <nav key={key} aria-labelledby={`footer-${key}`}>
-              <h3 id={`footer-${key}`} className="font-semibold text-gray-900 dark:text-white mb-4">
-                {section.title}
-              </h3>
-              <ul className="space-y-3">
-                {section.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={`/${locale}${link.href}`}
-                      className="text-sm text-gray-600 hover:text-accent transition-colors dark:text-gray-400 dark:hover:text-accent"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
-        </div>
-
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">{data.bottom.copyright}</p>
-            <div className="flex items-center gap-6">
-              {data.bottom.trustBadges.map((badge, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                  <badge.icon className="h-4 w-4 text-accent" />
-                  <span>{badge.text}</span>
-                </div>
-              ))}
+            <div className="mt-6 space-y-2 text-xs text-sand-100/50">
+              <p className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-gold-500/70" />
+                {data.address}
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail className="h-3.5 w-3.5 text-gold-500/70" />
+                info@iraqnow.iq
+              </p>
             </div>
           </div>
+
+          {/* الأعمدة */}
+          <div className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
+            {Object.entries(data.sections).map(([key, section]: [string, any]) => (
+              <nav key={key} aria-labelledby={`footer-${key}`}>
+                <h3 id={`footer-${key}`} className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-gold-400">
+                  <span className="h-3 w-1 rounded-full bg-gradient-to-b from-gold-400 to-gold-700" />
+                  {section.title}
+                </h3>
+                <ul className="space-y-3">
+                  {section.links.map((link: any) => (
+                    <li key={link.label}>
+                      <Link
+                        href={`/${locale}${link.href}`}
+                        className="group inline-flex items-center gap-2 text-sm text-sand-100/60 transition-all duration-200 hover:text-gold-400"
+                      >
+                        <span className="h-px w-0 bg-gold-500 transition-all duration-300 group-hover:w-3" />
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
+          </div>
+        </div>
+
+        <CuneiformDivider variant="star" className="opacity-60" />
+
+        {/* الشريط السفلي */}
+        <div className="flex flex-col items-center justify-between gap-4 text-xs text-sand-100/50 md:flex-row">
+          <p>{data.copyright}</p>
+
+          <div className="flex flex-wrap items-center justify-center gap-5">
+            {data.trustBadges.map((badge: string, i: number) => (
+              <span key={i} className="flex items-center gap-1.5">
+                {i === 0 && <Shield className="h-3.5 w-3.5 text-gold-500" />}
+                {i === 1 && <Scale className="h-3.5 w-3.5 text-gold-500" />}
+                {i === 2 && <Globe className="h-3.5 w-3.5 text-gold-500" />}
+                {badge}
+              </span>
+            ))}
+            <span className="hidden text-sand-100/30 md:inline">•</span>
+            <span className="text-gold-500/80">{data.madeIn} 🇮🇶</span>
+          </div>
+
+          <a
+            href="#top"
+            className="flex items-center gap-1.5 rounded-lg border border-sand-100/10 px-3 py-1.5 transition-all duration-300 hover:border-gold-500/50 hover:text-gold-400"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="h-3.5 w-3.5" />
+            <span>{locale === 'en' ? 'Top' : 'للأعلى'}</span>
+          </a>
         </div>
       </div>
     </footer>

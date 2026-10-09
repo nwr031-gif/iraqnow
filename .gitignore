@@ -61,3 +61,10 @@ logs
 
 # cloudflare
 .wrangler
+# Agent skills (auto-generated)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
+prisma7.config.ts
+AGENTS.md

@@ -1,132 +1,386 @@
 @import "tailwindcss";
 
 @theme {
-  --font-arabic: "Noto Sans Arabic", "Noto Kufi Arabic", system-ui, sans-serif;
+  --font-arabic: "Noto Sans Arabic", system-ui, sans-serif;
   --font-kufi: "Noto Kufi Arabic", system-ui, sans-serif;
   --font-inter: "Inter", system-ui, sans-serif;
+  
+  /* ═══════════════════════════════════════════
+     الهوية البصرية - بلاد الرافدين
+     Mesopotamian Brand Identity
+     ═══════════════════════════════════════════ */
+  
+  /* اللازورد - Lapis Lazuli (أزرق بابل) */
+  --color-lapis-50: #eef4fb;
+  --color-lapis-100: #d9e6f6;
+  --color-lapis-200: #b3cdec;
+  --color-lapis-300: #7fa9dd;
+  --color-lapis-400: #4a80c9;
+  --color-lapis-500: #2b5fab;
+  --color-lapis-600: #1e4a8c;
+  --color-lapis-700: #183a6f;
+  --color-lapis-800: #142d55;
+  --color-lapis-900: #0f2140;
+  --color-lapis-950: #081428;
 
-  --color-primary: #1a1a2e;
-  --color-primary-light: #16213e;
-  --color-primary-dark: #0f0f23;
-  --color-accent: #e94560;
-  --color-accent-hover: #d6344d;
-  --color-secondary: #0f3460;
+  /* الذهب - Gold (ذهب سومري) */
+  --color-gold-50: #fdf9ec;
+  --color-gold-100: #faf0cd;
+  --color-gold-200: #f4dd97;
+  --color-gold-300: #ecc55b;
+  --color-gold-400: #e2ad31;
+  --color-gold-500: #d4af37;
+  --color-gold-600: #b8860b;
+  --color-gold-700: #92620d;
+  --color-gold-800: #7a4e12;
+  --color-gold-900: #684114;
+
+  /* الطين المحروق - Terracotta (فخار بابل) */
+  --color-terra-50: #fdf5f1;
+  --color-terra-100: #fbe8df;
+  --color-terra-200: #f6cfbe;
+  --color-terra-300: #efab92;
+  --color-terra-400: #e57d5f;
+  --color-terra-500: #d95b3a;
+  --color-terra-600: #c44224;
+  --color-terra-700: #a4341e;
+  --color-terra-800: #862d1e;
+  --color-terra-900: #6e281c;
+
+  /* الرمل - Sand (رمل الرافدين) */
+  --color-sand-50: #fbf9f4;
+  --color-sand-100: #f5f0e6;
+  --color-sand-200: #e9dfca;
+  --color-sand-300: #dbc8a5;
+  --color-sand-400: #c9ab7c;
+  --color-sand-500: #b9925f;
+  --color-sand-600: #a67b4e;
+  --color-sand-700: #8a6342;
+  --color-sand-800: #71513a;
+  --color-sand-900: #5d4432;
+
+  /* الزفت - Bitumen (زفت سومري) */
+  --color-ink-50: #f6f6f5;
+  --color-ink-100: #e7e7e5;
+  --color-ink-200: #d0d0cc;
+  --color-ink-300: #b0afa9;
+  --color-ink-400: #88867e;
+  --color-ink-500: #6d6b63;
+  --color-ink-600: #57554e;
+  --color-ink-700: #46453f;
+  --color-ink-800: #33322e;
+  --color-ink-900: #1c1b18;
+  --color-ink-950: #0e0d0b;
+
+  /* ألوان دلالية */
+  --color-primary: #0f2140;
+  --color-primary-light: #183a6f;
+  --color-primary-dark: #081428;
+  --color-accent: #d4af37;
+  --color-accent-hover: #b8860b;
+  --color-accent-soft: #f4dd97;
+  --color-secondary: #2b5fab;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+
+  /* الظلال */
+  --shadow-lapis: 0 20px 60px -20px rgba(15, 33, 64, 0.45);
+  --shadow-gold: 0 8px 40px -8px rgba(212, 175, 55, 0.35);
+  --shadow-soft: 0 1px 3px rgba(28, 27, 24, 0.06), 0 8px 24px -12px rgba(28, 27, 24, 0.12);
+
+  /* الحركات - Animations */
+  --animate-marquee: marquee 50s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 50s linear infinite;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-scale-in: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-gold: pulse-gold 2s ease-in-out infinite;
+  --animate-spin-slow: spin 24s linear infinite;
+  --animate-cuneiform: cuneiform 1.2s steps(4) infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
+  50% { opacity: 0.9; box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+}
+
+@keyframes cuneiform {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════
+   الأنماط الأساسية
+   ═══════════════════════════════════════════ */
+
+:root {
+  --background: #fbf9f4;
+  --foreground: #1c1b18;
+  --card-bg: #ffffff;
+  --muted: #6d6b63;
+  --border: rgba(28, 27, 24, 0.1);
+  --overlay: rgba(255, 255, 255, 0.85);
+}
+
+.dark {
+  --background: #0e0d0b;
+  --foreground: #f5f0e6;
+  --card-bg: #1c1b18;
+  --muted: #b0afa9;
+  --border: rgba(245, 240, 230, 0.1);
+  --overlay: rgba(14, 13, 11, 0.85);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
-    background-color: #fafafa;
-    color: #1a1a2e;
-  }
-
-  *, ::before, ::after {
-    border-color: #e5e7eb;
+    background-color: var(--background);
+    color: var(--foreground);
+    transition: background-color 0.4s ease, color 0.4s ease;
   }
 
   ::selection {
-    background-color: var(--color-accent);
-    color: #ffffff;
+    background-color: var(--color-gold-500);
+    color: var(--color-ink-950);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--color-lapis-600), var(--color-lapis-800));
+    border-radius: 8px;
+    border: 2px solid var(--background);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(var(--color-gold-500), var(--color-gold-600));
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 }
 
 @layer utilities {
-  .font-arabic {
-    font-family: var(--font-arabic);
-  }
+  .font-arabic { font-family: var(--font-arabic); }
+  .font-kufi { font-family: var(--font-kufi); }
+  .font-inter { font-family: var(--font-inter); }
 
-  .font-kufi {
-    font-family: var(--font-kufi);
-  }
+  .rtl { direction: rtl; }
+  .ltr { direction: ltr; }
 
-  .font-inter {
-    font-family: var(--font-inter);
-  }
-
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .rtl {
-    direction: rtl;
-  }
-
-  .ltr {
-    direction: ltr;
-  }
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
 
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  .line-clamp-1, .line-clamp-2, .line-clamp-3, .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-1 { -webkit-line-clamp: 1; }
+  .line-clamp-2 { -webkit-line-clamp: 2; }
+  .line-clamp-3 { -webkit-line-clamp: 3; }
+  .line-clamp-4 { -webkit-line-clamp: 4; }
+
+  /* تدرج ذهبي للنصوص */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #e2ad31 0%, #d4af37 40%, #b8860b 70%, #e2ad31 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
   }
 
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(50%);
-    }
+  /* تدرج لازوردي */
+  .text-lapis-gradient {
+    background: linear-gradient(135deg, #4a80c9, #1e4a8c 50%, #0f2140);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  .animate-marquee {
-    display: inline-flex;
-    min-width: 200%;
-    animation: marquee 40s linear infinite;
+  /* زخرفة الطابوق البابلي */
+  .pattern-bricks {
+    background-image: 
+      linear-gradient(var(--color-border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border-soft) 1px, transparent 1px);
+    background-size: 40px 20px;
   }
 
-  .animate-marquee:hover {
-    animation-play-state: paused;
+  /* نقاط سومرية */
+  .pattern-dots {
+    background-image: radial-gradient(circle, currentColor 1px, transparent 1.5px);
+    background-size: 24px 24px;
+  }
+
+  /* شرائط أفقية - أسلوب مسماري */
+  .pattern-lines {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      currentColor 1px,
+      currentColor 9px
+    );
+  }
+
+  .glass {
+    background: var(--overlay);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  }
+
+  .glass-dark {
+    background: rgba(14, 13, 11, 0.72);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  }
+
+  /* حدود ذهبية متدرجة */
+  .border-gold-gradient {
+    border: 1px solid transparent;
+    background: 
+      linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+      linear-gradient(135deg, #d4af37, #92620d, #ecc55b) border-box;
+  }
+
+  .glow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .glow-lapis {
+    box-shadow: var(--shadow-lapis);
+  }
+
+  /* شبكة معمارية بابلية */
+  .ishtar-grid {
+    background-image:
+      linear-gradient(90deg, rgba(212, 175, 55, 0.07) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(212, 175, 55, 0.07) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  /* زخرفة المثلثات - بوابة عشتار */
+  .ziggurat-steps {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0 12px,
+      rgba(212, 175, 55, 0.08) 12px 13px,
+      transparent 13px 24px
+    );
   }
 }
 
 @layer components {
   .container-main {
     width: 100%;
-    max-width: 80rem;
+    max-width: 84rem;
     margin-inline: auto;
     padding-inline: 1rem;
   }
 
   @media (min-width: 640px) {
-    .container-main {
-      padding-inline: 1.5rem;
-    }
+    .container-main { padding-inline: 1.5rem; }
   }
 
   @media (min-width: 1024px) {
-    .container-main {
-      padding-inline: 2rem;
-    }
+    .container-main { padding-inline: 2rem; }
   }
 
+  /* الأزرار */
   .btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: var(--color-accent);
-    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+    padding: 0.75rem 1.75rem;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #ffffff;
-    transition: background-color 0.2s;
+    font-weight: 700;
+    color: var(--color-ink-950);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     cursor: pointer;
+    box-shadow: 0 4px 14px -4px rgba(212, 175, 55, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .btn-primary:hover::after {
+    transform: translateX(100%);
   }
 
   .btn-primary:hover {
-    background-color: var(--color-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(212, 175, 55, 0.65);
   }
 
   .btn-primary:disabled {
@@ -139,23 +393,20 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: var(--color-primary);
-    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, var(--color-lapis-600), var(--color-lapis-800));
+    padding: 0.75rem 1.75rem;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #ffffff;
-    transition: background-color 0.2s;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s;
     cursor: pointer;
+    box-shadow: 0 4px 14px -4px rgba(30, 74, 140, 0.5);
   }
 
   .btn-secondary:hover {
-    background-color: var(--color-primary-light);
-  }
-
-  .btn-secondary:disabled {
-    opacity: 0.5;
-    pointer-events: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(30, 74, 140, 0.65);
   }
 
   .btn-outline {
@@ -163,24 +414,21 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
-    background-color: #ffffff;
-    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: 1.5px solid var(--color-gold-500);
+    background: transparent;
+    padding: 0.75rem 1.75rem;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    transition: background-color 0.2s;
+    font-weight: 600;
+    color: var(--color-gold-600);
+    transition: all 0.3s;
     cursor: pointer;
   }
 
   .btn-outline:hover {
-    background-color: #f9fafb;
-  }
-
-  .btn-outline:disabled {
-    opacity: 0.5;
-    pointer-events: none;
+    background: var(--color-gold-500);
+    color: var(--color-ink-950);
+    transform: translateY(-2px);
   }
 
   .btn-ghost {
@@ -188,173 +436,214 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151;
-    transition: background-color 0.2s;
+    color: var(--foreground);
+    transition: all 0.2s;
     cursor: pointer;
   }
 
   .btn-ghost:hover {
-    background-color: #f3f4f6;
+    background: rgba(212, 175, 55, 0.12);
+    color: var(--color-gold-600);
   }
 
+  /* الحقول */
   .input {
     width: 100%;
-    border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
-    background-color: #ffffff;
+    border-radius: 0.75rem;
+    border: 1.5px solid var(--border);
+    background: var(--card-bg);
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
-    color: #111827;
-    transition: border-color 0.2s;
+    color: var(--foreground);
+    transition: all 0.25s;
   }
 
   .input::placeholder {
-    color: #9ca3af;
+    color: var(--muted);
   }
 
   .input:focus {
-    border-color: var(--color-accent);
+    border-color: var(--color-gold-500);
     outline: none;
-  }
-
-  .input:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
   }
 
   .label {
     display: block;
-    margin-bottom: 0.375rem;
+    margin-bottom: 0.5rem;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
+    font-weight: 600;
+    color: var(--foreground);
   }
 
+  /* البطاقات */
   .card {
-    border-radius: 0.75rem;
-    border: 1px solid #e5e7eb;
-    background-color: #ffffff;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.2s;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px -20px rgba(15, 33, 64, 0.25);
+    transform: translateY(-4px);
+    border-color: rgba(212, 175, 55, 0.4);
   }
 
   .card-hover {
-    border-radius: 0.75rem;
-    border: 1px solid #e5e7eb;
-    background-color: #ffffff;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    transition: all 0.2s;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .card-hover:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 24px 48px -20px rgba(15, 33, 64, 0.3);
+    transform: translateY(-6px) scale(1.01);
+    border-color: rgba(212, 175, 55, 0.45);
   }
 
+  /* الشارات */
   .badge {
     display: inline-flex;
     align-items: center;
+    gap: 0.35rem;
     border-radius: 9999px;
-    padding: 0.125rem 0.625rem;
+    padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
   }
 
-  .badge-primary {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    padding: 0.125rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    background-color: rgba(26, 26, 46, 0.1);
-    color: var(--color-primary);
+  .badge-gold {
+    background: linear-gradient(135deg, rgba(212,175,55,0.18), rgba(212,175,55,0.08));
+    color: var(--color-gold-600);
+    border: 1px solid rgba(212, 175, 55, 0.3);
   }
 
-  .badge-accent {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    padding: 0.125rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    background-color: rgba(233, 69, 96, 0.1);
-    color: var(--color-accent);
+  .badge-lapis {
+    background: linear-gradient(135deg, rgba(30,74,140,0.14), rgba(30,74,140,0.06));
+    color: var(--color-lapis-600);
+    border: 1px solid rgba(30, 74, 140, 0.25);
   }
 
-  .badge-error {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    padding: 0.125rem 0.625rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    background-color: rgba(239, 68, 68, 0.1);
-    color: var(--color-error);
+  .badge-terra {
+    background: linear-gradient(135deg, rgba(196,66,36,0.14), rgba(196,66,36,0.06));
+    color: var(--color-terra-600);
+    border: 1px solid rgba(196, 66, 36, 0.25);
   }
 
+  .badge-live {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff;
+    box-shadow: 0 2px 12px -2px rgba(239, 68, 68, 0.6);
+  }
+
+  /* الروابط */
   .link {
-    color: var(--color-accent);
+    color: var(--color-gold-600);
     text-decoration: none;
+    text-underline-offset: 3px;
     transition: color 0.2s;
   }
 
   .link:hover {
-    color: var(--color-accent-hover);
+    color: var(--color-gold-500);
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-decoration-thickness: 2px;
+  }
+
+  /* عناوين الأقسام */
+  .section-title {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-kufi);
+    font-weight: 700;
+    color: var(--foreground);
+  }
+
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 1.75em;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--color-gold-400), var(--color-gold-700));
+  }
+
+  /* الرابط المتحرك - hover underline */
+  .animated-underline {
+    position: relative;
+  }
+
+  .animated-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-gold-400), var(--color-gold-600));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .animated-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* صورة مع تكبير */
+  .img-zoom {
+    overflow: hidden;
+  }
+
+  .img-zoom img {
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .img-zoom:hover img {
+    transform: scale(1.08);
+  }
+
+  /* بطاقة زجاجية داكنة */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1rem;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .dark body {
-    background-color: #030712;
-    color: #f3f4f6;
-  }
+/* الوضع الداكن */
+.dark body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
 
-  .dark .btn-outline {
-    border-color: #4b5563;
-    background-color: #1f2937;
-    color: #e5e7eb;
+/* احترام تفضيلات تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+}
 
-  .dark .btn-outline:hover {
-    background-color: #374151;
-  }
-
-  .dark .btn-ghost {
-    color: #e5e7eb;
-  }
-
-  .dark .btn-ghost:hover {
-    background-color: #1f2937;
-  }
-
-  .dark .input {
-    border-color: #374151;
-    background-color: #111827;
-    color: #f3f4f6;
-  }
-
-  .dark .input::placeholder {
-    color: #6b7280;
-  }
-
-  .dark .label {
-    color: #d1d5db;
-  }
-
-  .dark .card,
-  .dark .card-hover {
-    border-color: #1f2937;
-    background-color: #111827;
-  }
+/* استجابة RTL/LTR للحركات */
+[dir="rtl"] .animate-marquee {
+  animation-direction: reverse;
 }

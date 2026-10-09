@@ -5,6 +5,8 @@ import Image from 'next/image'
 import { MapPin, Clock, Eye, Bookmark, Share2, Flame } from 'lucide-react'
 import { cn, formatRelativeTime, truncate } from '@/lib/utils'
 
+type Locale = 'ar' | 'ku' | 'en'
+
 export interface ArticleData {
   id: string
   slug: string
@@ -13,93 +15,120 @@ export interface ArticleData {
   publishedAt: string
   viewCount: number
   readingTime: number
-  translations: Array<{ locale: 'ar' | 'ku' | 'en'; title: string; excerpt: string }>
+  translations: Array<{ locale: Locale; title: string; excerpt: string }>
   media: Array<{ media: { url: string; alt: string } }>
-  category: { slug: string; translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> }
+  category: { slug: string; translations: Array<{ locale: Locale; name: string }> }
   author: { name: string; avatar?: string }
-  location?: { governorate?: { translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> } }
+  location?: { governorate?: { translations: Array<{ locale: Locale; name: string }> } }
 }
 
 interface ArticleCardProps {
   article: ArticleData
-  locale: 'ar' | 'ku' | 'en'
-  variant?: 'default' | 'compact' | 'featured'
+  locale: Locale
+  variant?: 'default' | 'compact' | 'featured' | 'horizontal'
 }
 
+const READ_LABELS: Record<Locale, string> = { ar: 'دقيقة قراءة', ku: 'خولەک خوێندنەوە', en: 'min read' }
+
 export function ArticleCard({ article, locale, variant = 'default' }: ArticleCardProps) {
-  const t = article.translations.find(tr => tr.locale === locale) || article.translations[0]
-  const cat = article.category.translations.find(tr => tr.locale === locale) || article.category.translations[0]
-  const loc = article.location?.governorate?.translations.find(tr => tr.locale === locale) || article.location?.governorate?.translations[0]
+  const t = article.translations.find((tr) => tr.locale === locale) || article.translations[0]
+  const cat = article.category.translations.find((tr) => tr.locale === locale) || article.category.translations[0]
+  const loc = article.location?.governorate?.translations.find((tr) => tr.locale === locale) || article.location?.governorate?.translations[0]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
   const hasImage = article.media.length > 0
+  const img = hasImage ? article.media[0].media : null
 
+  /* ─────────── Compact ─────────── */
   if (variant === 'compact') {
     return (
       <Link
         href={`/${locale}/article/${article.slug}`}
-        className="group flex gap-3 rounded-lg bg-white p-3 shadow-sm hover:shadow-md transition-shadow dark:bg-gray-900 dark:hover:shadow-accent/10"
+        className="group flex gap-3 rounded-xl p-2 transition-all duration-300 hover:bg-gold-500/5"
         style={{ direction: dir }}
       >
-        {hasImage && (
-          <Image
-            src={article.media[0].media.url}
-            alt={article.media[0].media.alt}
-            width={100}
-            height={70}
-            className="h-18 w-28 shrink-0 rounded-lg object-cover"
-            sizes="70px"
-          />
-        )}
-        <div className="flex-1 min-w-0 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-1 mb-1">
-              {article.breaking && <span className="text-[10px] font-bold text-error">{locale === 'ar' ? 'عاجل' : locale === 'ku' ? 'بەھێز' : 'LIVE'}</span>}
-              <span className="text-[11px] font-medium text-accent">{cat.name}</span>
-            </div>
-            <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-accent transition-colors dark:text-white">
-              {t.title}
-            </h3>
+        {img && (
+          <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg">
+            <Image src={img.url} alt={img.alt} fill sizes="80px" className="object-cover transition-transform duration-500 group-hover:scale-110" />
           </div>
-          <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400">
-            <span className="flex items-center gap-1">{formatRelativeTime(article.publishedAt, locale)}</span>
-            {loc && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{loc.name}</span>}
+        )}
+        <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+          <div>
+            <div className="mb-1 flex items-center gap-1.5">
+              {article.breaking && <span className="text-[10px] font-bold text-red-500">{locale === 'en' ? 'LIVE' : 'عاجل'}</span>}
+              <span className="text-[10px] font-semibold text-gold-600">{cat.name}</span>
+            </div>
+            <h4 className="text-[13px] font-semibold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-gold-600">
+              {t.title}
+            </h4>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] text-[var(--muted)]">
+            <span>{formatRelativeTime(article.publishedAt, locale)}</span>
           </div>
         </div>
       </Link>
     )
   }
 
+  /* ─────────── Horizontal ─────────── */
+  if (variant === 'horizontal') {
+    return (
+      <article className="group" style={{ direction: dir }}>
+        <Link href={`/${locale}/article/${article.slug}`} className="flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-3 transition-all duration-400 hover:-translate-y-1 hover:border-gold-500/40 hover:shadow-xl hover:shadow-lapis-900/10">
+          {img && (
+            <div className="img-zoom relative h-28 w-36 shrink-0 overflow-hidden rounded-xl">
+              <Image src={img.url} alt={img.alt} fill sizes="144px" className="object-cover" />
+            </div>
+          )}
+          <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="badge badge-gold !px-2 !py-0.5 text-[10px]">{cat.name}</span>
+                {loc && (
+                  <span className="flex items-center gap-0.5 text-[10px] text-[var(--muted)]">
+                    <MapPin className="h-3 w-3" />{loc.name}
+                  </span>
+                )}
+              </div>
+              <h3 className="font-kufi text-[15px] font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-gold-600">
+                {t.title}
+              </h3>
+            </div>
+            <div className="flex items-center gap-3 text-[10px] text-[var(--muted)]">
+              <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{formatRelativeTime(article.publishedAt, locale)}</span>
+              <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{article.viewCount.toLocaleString()}</span>
+            </div>
+          </div>
+        </Link>
+      </article>
+    )
+  }
+
+  /* ─────────── Featured ─────────── */
   if (variant === 'featured') {
     return (
-      <article className="relative group">
-        <Link href={`/${locale}/article/${article.slug}`} className="block relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl">
-          {hasImage && (
-            <Image
-              src={article.media[0].media.url}
-              alt={article.media[0].media.alt}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+      <article className="group relative" style={{ direction: dir }}>
+        <Link href={`/${locale}/article/${article.slug}`} className="relative block aspect-[16/10] overflow-hidden rounded-3xl border border-gold-500/20">
+          {img && (
+            <Image src={img.url} alt={img.alt} fill sizes="(max-width: 768px) 100vw, 66vw" className="object-cover transition-transform duration-[1.1s] group-hover:scale-105" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent" />
-          <div className="absolute inset-0 p-6 flex flex-col justify-end">
-            <div className="flex flex-wrap items-center gap-2 mb-3">
+          <div className="absolute inset-0 bg-gradient-to-t from-lapis-950 via-lapis-950/45 to-transparent" />
+
+          <div className="absolute inset-0 flex flex-col justify-end p-6">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
               {article.breaking && (
-                <span className="flex items-center gap-1 rounded-full bg-error px-3 py-1 text-xs font-bold text-white animate-pulse">
+                <span className="badge badge-live text-[10px] font-bold">
                   <Flame className="h-3 w-3" />
-                  {locale === 'ar' ? 'عاجل' : locale === 'ku' ? 'بەھێز' : 'BREAKING'}
+                  {locale === 'en' ? 'LIVE' : 'عاجل'}
                 </span>
               )}
-              <Link href={`/${locale}/category/${article.category.slug}`} className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm hover:bg-white/30">
-                {cat.name}
-              </Link>
+              <span className="badge border border-white/20 bg-white/10 text-white backdrop-blur-sm">{cat.name}</span>
             </div>
-            <h2 className="mb-2 text-xl font-bold text-white leading-tight line-clamp-2">{t.title}</h2>
-            <p className="mb-4 text-sm text-white/90 line-clamp-2 max-w-md">{t.excerpt}</p>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-white/80">
+            <h3 className="mb-2 font-kufi text-xl font-bold leading-snug text-white line-clamp-2 transition-colors group-hover:text-gold-300 sm:text-2xl">
+              {t.title}
+            </h3>
+            <p className="mb-4 max-w-lg text-sm text-sand-100/70 line-clamp-2">{t.excerpt}</p>
+            <div className="flex items-center gap-4 text-[11px] text-sand-100/60">
               <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{formatRelativeTime(article.publishedAt, locale)}</span>
-              {article.readingTime && <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{article.readingTime} {locale === 'ar' ? 'دقيقة' : locale === 'ku' ? 'چرکە' : 'min'}</span>}
               <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{article.viewCount.toLocaleString()}</span>
               {loc && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{loc.name}</span>}
             </div>
@@ -109,84 +138,86 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
     )
   }
 
+  /* ─────────── Default ─────────── */
   return (
-    <article className="card-hover overflow-hidden" style={{ direction: dir }}>
-      <Link href={`/${locale}/article/${article.slug}`} className="block">
-        {hasImage && (
-          <div className="relative aspect-[16/9] overflow-hidden">
+    <article className="group" style={{ direction: dir }}>
+      <Link
+        href={`/${locale}/article/${article.slug}`}
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] transition-all duration-400 hover:-translate-y-1.5 hover:border-gold-500/40 hover:shadow-2xl hover:shadow-lapis-900/15"
+      >
+        {img && (
+          <div className="img-zoom relative aspect-[16/10] overflow-hidden">
             <Image
-              src={article.media[0].media.url}
-              alt={article.media[0].media.alt}
+              src={img.url}
+              alt={img.alt}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover"
             />
-            <div className="absolute top-2 right-2 left-2 flex gap-2" style={{ [dir === 'rtl' ? 'left' : 'right']: 8 }}>
+            <div className="absolute inset-0 bg-gradient-to-t from-lapis-950/60 via-transparent to-transparent opacity-0 transition-opacity duration-400 group-hover:opacity-100" />
+
+            <div className="absolute start-3 top-3 flex gap-2">
               {article.breaking && (
-                <span className="flex items-center gap-1 rounded-full bg-error px-2 py-1 text-[10px] font-bold text-white animate-pulse">
+                <span className="badge badge-live !px-2.5 !py-1 text-[10px] font-bold">
                   <Flame className="h-3 w-3" />
-                  {locale === 'ar' ? 'عاجل' : locale === 'ku' ? 'بەھێز' : 'LIVE'}
+                  {locale === 'en' ? 'LIVE' : 'عاجل'}
                 </span>
               )}
-              <Link
-                href={`/${locale}/category/${article.category.slug}`}
-                className="rounded-full bg-white/90 px-2 py-1 text-[11px] font-medium text-gray-700 backdrop-blur-sm hover:bg-white dark:bg-gray-900/90 dark:text-gray-300"
-                onClick={(e) => e.stopPropagation()}
+            </div>
+
+            {/* زر الحفظ يظهر عند التمرير */}
+            <div className="absolute end-3 top-3 flex translate-y-2 gap-1.5 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 text-ink-800 shadow-lg backdrop-blur-sm transition-colors hover:bg-gold-500 hover:text-white dark:bg-ink-900/90 dark:text-sand-100"
+                aria-label="حفظ"
+                onClick={(e) => e.preventDefault()}
               >
-                {cat.name}
-              </Link>
+                <Bookmark className="h-4 w-4" />
+              </button>
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 text-ink-800 shadow-lg backdrop-blur-sm transition-colors hover:bg-gold-500 hover:text-white dark:bg-ink-900/90 dark:text-sand-100"
+                aria-label="مشاركة"
+                onClick={(e) => e.preventDefault()}
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
             </div>
           </div>
         )}
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Link
-              href={`/${locale}/category/${article.category.slug}`}
-              className="text-xs font-medium text-accent hover:underline"
-            >
-              {cat.name}
-            </Link>
+
+        <div className="flex flex-1 flex-col p-5">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="badge badge-gold !px-2.5 !py-0.5 text-[11px]">{cat.name}</span>
             {loc && (
-              <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-0.5 text-[11px] text-[var(--muted)]">
                 <MapPin className="h-3 w-3" />
                 {loc.name}
               </span>
             )}
           </div>
-          <h3 className="mb-2 text-lg font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-accent transition-colors dark:text-white">
+
+          <h3 className="mb-2.5 font-kufi text-lg font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors duration-300 group-hover:text-gold-600">
             {t.title}
           </h3>
-          <p className="mb-3 text-sm text-gray-600 line-clamp-2 dark:text-gray-400">
-            {truncate(t.excerpt, 120)}
+
+          <p className="mb-4 flex-1 text-sm leading-relaxed text-[var(--muted)] line-clamp-2">
+            {truncate(t.excerpt, 130)}
           </p>
-          <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
-            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {formatRelativeTime(article.publishedAt, locale)}
+
+          <div className="flex items-center justify-between border-t border-[var(--border)] pt-3.5">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-lapis-600 to-lapis-900 font-kufi text-[10px] font-bold text-gold-400">
+                {article.author.name.charAt(0)}
               </span>
-              {article.readingTime && (
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {article.readingTime} {locale === 'ar' ? 'دقيقة' : locale === 'ku' ? 'چرکە' : 'min'}
-                </span>
-              )}
-              <span className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />
-                {article.viewCount.toLocaleString()}
-              </span>
+              <span className="text-[11px] font-medium text-[var(--muted)]">{article.author.name}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <button className="p-1.5 rounded-lg text-gray-400 hover:text-accent hover:bg-accent/10 transition-colors" aria-label="Bookmark">
-                <Bookmark className="h-4 w-4" />
-              </button>
-              <button className="p-1.5 rounded-lg text-gray-400 hover:text-accent hover:bg-accent/10 transition-colors" aria-label="Share">
-                <Share2 className="h-4 w-4" />
-              </button>
+            <div className="flex items-center gap-3 text-[10px] text-[var(--muted)]">
+              <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{formatRelativeTime(article.publishedAt, locale)}</span>
+              <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{article.viewCount.toLocaleString()}</span>
             </div>
           </div>
         </div>
-       </Link>
+      </Link>
     </article>
   )
 }

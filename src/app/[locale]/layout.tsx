@@ -1,71 +1,79 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
-import { Noto_Sans_Arabic, Noto_Kufi_Arabic } from 'next/font/google'
+import { Inter, Noto_Sans_Arabic, Noto_Kufi_Arabic } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const notoArabic = Noto_Sans_Arabic({ 
-  subsets: ['arabic'], 
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
+const notoArabic = Noto_Sans_Arabic({
+  subsets: ['arabic'],
   variable: '--font-arabic',
   weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
 })
-const notoKufi = Noto_Kufi_Arabic({ 
-  subsets: ['arabic'], 
+const notoKufi = Noto_Kufi_Arabic({
+  subsets: ['arabic'],
   variable: '--font-kufi',
   weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://iraqnow.iq'),
   title: {
-    default: 'IraqNow - بوابة العراق الإخبارية',
-    template: '%s | IraqNow',
+    default: 'العراق الآن | Iraq Now — صوت العراق الحقيقي',
+    template: '%s | العراق الآن — Iraq Now',
   },
-  description: 'منصة إخبارية عراقية شاملة متعددة اللغات (العربية، الكردية، الإنكليزية) مع خرائط تفاعلية، بحث متقدم، وميزات مجتمعية',
-  keywords: ['أخبار العراق', 'Iraq news', 'العراق الآن', 'بوابة إخبارية', 'أخبار عربية', 'أخبار كردية'],
-  authors: [{ name: 'IraqNow' }],
-  creator: 'IraqNow',
-  publisher: 'IraqNow',
-  robots: 'index, follow',
+  description:
+    'منصة إخبارية عراقية مستقلة متعددة اللغات (العربية، الكردية، الإنكليزية). تغطية شاملة من بغداد إلى أربيل والبصرة والموصل — أخبار عاجلة، تقارير معمقة، خرائط تفاعلية، صحافة بيانات، وبودكاست.',
+  keywords: [
+    'أخبار العراق', 'العراق الآن', 'Iraq Now', 'Iraq news', 'أخبار عربية',
+    'أخبار كردية', 'بغداد', 'البصرة', 'أربيل', 'الموصل', 'كردستان',
+    'اقتصاد العراق', 'سياسة العراق', 'رووداو', 'شفق نيوز',
+  ],
+  authors: [{ name: 'فريق العراق الآن', url: 'https://iraqnow.iq/team' }],
+  creator: 'Iraq Now — العراق الآن',
+  publisher: 'Iraq Now Media',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
   openGraph: {
     type: 'website',
     locale: 'ar_IQ',
-    url: 'https://iraqnow.com',
-    siteName: 'IraqNow',
-    title: 'IraqNow - بوابة العراق الإخبارية',
-    description: 'منصة إخبارية عراقية شاملة متعددة اللغات',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'IraqNow',
-      },
-    ],
+    alternateLocale: ['ku_IQ', 'en_US'],
+    url: 'https://iraqnow.iq',
+    siteName: 'العراق الآن — Iraq Now',
+    title: 'العراق الآن | Iraq Now — صوت العراق الحقيقي',
+    description: 'تغطية شاملة ومستقلة من بغداد إلى أربيل والبصرة والموصل — بثلاث لغات',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'العراق الآن — Iraq Now' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'IraqNow',
-    description: 'منصة إخبارية عراقية شاملة متعددة اللغات',
+    site: '@iraqnow',
+    creator: '@iraqnow',
+    title: 'العراق الآن | Iraq Now',
+    description: 'صوت العراق الحقيقي — بثلاث لغات',
     images: ['/og-image.png'],
   },
   alternates: {
-    languages: {
-      ar: '/ar',
-      ku: '/ku',
-      en: '/en',
-    },
+    canonical: '/',
+    languages: { ar: '/ar', ku: '/ku', en: '/en', 'x-default': '/ar' },
   },
+  category: 'news',
 }
 
 export const viewport: Viewport = {
-  themeColor: '#1a1a2e',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fbf9f4' },
+    { media: '(prefers-color-scheme: dark)', color: '#0e0d0b' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  colorScheme: 'light dark',
 }
 
 export default async function RootLayout({
@@ -76,22 +84,28 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>
 }) {
   const resolvedLocale = (await params).locale
-  const dir = resolvedLocale === 'en' ? 'ltr' : 'rtl'
-  const lang = resolvedLocale === 'ku' ? 'ckb' : resolvedLocale
+  const locale = (['ar', 'ku', 'en'].includes(resolvedLocale) ? resolvedLocale : 'ar') as 'ar' | 'ku' | 'en'
+  const dir = locale === 'en' ? 'ltr' : 'rtl'
+  const lang = locale === 'ku' ? 'ckb' : locale
 
   return (
-    <html lang={lang} dir={dir} className={`${inter.variable} ${notoArabic.variable} ${notoKufi.variable}`}>
+    <html
+      lang={lang}
+      dir={dir}
+      className={`${inter.variable} ${notoArabic.variable} ${notoKufi.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className={`${dir === 'rtl' ? 'font-arabic' : 'font-inter'} antialiased bg-gray-50 text-gray-900`}>
-        <Providers locale={resolvedLocale as 'ar' | 'ku' | 'en'}>
-          <div className="flex flex-col min-h-screen">
-            <LocaleSwitcher />
-            <Header locale={resolvedLocale as 'ar' | 'ku' | 'en'} />
+      <body className={`${dir === 'rtl' ? 'font-arabic' : 'font-inter'} min-h-screen antialiased`}>
+        <Providers locale={locale}>
+          <div className="flex min-h-screen flex-col">
+            <Header locale={locale} />
             <main className="flex-1">{children}</main>
-            <Footer locale={resolvedLocale as 'ar' | 'ku' | 'en'} />
+            <Footer locale={locale} />
           </div>
         </Providers>
       </body>

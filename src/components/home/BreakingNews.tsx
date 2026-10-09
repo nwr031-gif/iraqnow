@@ -3,45 +3,99 @@
 import Link from 'next/link'
 import { Flame } from 'lucide-react'
 
+type Locale = 'ar' | 'ku' | 'en'
+
 interface BreakingNewsProps {
-  locale: 'ar' | 'ku' | 'en'
+  locale: Locale
 }
 
-const mockBreakingNews = [
-  { id: '1', slug: 'breaking-1', title: { ar: 'رئيس الوزراء يعلن حالة الطوارئ الاقتصادية', ku: 'سەرۆک وەزیر دژوور دەکرێت بۆ پهێنای ئابووری', en: 'PM Declares Economic Emergency' }, category: { ar: 'السياسة', ku: 'سیاسەت', en: 'Politics' }, time: '5', views: 25000, breaking: true },
-  { id: '2', slug: 'breaking-2', title: { ar: 'انفجار في سوق شعبي ببغداد يسفر عن إصابات', ku: 'تەقینەوەیەک لە بازاڕی گشتی بەغداد', en: 'Explosion in Baghdad Market' }, category: { ar: 'الأمن', ku: 'ئاسایش', en: 'Security' }, time: '12', views: 18000, breaking: true },
-  { id: '3', slug: 'breaking-3', title: { ar: 'سعر صرف الدولار ينخفض لأول مرة منذ شهور', ku: 'نرخی دۆلار دابەش دەکات بۆ یەکەم جار', en: 'Dollar Rate Drops for First Time in Months' }, category: { ar: 'الاقتصاد', ku: 'أپووری', en: 'Economy' }, time: '25', views: 32000, breaking: true },
-  { id: '4', slug: 'breaking-4', title: { ar: 'منتخب العراق يتأهل لنهائيات كأس آسيا', ku: 'تیمی عێراق سەرکەوتوو دەبێت بۆ کۆتایی ئاسیا', en: 'Iraq Qualifies for Asian Cup Finals' }, category: { ar: 'الرياضة', ku: 'وەرزش', en: 'Sports' }, time: '40', views: 45000, breaking: true },
+const BREAKING = [
+  {
+    id: '1',
+    slug: 'breaking-1',
+    title: { ar: 'مجلس الوزراء يعقد جلسة استثنائية لمناقشة الموازنة', ku: 'ئەنجومەنی وەزیران کۆبوونەوەی نائاسایی ئەنجام دەدات', en: 'Cabinet Holds Emergency Session on Budget' },
+    category: { ar: 'سياسة', ku: 'سیاسەت', en: 'Politics' },
+  },
+  {
+    id: '2',
+    slug: 'breaking-2',
+    title: { ar: 'البنك المركزي يعلن إجراءات جديدة لدعم الدينار العراقي', ku: 'بانکی ناوەندی ڕێکارە نوێیەکان بۆ پشتگیری دینار ڕادەگەیەنێت', en: 'Central Bank Announces New Measures to Support the Dinar' },
+    category: { ar: 'اقتصاد', ku: 'ئابووری', en: 'Economy' },
+  },
+  {
+    id: '3',
+    slug: 'breaking-3',
+    title: { ar: 'افتتاح أكبر محطة للطاقة الشمسية في البصرة بقدرة 1000 ميغاواط', ku: 'گەورەترین وێستگەی وزەی خۆر لە بەسرە دەکرێتەوە', en: 'Largest Solar Plant Opens in Basra with 1000MW Capacity' },
+    category: { ar: 'طاقة', ku: 'وزە', en: 'Energy' },
+  },
+  {
+    id: '4',
+    slug: 'breaking-4',
+    title: { ar: 'منتخب العراق يتأهل لنهائيات كأس آسيا بعد فوز تاريخي', ku: 'هەڵبژاردەی عێراق بۆ کۆتایی جامی ئاسیا سەرکەوت', en: 'Iraq Qualifies for Asian Cup Final After Historic Win' },
+    category: { ar: 'رياضة', ku: 'وەرزش', en: 'Sports' },
+  },
+  {
+    id: '5',
+    slug: 'breaking-5',
+    title: { ar: 'إطلاق أول قطار كهربائي بين بغداد والموصل العام المقبل', ku: 'یەکەم شەمەندەفەری کارەبایی نێوان بەغداد و موسڵ دەستپێدەکات', en: 'First Electric Train Between Baghdad and Mosul Launches Next Year' },
+    category: { ar: 'بنية تحتية', ku: 'ژێرخان', en: 'Infrastructure' },
+  },
 ]
 
 export function BreakingNews({ locale }: BreakingNewsProps) {
-  const doubled = [...mockBreakingNews, ...mockBreakingNews]
+  const doubled = [...BREAKING, ...BREAKING]
 
   return (
-    <section className="border-y border-gray-200 bg-error/5 dark:bg-error/10 overflow-hidden" aria-label="Breaking News">
+    <section
+      className="relative overflow-hidden border-b border-gold-500/15 bg-gradient-to-l from-lapis-950 via-lapis-900 to-lapis-950"
+      aria-label="Breaking news"
+    >
       <div className="container-main">
         <div className="flex items-center gap-4 py-3">
-          <div className="flex-shrink-0 flex items-center gap-2 rounded-lg bg-error px-3 py-1 text-sm font-bold text-white animate-pulse">
-            <Flame className="h-4 w-4" />
-            {locale === 'ar' ? 'عاجل' : locale === 'ku' ? 'بەھێز' : 'BREAKING'}
+          {/* شارة عاجل */}
+          <div className="relative flex shrink-0 items-center gap-2 rounded-lg bg-gradient-to-l from-red-600 to-red-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-lg shadow-red-900/40">
+            <span className="absolute inset-0 animate-pulse rounded-lg bg-red-500/40" />
+            <Flame className="relative h-4 w-4" />
+            <span className="relative font-kufi tracking-wide">
+              {locale === 'ar' ? 'عاجل' : locale === 'ku' ? 'بەپەلە' : 'BREAKING'}
+            </span>
           </div>
-          <div className="flex-1 overflow-hidden">
-            <div
-              className="flex whitespace-nowrap gap-8 animate-marquee"
-              style={{ animationDirection: locale === 'en' ? 'normal' : 'reverse' }}
-            >
+
+          {/* الشريط المتحرك */}
+          <div className="relative flex-1 overflow-hidden" dir="ltr">
+            {/* تلاشي جانبي */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-lapis-950 to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-lapis-950 to-transparent" />
+
+            <div className="flex w-max animate-marquee items-center gap-10 hover:[animation-play-state:paused]">
               {doubled.map((news, i) => (
                 <Link
                   key={`${news.id}-${i}`}
                   href={`/${locale}/article/${news.slug}`}
-                  className="flex-shrink-0 flex items-center gap-3 text-sm font-medium text-gray-900 hover:text-accent dark:text-white dark:hover:text-accent"
+                  dir={locale === 'en' ? 'ltr' : 'rtl'}
+                  className="group flex shrink-0 items-center gap-3 text-sm"
                 >
-                  <span className="text-accent font-bold">●</span>
-                  <span className="text-gray-600 dark:text-gray-400">[{news.category[locale] || news.category.ar}]</span>
-                  <span>{news.title[locale] || news.title.ar}</span>
+                  <span className="flex h-1.5 w-1.5 shrink-0 rounded-full bg-gold-500 shadow-[0_0_8px_rgba(212,175,55,0.8)]" />
+                  <span className="shrink-0 rounded-md bg-gold-500/15 px-2 py-0.5 text-[10px] font-bold text-gold-400">
+                    {news.category[locale]}
+                  </span>
+                  <span className="whitespace-nowrap font-medium text-sand-100/85 transition-colors group-hover:text-gold-300">
+                    {news.title[locale]}
+                  </span>
                 </Link>
               ))}
             </div>
+          </div>
+
+          {/* حالة البث */}
+          <div className="hidden shrink-0 items-center gap-2 text-[11px] text-sand-100/50 md:flex">
+            <span className="flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+              </span>
+              {locale === 'en' ? 'Auto-refresh' : 'تحديث تلقائي'}
+            </span>
           </div>
         </div>
       </div>

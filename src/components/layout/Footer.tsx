@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Facebook, Twitter, Youtube, Instagram, Telegram, Whatsapp, Rss, Globe, Mail, Shield, Scale } from 'lucide-react'
+import { Send, MessageSquare, Rss, Globe, Mail, Shield, Scale } from 'lucide-react'
 
 const footerData = {
   ar: {
@@ -51,13 +51,12 @@ const footerData = {
       },
     },
     social: [
-      { icon: Facebook, href: 'https://facebook.com/iraqnow', label: 'فيسبوك' },
-      { icon: Twitter, href: 'https://twitter.com/iraqnow', label: 'تويتر' },
-      { icon: Youtube, href: 'https://youtube.com/iraqnow', label: 'يوتيوب' },
-      { icon: Instagram, href: 'https://instagram.com/iraqnow', label: 'إنستغرام' },
-      { icon: Telegram, href: 'https://t.me/iraqnow', label: 'تيليجرام' },
-      { icon: Whatsapp, href: 'https://whatsapp.com/channel/iraqnow', label: 'واتساب' },
+      { icon: Send, href: 'https://t.me/iraqnow', label: 'تيليجرام' },
+      { icon: MessageSquare, href: 'https://whatsapp.com/channel/iraqnow', label: 'واتساب' },
       { icon: Rss, href: '/rss', label: 'RSS' },
+      { icon: Globe, href: 'https://twitter.com/iraqnow', label: 'تويتر' },
+      { icon: Globe, href: 'https://youtube.com/iraqnow', label: 'يوتيوب' },
+      { icon: Globe, href: 'https://instagram.com/iraqnow', label: 'إنستغرام' },
     ],
     bottom: {
       copyright: '© 2026 IraqNow. جميع الحقوق محفوظة.',
@@ -117,13 +116,12 @@ const footerData = {
       },
     },
     social: [
-      { icon: Facebook, href: 'https://facebook.com/iraqnow', label: 'فەیسبووک' },
-      { icon: Twitter, href: 'https://twitter.com/iraqnow', label: 'تویتەر' },
-      { icon: Youtube, href: 'https://youtube.com/iraqnow', label: 'یۆتوب' },
-      { icon: Instagram, href: 'https://instagram.com/iraqnow', label: 'ئینستاگرام' },
-      { icon: Telegram, href: 'https://t.me/iraqnow', label: 'تێلێگرام' },
-      { icon: Whatsapp, href: 'https://whatsapp.com/channel/iraqnow', label: 'واتساپ' },
+      { icon: Send, href: 'https://t.me/iraqnow', label: 'تێلێگرام' },
+      { icon: MessageSquare, href: 'https://whatsapp.com/channel/iraqnow', label: 'واتساپ' },
       { icon: Rss, href: '/rss', label: 'RSS' },
+      { icon: Globe, href: 'https://twitter.com/iraqnow', label: 'تویتەر' },
+      { icon: Globe, href: 'https://youtube.com/iraqnow', label: 'یۆتوب' },
+      { icon: Globe, href: 'https://instagram.com/iraqnow', label: 'ئینستاگرام' },
     ],
     bottom: {
       copyright: '© 2026 IraqNow. ھەموو مافەکان پارێزراوە.',
@@ -183,13 +181,12 @@ const footerData = {
       },
     },
     social: [
-      { icon: Facebook, href: 'https://facebook.com/iraqnow', label: 'Facebook' },
-      { icon: Twitter, href: 'https://twitter.com/iraqnow', label: 'Twitter' },
-      { icon: Youtube, href: 'https://youtube.com/iraqnow', label: 'YouTube' },
-      { icon: Instagram, href: 'https://instagram.com/iraqnow', label: 'Instagram' },
-      { icon: Telegram, href: 'https://t.me/iraqnow', label: 'Telegram' },
-      { icon: Whatsapp, href: 'https://whatsapp.com/channel/iraqnow', label: 'WhatsApp' },
+      { icon: Send, href: 'https://t.me/iraqnow', label: 'Telegram' },
+      { icon: MessageSquare, href: 'https://whatsapp.com/channel/iraqnow', label: 'WhatsApp' },
       { icon: Rss, href: '/rss', label: 'RSS' },
+      { icon: Globe, href: 'https://twitter.com/iraqnow', label: 'Twitter' },
+      { icon: Globe, href: 'https://youtube.com/iraqnow', label: 'YouTube' },
+      { icon: Globe, href: 'https://instagram.com/iraqnow', label: 'Instagram' },
     ],
     bottom: {
       copyright: '© 2026 IraqNow. All rights reserved.',

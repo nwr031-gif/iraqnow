@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'سجل دخولك للوصول إلى ميزات مخصصة',
 }
 
-export default function SignInPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function SignInPage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = (await params).locale as 'ar' | 'ku' | 'en'
 
   return (

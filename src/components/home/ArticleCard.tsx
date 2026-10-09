@@ -2,24 +2,26 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Clock, Eye, Bookmark, Share2 } from 'lucide-react'
+import { MapPin, Clock, Eye, Bookmark, Share2, Flame } from 'lucide-react'
 import { cn, formatRelativeTime, truncate } from '@/lib/utils'
 
+export interface ArticleData {
+  id: string
+  slug: string
+  breaking: boolean
+  featured: boolean
+  publishedAt: string
+  viewCount: number
+  readingTime: number
+  translations: Array<{ locale: 'ar' | 'ku' | 'en'; title: string; excerpt: string }>
+  media: Array<{ media: { url: string; alt: string } }>
+  category: { slug: string; translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> }
+  author: { name: string; avatar?: string }
+  location?: { governorate?: { translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> } }
+}
+
 interface ArticleCardProps {
-  article: {
-    id: string
-    slug: string
-    breaking: boolean
-    featured: boolean
-    publishedAt: string
-    viewCount: number
-    readingTime: number
-    translations: Array<{ locale: 'ar' | 'ku' | 'en'; title: string; excerpt: string }>
-    media: Array<{ media: { url: string; alt: string } }>
-    category: { slug: string; translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> }
-    author: { name: string; avatar?: string }
-    location?: { governorate?: { translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> } }
-  }
+  article: ArticleData
   locale: 'ar' | 'ku' | 'en'
   variant?: 'default' | 'compact' | 'featured'
 }
@@ -184,9 +186,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
             </div>
           </div>
         </div>
-      </Link>
+       </Link>
     </article>
   )
 }
-
-import { Flame } from 'lucide-react'

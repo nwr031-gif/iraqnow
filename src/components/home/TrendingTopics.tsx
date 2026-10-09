@@ -37,7 +37,7 @@ export function TrendingTopics({ locale }: TrendingTopicsProps) {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {mockTrending.map((item, index) => {
-            const changeIcon = item.change > 0 ? ArrowUp : item.change < 0 ? ArrowDown : Minus
+            const ChangeIcon = item.change > 0 ? ArrowUp : item.change < 0 ? ArrowDown : Minus
             const changeColor = item.change > 0 ? 'text-success' : item.change < 0 ? 'text-error' : 'text-gray-500'
             return (
               <Link
@@ -60,13 +60,10 @@ export function TrendingTopics({ locale }: TrendingTopicsProps) {
                   </h3>
                   <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                     <span className="flex items-center gap-1">
-                      <changeIcon className={cn('h-3 w-3', changeColor)} />
+                      <ChangeIcon className={cn('h-3 w-3', changeColor)} />
                       {Math.abs(item.change)}%
                     </span>
-                    <span className="flex items-center gap-1">
-                      <span className="h-3 w-3" style={{ maskImage: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Cpath d=%22M1 12s4-8 11-8 11 8-4 8-11 8%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3C/svg%22")', WebkitMaskImage: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Cpath d=%22M1 12s4-8 11-8 11 8-4 8-11 8%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3C/svg%22")' }} />
-                      {item.count.toLocaleString()}
-                    </span>
+                    <span>{item.count.toLocaleString()}</span>
                   </div>
                 </div>
               </Link>

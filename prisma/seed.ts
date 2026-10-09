@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { hash } from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log('🌱 Seeding database...')
@@ -16,7 +18,7 @@ async function main() {
       name: 'Admin User',
       role: 'ADMIN',
       locale: 'ar',
-      password: adminPassword,
+      passwordHash: adminPassword,
     },
   })
   console.log('✅ Admin user created:', admin.email)
@@ -31,7 +33,7 @@ async function main() {
       name: 'Editor User',
       role: 'EDITOR',
       locale: 'ar',
-      password: editorPassword,
+      passwordHash: editorPassword,
     },
   })
   console.log('✅ Editor user created:', editor.email)
@@ -46,7 +48,7 @@ async function main() {
       name: 'Ahmed Al-Zubaydi',
       role: 'JOURNALIST',
       locale: 'ar',
-      password: journoPassword,
+      passwordHash: journoPassword,
     },
   })
   console.log('✅ Journalist user created:', journalist.email)

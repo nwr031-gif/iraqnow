@@ -1,10 +1,10 @@
-import { MeiliSearch } from 'meilisearch'
+import { Meilisearch } from 'meilisearch'
 import { INDEXES } from '../src/lib/meilisearch'
 
 const host = process.env.MEILISEARCH_HOST!
 const masterKey = process.env.MEILISEARCH_MASTER_KEY!
 
-const meilisearch = new MeiliSearch({ host, apiKey: masterKey })
+const client = new Meilisearch({ host, apiKey: masterKey })
 
 async function setupIndexes() {
   console.log('🔧 Setting up Meilisearch indexes...')
@@ -13,17 +13,17 @@ async function setupIndexes() {
 
   for (const indexName of indexes) {
     try {
-      await meilisearch.getIndex(indexName)
+      await client.getIndex(indexName)
       console.log(`✅ Index "${indexName}" already exists`)
     } catch {
-      await meilisearch.createIndex(indexName, { primaryKey: 'id' })
+      await client.createIndex(indexName, { primaryKey: 'id' })
       console.log(`✨ Created index "${indexName}"`)
     }
   }
 
   // Configure articles index
   console.log('⚙️ Configuring articles index...')
-  const articlesIndex = meilisearch.index(INDEXES.articles)
+  const articlesIndex = client.index(INDEXES.articles)
   await articlesIndex.updateSettings({
     searchableAttributes: [
       'title.ar', 'title.ku', 'title.en',
@@ -54,22 +54,20 @@ async function setupIndexes() {
   })
 
   await articlesIndex.updateSynonyms({
-    synonyms: {
-      'العراق': ['عراق', 'Iraq', 'عێراق'],
-      'بغداد': ['Baghdad', 'بەغداد'],
-      'كردستان': ['Kurdistan', 'کوردستان'],
-      'الانتخابات': ['elections', 'هەڵبژاردن'],
-      'الاقتصاد': ['economy', 'أپووری'],
-      'السياسة': ['politics', 'سیاسەت'],
-      'الرياضة': ['sports', 'وەرزش'],
-      'التعليم': ['education', 'پەروەردە'],
-      'الصحة': ['health', 'تەندروستی'],
-    },
+    العراق: ['عراق', 'Iraq', 'عێراق'],
+    بغداد: ['Baghdad', 'بەغداد'],
+    كردستان: ['Kurdistan', 'کوردستان'],
+    الانتخابات: ['elections', 'هەڵبژاردن'],
+    الاقتصاد: ['economy', 'أپووری'],
+    السياسة: ['politics', 'سیاسەت'],
+    الرياضة: ['sports', 'وەرزش'],
+    التعليم: ['education', 'پەروەردە'],
+    الصحة: ['health', 'تەندروستی'],
   })
 
   // Configure categories index
   console.log('⚙️ Configuring categories index...')
-  const catIndex = meilisearch.index(INDEXES.categories)
+  const catIndex = client.index(INDEXES.categories)
   await catIndex.updateSettings({
     searchableAttributes: ['name.ar', 'name.ku', 'name.en', 'slug'],
     filterableAttributes: ['parentId', 'isActive'],
@@ -78,14 +76,14 @@ async function setupIndexes() {
 
   // Configure tags index
   console.log('⚙️ Configuring tags index...')
-  const tagIndex = meilisearch.index(INDEXES.tags)
+  const tagIndex = client.index(INDEXES.tags)
   await tagIndex.updateSettings({
     searchableAttributes: ['name.ar', 'name.ku', 'name.en', 'slug'],
   })
 
   // Configure governorates index
   console.log('⚙️ Configuring governorates index...')
-  const govIndex = meilisearch.index(INDEXES.governorates)
+  const govIndex = client.index(INDEXES.governorates)
   await govIndex.updateSettings({
     searchableAttributes: ['name.ar', 'name.ku', 'name.en', 'code'],
     filterableAttributes: ['code'],

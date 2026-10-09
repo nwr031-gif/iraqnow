@@ -1,13 +1,15 @@
 'use client'
 
 import { Suspense } from 'react'
+import Link from 'next/link'
 import { ArticleCard } from './ArticleCard'
+import type { ArticleData } from './ArticleCard'
 
 interface LatestNewsProps {
   locale: 'ar' | 'ku' | 'en'
 }
 
-const mockArticles = Array.from({ length: 10 }, (_, i) => ({
+const mockArticles: ArticleData[] = Array.from({ length: 10 }, (_, i) => ({
   id: String(i + 5),
   slug: `article-${i + 5}`,
   breaking: i === 0,
@@ -16,14 +18,14 @@ const mockArticles = Array.from({ length: 10 }, (_, i) => ({
   viewCount: Math.floor(Math.random() * 10000) + 1000,
   readingTime: Math.floor(Math.random() * 10) + 3,
   translations: [
-    { locale: 'ar', title: `عنوان الخبر ${i + 1} باللغة العربية مع تفاصيل مهمة`, excerpt: `ملخص للخبر ${i + 1} يشرح المحتوى بإيجاز` },
-    { locale: 'ku', title: `سەرەڕای هەواڵ ${i + 1} بە زمانی کوردی`, excerpt: `کورتکراوەی هەواڵ ${i + 1}` },
-    { locale: 'en', title: `Article ${i + 1} Title in English`, excerpt: `Summary of article ${i + 1}` },
+    { locale: 'ar' as const, title: `عنوان الخبر ${i + 1} باللغة العربية مع تفاصيل مهمة`, excerpt: `ملخص للخبر ${i + 1} يشرح المحتوى بإيجاز` },
+    { locale: 'ku' as const, title: `سەرەڕای هەواڵ ${i + 1} بە زمانی کوردی`, excerpt: `کورتکراوەی هەواڵ ${i + 1}` },
+    { locale: 'en' as const, title: `Article ${i + 1} Title in English`, excerpt: `Summary of article ${i + 1}` },
   ],
   media: [{ media: { url: `https://picsum.photos/seed/article${i + 5}/800/450`, alt: `Article ${i + 5} image` } }],
-  category: { slug: ['politics', 'economy', 'security', 'society', 'culture', 'sports', 'technology', 'health', 'education', 'environment'][i % 10], translations: [{ locale: 'ar', name: 'السياسة' }] },
+  category: { slug: ['politics', 'economy', 'security', 'society', 'culture', 'sports', 'technology', 'health', 'education', 'environment'][i % 10], translations: [{ locale: 'ar' as const, name: 'السياسة' }] },
   author: { name: `Author ${i + 1}` },
-  location: { governorate: { translations: [{ locale: 'ar', name: 'بغداد' }] } },
+  location: { governorate: { translations: [{ locale: 'ar' as const, name: 'بغداد' }] } },
 }))
 
 export function LatestNews({ locale }: LatestNewsProps) {

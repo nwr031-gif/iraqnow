@@ -306,7 +306,7 @@ export function Header({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
               </form>
               <div className="mt-4 flex flex-wrap gap-2">
                 <span className="text-sm text-gray-500">{locale === 'ar' ? 'اقتراحات:' : locale === 'ku' ? 'پێشنیارەکان:' : 'Suggestions:'}</span>
-                ['العراق', 'بغداد', 'كردستان', 'الانتخابات', 'الاقتصاد'].map((sug, i) => (
+                {(locale === 'ar' ? ['العراق', 'بغداد', 'كردستان', 'الانتخابات', 'الاقتصاد'] : locale === 'ku' ? ['عێراق', 'بەغداد', 'کوردستان', 'هەڵبژاردن', 'أپووری'] : ['Iraq', 'Baghdad', 'Kurdistan', 'Elections', 'Economy']).map((sug: string, i: number) => (
                   <button
                     key={i}
                     type="button"

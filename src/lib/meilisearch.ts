@@ -1,21 +1,21 @@
-import { MeiliSearch } from 'meilisearch'
+import { Meilisearch } from 'meilisearch'
 
 const host = process.env.MEILISEARCH_HOST!
 const masterKey = process.env.MEILISEARCH_MASTER_KEY!
 const adminKey = process.env.MEILISEARCH_ADMIN_KEY!
 const searchKey = process.env.MEILISEARCH_SEARCH_KEY!
 
-export const meilisearch = new MeiliSearch({
+export const meilisearch = new Meilisearch({
   host,
   apiKey: masterKey,
 })
 
-export const meilisearchAdmin = new MeiliSearch({
+export const meilisearchAdmin = new Meilisearch({
   host,
   apiKey: adminKey,
 })
 
-export const meilisearchSearch = new MeiliSearch({
+export const meilisearchSearch = new Meilisearch({
   host,
   apiKey: searchKey,
 })
@@ -115,17 +115,15 @@ async function configureArticleIndex() {
   })
 
   await index.updateSynonyms({
-    synonyms: {
-      'العراق': ['عراق', 'Iraq', 'عێراق'],
-      'بغداد': ['Baghdad', 'بەغداد'],
-      'كردستان': ['Kurdistan', 'کوردستان'],
-      'الانتخابات': ['elections', 'هەڵبژاردن'],
-      'الاقتصاد': ['economy', 'أپووری'],
-      'السياسة': ['politics', 'سیاسەت'],
-      'الرياضة': ['sports', 'وەرزش'],
-      'التعليم': ['education', 'پەروەردە'],
-      'الصحة': ['health', 'تەندروستی'],
-    },
+    العراق: ['عراق', 'Iraq', 'عێراق'],
+    بغداد: ['Baghdad', 'بەغداد'],
+    كردستان: ['Kurdistan', 'کوردستان'],
+    الانتخابات: ['elections', 'هەڵبژاردن'],
+    الاقتصاد: ['economy', 'أپووری'],
+    السياسة: ['politics', 'سیاسەت'],
+    الرياضة: ['sports', 'وەرزش'],
+    التعليم: ['education', 'پەروەردە'],
+    الصحة: ['health', 'تەندروستی'],
   })
 }
 
@@ -181,20 +179,20 @@ export async function indexArticle(article: any) {
         en: at.tag.translations?.find((t: any) => t.locale === 'en')?.name || '',
       },
     })) || [],
-    governorate: article.location?.governorate ? {
-      id: article.location.governorate.id,
+    governorate: article.locations?.[0]?.governorate ? {
+      id: article.locations[0].governorate.id,
       name: {
-        ar: article.location.governorate.translations?.find((t: any) => t.locale === 'ar')?.name || '',
-        ku: article.location.governorate.translations?.find((t: any) => t.locale === 'ku')?.name || '',
-        en: article.location.governorate.translations?.find((t: any) => t.locale === 'en')?.name || '',
+        ar: article.locations[0].governorate.translations?.find((t: any) => t.locale === 'ar')?.name || '',
+        ku: article.locations[0].governorate.translations?.find((t: any) => t.locale === 'ku')?.name || '',
+        en: article.locations[0].governorate.translations?.find((t: any) => t.locale === 'en')?.name || '',
       },
     } : null,
-    district: article.location?.district ? {
-      id: article.location.district.id,
+    district: article.locations?.[0]?.district ? {
+      id: article.locations[0].district.id,
       name: {
-        ar: article.location.district.translations?.find((t: any) => t.locale === 'ar')?.name || '',
-        ku: article.location.district.translations?.find((t: any) => t.locale === 'ku')?.name || '',
-        en: article.location.district.translations?.find((t: any) => t.locale === 'en')?.name || '',
+        ar: article.locations[0].district.translations?.find((t: any) => t.locale === 'ar')?.name || '',
+        ku: article.locations[0].district.translations?.find((t: any) => t.locale === 'ku')?.name || '',
+        en: article.locations[0].district.translations?.find((t: any) => t.locale === 'en')?.name || '',
       },
     } : null,
     author: {

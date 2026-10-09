@@ -1,10 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Play, ChevronRight, ChevronLeft, MapPin, Clock, Flame } from 'lucide-react'
+import { Play, ChevronRight, ChevronLeft, MapPin, Clock, Flame, Users, Zap, Map } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn, formatRelativeTime } from '@/lib/utils'
+
+interface FeaturesData {
+  icon: LucideIcon
+  title: { ar: string; ku: string; en: string }
+  desc: { ar: string; ku: string; en: string }
+}
+
+const features: FeaturesData[] = [
+  { icon: Map, title: { ar: 'خرائط تفاعلية', ku: 'نەخشەی بەراوەر', en: 'Interactive Maps' }, desc: { ar: 'تصفح الأخبار جغرافياً', ku: 'هەواڵەکان بە جۆگرافیایی', en: 'Browse news geographically' } },
+  { icon: Users, title: { ar: 'مجتمع تفاعلي', ku: 'کۆمەڵگەی بەراوەر', en: 'Interactive Community' }, desc: { ar: 'تعليقات ونقاشات بناءة', ku: 'تێبینی و مێژوو', en: 'Comments and discussions' } },
+  { icon: Zap, title: { ar: 'تنبيهات فورية', ku: 'ئاگادارکردنەوەی بێدەنگ', en: 'Instant Alerts' }, desc: { ar: 'لا تفوت أي خبر مهم', ku: 'ھیچ هەواڵێکی گرنگ نەگەڕێت', en: 'Never miss important news' } },
+]
 
 interface Article {
   id: string
@@ -97,7 +110,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
       <div className="container-main relative py-8 lg:py-12">
         <div className="grid gap-8 lg:grid-cols-3">
-          <article className="lg:col-span-2 relative group" style={{ '--aspect-ratio': '16/9' }}>
+          <article className="lg:col-span-2 relative group">
             <Link href={`/${locale}/article/${mockHeroArticle.slug}`} className="block relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src={mockHeroArticle.media[0].media.url}
@@ -206,9 +219,3 @@ export function HeroSection({ locale }: HeroSectionProps) {
     </section>
   )
 }
-
-const features = [
-  { icon: Map, title: { ar: 'خرائط تفاعلية', ku: 'نەخشەی بەراوەر', en: 'Interactive Maps' }, desc: { ar: 'تصفح الأخبار جغرافياً', ku: 'هەواڵەکان بە جۆگرافیایی', en: 'Browse news geographically' } },
-  { icon: Users, title: { ar: 'مجتمع تفاعلي', ku: 'کۆمەڵگەی بەراوەر', en: 'Interactive Community' }, desc: { ar: 'تعليقات ونقاشات بناءة', ku: 'تێبینی و مێژوو', en: 'Comments and discussions' } },
-  { icon: Zap, title: { ar: 'تنبيهات فورية', ku: 'ئاگادارکردنەوەی بێدەنگ', en: 'Instant Alerts' }, desc: { ar: 'لا تفوت أي خبر مهم', ku: 'ھیچ هەواڵێکی گرنگ نەگەڕێت', en: 'Never miss important news' } },
-]

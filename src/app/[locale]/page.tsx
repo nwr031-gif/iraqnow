@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { Link } from 'next/link'
+import Link from 'next/link'
 import { Suspense } from 'react'
 import { HeroSection } from '@/components/home/HeroSection'
 import { BreakingNews } from '@/components/home/BreakingNews'
@@ -8,13 +8,20 @@ import { CategorySections } from '@/components/home/CategorySections'
 import { TrendingTopics } from '@/components/home/TrendingTopics'
 import { NewsletterSignup } from '@/components/home/NewsletterSignup'
 import { Map, TrendingUp, Users, Zap, Award } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'الرئيسية',
   description: 'IraqNow - بوابة العراق الإخبارية الشاملة متعددة اللغات. أخبار عاجلة، تقارير معمقة، خرائط تفاعلية، وصحافة بيانات.',
 }
 
-const features = [
+interface FeatureItem {
+  icon: LucideIcon
+  title: { ar: string; ku: string; en: string }
+  desc: { ar: string; ku: string; en: string }
+}
+
+const features: FeatureItem[] = [
   { icon: Map, title: { ar: 'خرائط تفاعلية', ku: 'نەخشەی بەراوەر', en: 'Interactive Maps' }, desc: { ar: 'تصفح الأخبار جغرافياً على خريطة العراق', ku: 'هەواڵەکان بە جۆگرافیایی لەسەر نەخشەی عێراق بدۆزەوە', en: 'Browse news geographically on Iraq map' } },
   { icon: TrendingUp, title: { ar: 'تحليلات وبيانات', ku: 'تَحلیل و داتا', en: 'Analytics & Data' }, desc: { ar: 'صحافة بيانات معمقة ورسوم بيانية تفاعلية', ku: 'رۆژنامەوانی داتای سەێوە و گرافە بەراوەرەکان', en: 'In-depth data journalism with interactive charts' } },
   { icon: Users, title: { ar: 'مجتمع تفاعلي', ku: 'کۆمەڵگەی بەراوەر', en: 'Interactive Community' }, desc: { ar: 'تعليقات، نقاشات، وإشارات مرجعية مخصصة', ku: 'تێبینی، مێژوو، و نیشانەکانی تایبەت', en: 'Comments, discussions, and personalized bookmarks' } },
@@ -22,7 +29,7 @@ const features = [
   { icon: Award, title: { ar: 'محتوى موثوق', ku: 'ناوەڕۆکی باوەڕپێکراو', en: 'Trusted Content' }, desc: { ar: 'فريق تحريري محترف ومعايير تحقق عالية', ku: 'تێمی ڕۆژنامەوانی پیشەگەر و استانداردە باوەڕی بەرز', en: 'Professional editorial team with high verification standards' } },
 ]
 
-export default function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const resolvedParams = await params
   const locale = resolvedParams.locale as 'ar' | 'ku' | 'en'
 

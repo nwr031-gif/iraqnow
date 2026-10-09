@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ArticleCard } from './ArticleCard'
+import type { ArticleData } from './ArticleCard'
 import { NAV_CATEGORIES } from '@/lib/constants'
 
 interface CategorySectionsProps {
@@ -14,7 +15,7 @@ const categoryLabels = {
   en: { politics: 'Politics', economy: 'Economy', security: 'Security', society: 'Society', culture: 'Culture', sports: 'Sports', technology: 'Technology', health: 'Health', education: 'Education', environment: 'Environment', local: 'Local', world: 'World' },
 }
 
-const mockCategoryArticles = (categorySlug: string) => Array.from({ length: 4 }, (_, i) => ({
+const mockCategoryArticles = (categorySlug: string): ArticleData[] => Array.from({ length: 4 }, (_, i) => ({
   id: `${categorySlug}-${i}`,
   slug: `${categorySlug}-article-${i}`,
   breaking: i === 0,
@@ -23,14 +24,14 @@ const mockCategoryArticles = (categorySlug: string) => Array.from({ length: 4 },
   viewCount: Math.floor(Math.random() * 5000) + 500,
   readingTime: Math.floor(Math.random() * 8) + 2,
   translations: [
-    { locale: 'ar', title: `${categoryLabels.ar[categorySlug as keyof typeof categoryLabels.ar]}: خبر ${i + 1}`, excerpt: `ملخص خبر ${categoryLabels.ar[categorySlug as keyof typeof categoryLabels.ar]} رقم ${i + 1}` },
-    { locale: 'ku', title: `${categoryLabels.ku[categorySlug as keyof typeof categoryLabels.ku]}: هەواڵ ${i + 1}`, excerpt: `کورتکراوەی ${categoryLabels.ku[categorySlug as keyof typeof categoryLabels.ku]} ${i + 1}` },
-    { locale: 'en', title: `${categoryLabels.en[categorySlug as keyof typeof categoryLabels.en]}: Article ${i + 1}`, excerpt: `Summary of ${categoryLabels.en[categorySlug as keyof typeof categoryLabels.en]} ${i + 1}` },
+    { locale: 'ar' as const, title: `${categoryLabels.ar[categorySlug as keyof typeof categoryLabels.ar]}: خبر ${i + 1}`, excerpt: `ملخص خبر ${categoryLabels.ar[categorySlug as keyof typeof categoryLabels.ar]} رقم ${i + 1}` },
+    { locale: 'ku' as const, title: `${categoryLabels.ku[categorySlug as keyof typeof categoryLabels.ku]}: هەواڵ ${i + 1}`, excerpt: `کورتکراوەی ${categoryLabels.ku[categorySlug as keyof typeof categoryLabels.ku]} ${i + 1}` },
+    { locale: 'en' as const, title: `${categoryLabels.en[categorySlug as keyof typeof categoryLabels.en]}: Article ${i + 1}`, excerpt: `Summary of ${categoryLabels.en[categorySlug as keyof typeof categoryLabels.en]} ${i + 1}` },
   ],
   media: [{ media: { url: `https://picsum.photos/seed/${categorySlug}${i}/800/450`, alt: `${categorySlug} article ${i}` } }],
-  category: { slug: categorySlug, translations: [{ locale: 'ar', name: categoryLabels.ar[categorySlug as keyof typeof categoryLabels.ar] }] },
+  category: { slug: categorySlug, translations: [{ locale: 'ar' as const, name: categoryLabels.ar[categorySlug as keyof typeof categoryLabels.ar] }] },
   author: { name: `Reporter ${i + 1}` },
-  location: { governorate: { translations: [{ locale: 'ar', name: 'بغداد' }] } },
+  location: { governorate: { translations: [{ locale: 'ar' as const, name: 'بغداد' }] } },
 }))
 
 export function CategorySections({ locale }: CategorySectionsProps) {

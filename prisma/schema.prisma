@@ -4,13 +4,12 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Locale {
-  AR
-  KU
-  EN
+  ar
+  ku
+  en
 }
 
 enum ArticleStatus {
@@ -32,8 +31,9 @@ model User {
   phone         String?   @unique
   name          String?
   avatar        String?
+  passwordHash  String?
   role          UserRole  @default(READER)
-  locale        Locale    @default(AR)
+  locale        Locale    @default(ar)
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -157,6 +157,7 @@ model Article {
   tags          ArticleTag[]
   comments      Comment[]
   bookmarks     Bookmark[]
+  locations     ArticleLocation[]
 
   @@index([status, publishedAt])
   @@index([categoryId, status])
@@ -309,7 +310,19 @@ model District {
   governorate   Governorate @relation(fields: [governorateId], references: [id], onDelete: Cascade)
   articles      ArticleLocation[]
 
+  translations  DistrictTranslation[]
+
   @@index([governorateId])
+}
+
+model DistrictTranslation {
+  id         String   @id @default(cuid())
+  locale     Locale
+  name       String
+  districtId String
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+
+  @@unique([districtId, locale])
 }
 
 model ArticleLocation {
@@ -333,7 +346,7 @@ model ArticleLocation {
 model Newsletter {
   id        String   @id @default(cuid())
   email     String   @unique
-  locale    Locale   @default(AR)
+  locale    Locale   @default(ar)
   active    Boolean  @default(true)
   token     String   @unique @default(cuid())
   createdAt DateTime @default(now())

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+type LocaleParam = 'ar' | 'ku' | 'en'
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -10,13 +12,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
     }
 
+    const safeLocale: LocaleParam = ['ar', 'ku', 'en'].includes(locale) ? locale : 'ar'
+
     const existing = await prisma.newsletter.findUnique({ where: { email } })
 
     if (existing) {
       if (!existing.active) {
         await prisma.newsletter.update({
           where: { email },
-          data: { active: true, locale: (locale as 'ar' | 'ku' | 'en') || 'ar' },
+          data: { active: true, locale: safeLocale },
         })
       }
       return NextResponse.json({ success: true, message: 'Already subscribed' })
@@ -25,7 +29,7 @@ export async function POST(request: NextRequest) {
     await prisma.newsletter.create({
       data: {
         email,
-        locale: (locale as 'ar' | 'ku' | 'en') || 'ar',
+        locale: safeLocale,
         active: true,
       },
     })

@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { indexArticle, setupIndexes } from '../src/lib/meilisearch'
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 
 async function indexArticles() {
   console.log('📰 Indexing articles to Meilisearch...')
@@ -16,7 +18,7 @@ async function indexArticles() {
       tags: { include: { tag: { include: { translations: true } } } },
       media: { include: { media: true }, take: 1 },
       author: true,
-      location: {
+      locations: {
         include: {
           governorate: { include: { translations: true } },
           district: { include: { translations: true } },

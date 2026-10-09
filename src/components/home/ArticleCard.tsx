@@ -15,11 +15,11 @@ export interface ArticleData {
   publishedAt: string
   viewCount: number
   readingTime: number
-  translations: Array<{ locale: Locale; title: string; excerpt: string }>
+  translations: Array<{ locale: 'ar' | 'ku' | 'en'; title: string; excerpt: string }>
   media: Array<{ media: { url: string; alt: string } }>
-  category: { slug: string; translations: Array<{ locale: Locale; name: string }> }
-  author: { name: string; avatar?: string }
-  location?: { governorate?: { translations: Array<{ locale: Locale; name: string }> } }
+  category?: { slug: string; translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> }
+  author?: { name: string; avatar?: string }
+  location?: { governorate?: { translations: Array<{ locale: 'ar' | 'ku' | 'en'; name: string }> } }
 }
 
 interface ArticleCardProps {
@@ -31,11 +31,12 @@ interface ArticleCardProps {
 const READ_LABELS: Record<Locale, string> = { ar: 'دقيقة قراءة', ku: 'خولەک خوێندنەوە', en: 'min read' }
 
 export function ArticleCard({ article, locale, variant = 'default' }: ArticleCardProps) {
-  const t = article.translations.find((tr) => tr.locale === locale) || article.translations[0]
-  const cat = article.category.translations.find((tr) => tr.locale === locale) || article.category.translations[0]
-  const loc = article.location?.governorate?.translations.find((tr) => tr.locale === locale) || article.location?.governorate?.translations[0]
+  const t = article.translations?.find((tr) => tr.locale === locale) || article.translations?.[0] || { locale, title: '', excerpt: '' }
+  const cat = article.category?.translations?.find((tr) => tr.locale === locale) || article.category?.translations?.[0] || { locale, name: '' }
+  const loc = article.location?.governorate?.translations?.find((tr) => tr.locale === locale) || article.location?.governorate?.translations?.[0]
+  const authorName = article.author?.name || 'العراق الآن'
   const dir = locale === 'en' ? 'ltr' : 'rtl'
-  const hasImage = article.media.length > 0
+  const hasImage = (article.media?.length || 0) > 0
   const img = hasImage ? article.media[0].media : null
 
   /* ─────────── Compact ─────────── */
@@ -207,9 +208,9 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
           <div className="flex items-center justify-between border-t border-[var(--border)] pt-3.5">
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-lapis-600 to-lapis-900 font-kufi text-[10px] font-bold text-gold-400">
-                {article.author.name.charAt(0)}
+                {authorName.charAt(0)}
               </span>
-              <span className="text-[11px] font-medium text-[var(--muted)]">{article.author.name}</span>
+              <span className="text-[11px] font-medium text-[var(--muted)]">{authorName}</span>
             </div>
             <div className="flex items-center gap-3 text-[10px] text-[var(--muted)]">
               <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{formatRelativeTime(article.publishedAt, locale)}</span>
@@ -221,3 +222,5 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
     </article>
   )
 }
+
+

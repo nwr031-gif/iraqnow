@@ -35,8 +35,23 @@ model User {
   role          UserRole  @default(READER)
   locale        Locale    @default(ar)
   emailVerified DateTime?
+  isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  /* ملف المحرر - Editor Profile */
+  slug          String?   @unique
+  jobTitle      String?
+  bio           String?   @db.Text
+  coverImage    String?
+  twitter       String?
+  linkedin      String?
+  instagram     String?
+  facebook      String?
+  website       String?
+  specialties   String[]  @default([])
+  staffSince    DateTime?
+  isPublic      Boolean   @default(true)
 
   accounts      Account[]
   sessions      Session[]
@@ -48,6 +63,8 @@ model User {
 
   @@index([email])
   @@index([phone])
+  @@index([slug])
+  @@index([role, isActive])
 }
 
 model Account {
@@ -381,4 +398,78 @@ model SponsoredContent {
   updatedAt   DateTime @updatedAt
 
   @@index([active, startDate, endDate])
+}
+
+/* ═══════════════════════════════════════════
+   البودكاست - Podcasts
+   ═══════════════════════════════════════════ */
+
+model PodcastShow {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  coverUrl    String?
+  hostId      String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  translations PodcastShowTranslation[]
+  episodes     PodcastEpisode[]
+}
+
+model PodcastShowTranslation {
+  id            String      @id @default(cuid())
+  locale        Locale
+  title         String
+  description   String?     @db.Text
+  showId        String
+  show          PodcastShow @relation(fields: [showId], references: [id], onDelete: Cascade)
+
+  @@unique([showId, locale])
+}
+
+model PodcastEpisode {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  episodeNumber Int
+  season       Int       @default(1)
+  duration     String?
+  audioUrl     String
+  coverUrl     String?
+  showId       String?
+  publishedAt  DateTime  @default(now())
+  isPublished  Boolean   @default(true)
+  views        Int       @default(0)
+  isFeatured   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  show         PodcastShow? @relation(fields: [showId], references: [id])
+  translations PodcastTranslation[]
+
+  @@index([isPublished, publishedAt])
+  @@index([slug])
+}
+
+model PodcastTranslation {
+  id        String         @id @default(cuid())
+  locale    Locale
+  title     String
+  description String?      @db.Text
+  guest     String?
+  showNotes String?        @db.Text
+  episodeId String
+  episode   PodcastEpisode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([episodeId, locale])
+}
+
+/* ═══════════════════════════════════════════
+   إعدادات الموقع - Site Settings
+   ═══════════════════════════════════════════ */
+
+model SiteSetting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
 }

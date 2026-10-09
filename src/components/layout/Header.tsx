@@ -430,7 +430,7 @@ export function Header({ locale }: { locale: Locale }) {
                         {[
                           { href: `/${locale}/profile`, icon: User, label: t.profile },
                           { href: `/${locale}/bookmarks`, icon: Bookmark, label: t.bookmarks },
-                          ...((session.user as any).role !== 'READER' ? [{ href: `/${locale}/dashboard`, icon: LayoutDashboard, label: t.dashboard }] : []),
+                          ...((session.user as any).role !== 'READER' ? [{ href: `/admin`, icon: LayoutDashboard, label: t.dashboard }] : []),
                         ].map((item) => (
                           <Link
                             key={item.href}
@@ -628,3 +628,4 @@ export function Header({ locale }: { locale: Locale }) {
     </header>
   )
 }
+

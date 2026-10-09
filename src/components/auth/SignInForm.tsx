@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle, KeyRound } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -33,7 +33,7 @@ export function SignInForm({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignInFormData>({
+  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: { remember: true },
   })
@@ -84,6 +84,34 @@ export function SignInForm({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
           <span>{error || success}</span>
         </div>
       )}
+
+      {/* تلميح الحسابات التجريبية */}
+      <div className="mb-6 rounded-xl border border-[var(--color-gold-500,#d4af37)]/30 bg-[var(--color-gold-500,#d4af37)]/[0.06] p-4">
+        <p className="mb-2.5 flex items-center gap-2 text-xs font-bold text-[var(--color-gold-600,#b8860b)]">
+          <KeyRound className="h-3.5 w-3.5" />
+          {locale === 'en' ? 'Demo Accounts (click to fill)' : 'حسابات تجريبية (اضغط للتعبئة)'}
+        </p>
+        <div className="space-y-1.5">
+          {[
+            { label: locale === 'en' ? 'Admin' : 'مدير عام', email: 'admin@iraqnow.com', pass: 'admin123' },
+            { label: locale === 'en' ? 'Editor' : 'محرر', email: 'editor@iraqnow.com', pass: 'editor123' },
+            { label: locale === 'en' ? 'Journalist' : 'صحفي', email: 'ahmed@iraqnow.com', pass: 'journo123' },
+          ].map((acc) => (
+            <button
+              key={acc.email}
+              type="button"
+              onClick={() => {
+                setValue('email', acc.email)
+                setValue('password', acc.pass)
+              }}
+              className="flex w-full items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-xs transition-colors hover:border-[var(--color-gold-500,#d4af37)]/50"
+            >
+              <span className="font-bold text-[var(--foreground)]">{acc.label}</span>
+              <span className="text-[10px] text-[var(--muted)]" dir="ltr">{acc.email}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
         <div>

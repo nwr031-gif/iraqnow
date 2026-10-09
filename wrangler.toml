@@ -1,0 +1,15 @@
+name = "iraqnow"
+compatibility_date = "2026-10-09"
+pages_build_output_dir = ".vercel/output"
+
+[env]
+NEXT_TELEMETRY_DISABLED = "1"
+
+[vars]
+NEXT_PUBLIC_SUPABASE_URL = "https://afwbjyfnhchoqgqbqrfg.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_kLEM0R1eYNwEe9zZJrRL7A_E_Sh8CJh"
+MEILISEARCH_HOST = "https://ms-7fba9866c156-55153.par.meilisearch.io"
+MEILISEARCH_MASTER_KEY = "227eed949d2020fb92f2d347d1338a1caf9fd680"
+MEILISEARCH_ADMIN_KEY = "c35181225c36d63cd0790ae9f5e97cdf9f451ceac11c2ce0d5010390dbaacb2e"
+MEILISEARCH_SEARCH_KEY = "43adf2d3612dd385beb287cbb8bf065255f1ab0da6cb413cfd0c5bd8fb4c87e5"
+NEXTAUTH_URL = "https://iraqnow.com"

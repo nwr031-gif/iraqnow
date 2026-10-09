@@ -1,0 +1,371 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Locale {
+  AR
+  KU
+  EN
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum UserRole {
+  READER
+  JOURNALIST
+  EDITOR
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  phone         String?   @unique
+  name          String?
+  avatar        String?
+  role          UserRole  @default(READER)
+  locale        Locale    @default(AR)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  articles      Article[]         @relation("ArticleAuthor")
+  comments      Comment[]
+  bookmarks     Bookmark[]
+  notifications Notification[]
+  preferences   UserPreference?
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  translations CategoryTranslation[]
+  articles     Article[]
+
+  @@index([parentId])
+  @@index([slug])
+}
+
+model CategoryTranslation {
+  id          String   @id @default(cuid())
+  locale      Locale
+  name        String
+  description String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+
+  translations TagTranslation[]
+  articles     ArticleTag[]
+}
+
+model TagTranslation {
+  id        String @id @default(cuid())
+  locale    Locale
+  name      String
+  tagId     String
+  tag       Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, locale])
+}
+
+model Article {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  status        ArticleStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  authorId      String
+  categoryId    String
+  breaking      Boolean       @default(false)
+  featured      Boolean       @default(false)
+  viewCount     Int           @default(0)
+  readingTime   Int?
+
+  author        User          @relation("ArticleAuthor", fields: [authorId], references: [id])
+  category      Category      @relation(fields: [categoryId], references: [id])
+  translations  ArticleTranslation[]
+  media         ArticleMedia[]
+  tags          ArticleTag[]
+  comments      Comment[]
+  bookmarks     Bookmark[]
+
+  @@index([status, publishedAt])
+  @@index([categoryId, status])
+  @@index([authorId])
+  @@index([slug])
+}
+
+model ArticleTranslation {
+  id          String   @id @default(cuid())
+  locale      Locale
+  title       String
+  excerpt     String   @db.Text
+  content     String   @db.Text
+  seoTitle    String?
+  seoDesc     String?
+  seoKeywords String[]
+  articleId   String
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, locale])
+  @@index([locale])
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  type      String
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  alt       String?
+  createdAt DateTime @default(now())
+
+  articles  ArticleMedia[]
+}
+
+model ArticleMedia {
+  id        String   @id @default(cuid())
+  articleId String
+  mediaId   String
+  order     Int      @default(0)
+  caption   String?
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, mediaId])
+}
+
+model ArticleTag {
+  id        String @id @default(cuid())
+  articleId String
+  tagId     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, tagId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  articleId String
+  userId    String
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, status])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  articleId String
+  userId    String
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  message   String   @db.Text
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+model UserPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  newsletter      Boolean  @default(false)
+  pushNotifications Boolean @default(true)
+  emailNotifications Boolean @default(true)
+  preferredCategories String[] @default([])
+  preferredTags   String[] @default([])
+  theme           String   @default("system")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Governorate {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  centerLat   Float
+  centerLng   Float
+  zoom        Int      @default(8)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  translations GovernorateTranslation[]
+  districts    District[]
+  articles     ArticleLocation[]
+}
+
+model GovernorateTranslation {
+  id            String      @id @default(cuid())
+  locale        Locale
+  name          String
+  governorateId String
+  governorate   Governorate @relation(fields: [governorateId], references: [id], onDelete: Cascade)
+
+  @@unique([governorateId, locale])
+}
+
+model District {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  governorateId String
+  centerLat     Float
+  centerLng     Float
+  zoom          Int         @default(10)
+  governorate   Governorate @relation(fields: [governorateId], references: [id], onDelete: Cascade)
+  articles      ArticleLocation[]
+
+  @@index([governorateId])
+}
+
+model ArticleLocation {
+  id            String      @id @default(cuid())
+  articleId     String
+  governorateId String?
+  districtId    String?
+  lat           Float
+  lng           Float
+  address       String?
+  article       Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  governorate   Governorate? @relation(fields: [governorateId], references: [id])
+  district      District?   @relation(fields: [districtId], references: [id])
+
+  @@index([articleId])
+  @@index([governorateId])
+  @@index([districtId])
+  @@index([lat, lng])
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  locale    Locale   @default(AR)
+  active    Boolean  @default(true)
+  token     String   @unique @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([active])
+}
+
+model AdSlot {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  sizes       Json
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SponsoredContent {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  sponsorName String
+  sponsorLogo String?
+  sponsorUrl  String?
+  startDate   DateTime
+  endDate     DateTime
+  active      Boolean  @default(true)
+  slots       String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active, startDate, endDate])
+}

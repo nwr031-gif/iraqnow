@@ -176,7 +176,10 @@ export async function createEditor(data: {
     if (existing) return { ok: false, error: 'البريد الإلكتروني مستخدم مسبقاً' }
 
     const passwordHash = await hash(data.password, 12)
-    const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '') || undefined
+    let slug: string | undefined = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '').replace(/^-+|-+$/g, '')
+    if (!slug || slug.length < 3) {
+      slug = data.email.split('@')[0].toLowerCase().replace(/[^\w-]/g, '') || undefined
+    }
     const user = await db.user.create({
       data: {
         name: data.name, email: data.email, passwordHash, role: data.role as any,

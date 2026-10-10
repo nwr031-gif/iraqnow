@@ -433,41 +433,47 @@ export async function storeSubscribers() {
 
 /* ═══════════ الكتابة ═══════════ */
 
-async function sbInsert(table: string, rows: any): Promise<boolean> {
+async function sbInsert(table: string, rows: any): Promise<{ ok: boolean; error?: string }> {
   try {
     const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
       method: 'POST',
       headers: headers({ Prefer: 'return=minimal' }),
       body: JSON.stringify(rows),
     })
-    return res.status === 201 || res.status === 200
-  } catch {
-    return false
+    if (res.status === 201 || res.status === 200) return { ok: true }
+    const body = await res.text().catch(() => '')
+    return { ok: false, error: `Supabase ${res.status}: ${body.slice(0, 150)}` }
+  } catch (e: any) {
+    return { ok: false, error: e.message }
   }
 }
 
-async function sbUpdate(table: string, id: string, updates: any): Promise<boolean> {
+async function sbUpdate(table: string, id: string, updates: any): Promise<{ ok: boolean; error?: string }> {
   try {
     const res = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
       method: 'PATCH',
       headers: headers({ Prefer: 'return=minimal' }),
       body: JSON.stringify(updates),
     })
-    return res.status === 200 || res.status === 204
-  } catch {
-    return false
+    if (res.status === 200 || res.status === 204) return { ok: true }
+    const body = await res.text().catch(() => '')
+    return { ok: false, error: `Supabase ${res.status}: ${body.slice(0, 150)}` }
+  } catch (e: any) {
+    return { ok: false, error: e.message }
   }
 }
 
-async function sbDelete(table: string, id: string): Promise<boolean> {
+async function sbDelete(table: string, id: string): Promise<{ ok: boolean; error?: string }> {
   try {
     const res = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       headers: headers(),
     })
-    return res.status === 200 || res.status === 204
-  } catch {
-    return false
+    if (res.status === 200 || res.status === 204) return { ok: true }
+    const body = await res.text().catch(() => '')
+    return { ok: false, error: `Supabase ${res.status}: ${body.slice(0, 150)}` }
+  } catch (e: any) {
+    return { ok: false, error: e.message }
   }
 }
 
@@ -496,8 +502,8 @@ export async function storeCreateArticle(data: Partial<MockArticle> & { authorNa
     gallery: data.gallery || [],
     translations: data.translations || [],
   }
-  const ok = await sbInsert('articles', articleToRow(article))
-  if (!ok) return { ok: false, error: 'فشل الحفظ في Supabase' }
+  const res = await sbInsert('articles', articleToRow(article))
+  if (!res.ok) return { ok: false, error: res.error }
   return { ok: true, id, mock: false }
 }
 
@@ -561,8 +567,8 @@ export async function storeUpdateArticle(id: string, updates: Partial<MockArticl
     if (excerpt !== undefined) row[`excerpt_${l}`] = excerpt
     if (content !== undefined) row[`content_${l}`] = content
   }
-  const ok = await sbUpdate('articles', id, row)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل التحديث' }
+  const res = await sbUpdate('articles', id, row)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeDeleteArticle(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -573,8 +579,8 @@ export async function storeDeleteArticle(id: string): Promise<{ ok: boolean; err
     store.articles.splice(idx, 1)
     return { ok: true, mock: true }
   }
-  const ok = await sbDelete('articles', id)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل الحذف' }
+  const res = await sbDelete('articles', id)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeCreateEditor(data: {
@@ -585,7 +591,18 @@ export async function storeCreateEditor(data: {
   if (data.password.length < 6) return { ok: false, error: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' }
 
   const passwordHash = await hash(data.password, 10)
-  const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '') || genId('author')
+  let slug = data.name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u0600-\u06FF-]/g, '')
+    .replace(/^-+|-+$/g, '')
+  /* الاسم العربي قد يُنتج slug غير صالح — استخدم البريد كأساس مضمون */
+  if (!slug || slug.length < 3 || /^-+$/.test(slug)) {
+    slug = data.email.split('@')[0].toLowerCase().replace(/[^\w-]/g, '') || genId('author')
+  }
+  if (getStore().authors.find((a) => a.slug === slug)) {
+    slug = `${slug}-${genId('u').slice(-4)}`
+  }
 
   if (!(await isSupabaseReady())) {
     const store = getStore()
@@ -606,13 +623,14 @@ export async function storeCreateEditor(data: {
   if (existing && existing.length > 0) return { ok: false, error: 'البريد الإلكتروني مستخدم مسبقاً' }
 
   const id = genId('user')
-  const ok = await sbInsert('authors', [{
+  const res = await sbInsert('authors', [{
     id, name: data.name, slug, email: data.email, role: data.role,
     job_title: data.jobTitle || '', bio: data.bio || '',
     specialties: [], staff_since: new Date().toISOString(),
     is_active: true, article_count: 0, password_hash: passwordHash,
   }])
-  return ok ? { ok: true, id, mock: false } : { ok: false, error: 'فشل إنشاء الحساب في Supabase' }
+  if (!res.ok) return { ok: false, error: res.error }
+  return { ok: true, id, mock: false }
 }
 
 export async function storeUpdateUser(id: string, updates: Partial<MockAuthor> & { password?: string }): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -638,8 +656,8 @@ export async function storeUpdateUser(id: string, updates: Partial<MockAuthor> &
   if (updates.website !== undefined) row.website = updates.website
   if (updates.specialties) row.specialties = updates.specialties
   if (updates.password) row.password_hash = await hash(updates.password, 10)
-  const ok = await sbUpdate('authors', id, row)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل التحديث' }
+  const res = await sbUpdate('authors', id, row)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeDeleteUser(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -650,8 +668,8 @@ export async function storeDeleteUser(id: string): Promise<{ ok: boolean; error?
     store.authors.splice(idx, 1)
     return { ok: true, mock: true }
   }
-  const ok = await sbDelete('authors', id)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل الحذف' }
+  const res = await sbDelete('authors', id)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeVerifyLogin(email: string, password: string, compareFn: (a: string, b: string) => Promise<boolean>): Promise<{ id: string; name: string; role: string } | null> {
@@ -682,8 +700,8 @@ export async function storeModerateComment(id: string, status: MockComment['stat
     comment.status = status
     return { ok: true, mock: true }
   }
-  const ok = await sbUpdate('comments', id, { status })
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل التحديث' }
+  const res = await sbUpdate('comments', id, { status })
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeDeleteComment(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -694,8 +712,8 @@ export async function storeDeleteComment(id: string): Promise<{ ok: boolean; err
     store.comments.splice(idx, 1)
     return { ok: true, mock: true }
   }
-  const ok = await sbDelete('comments', id)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل الحذف' }
+  const res = await sbDelete('comments', id)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeCreateCategory(data: { slug: string; translations: { locale: Locale; name: string; description?: string }[] }): Promise<{ ok: boolean; id?: string; error?: string; mock?: boolean }> {
@@ -720,8 +738,8 @@ export async function storeCreateCategory(data: { slug: string; translations: { 
     row[`name_${t.locale}`] = t.name
     row[`description_${t.locale}`] = t.description || ''
   }
-  const ok = await sbInsert('categories', [row])
-  return ok ? { ok: true, id, mock: false } : { ok: false, error: 'فشل الحفظ' }
+  const res = await sbInsert('categories', [row])
+  return res.ok ? { ok: true, id, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeUpdateCategory(id: string, updates: { slug?: string; translations?: { locale: Locale; name: string; description?: string }[] }): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -741,8 +759,8 @@ export async function storeUpdateCategory(id: string, updates: { slug?: string; 
       row[`description_${t.locale}`] = t.description || ''
     }
   }
-  const ok = await sbUpdate('categories', id, row)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل التحديث' }
+  const res = await sbUpdate('categories', id, row)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeDeleteCategory(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -753,8 +771,8 @@ export async function storeDeleteCategory(id: string): Promise<{ ok: boolean; er
     store.categories.splice(idx, 1)
     return { ok: true, mock: true }
   }
-  const ok = await sbDelete('categories', id)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل الحذف' }
+  const res = await sbDelete('categories', id)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeCreatePodcast(data: Partial<MockPodcast>): Promise<{ ok: boolean; id?: string; error?: string; mock?: boolean }> {
@@ -778,8 +796,8 @@ export async function storeCreatePodcast(data: Partial<MockPodcast>): Promise<{ 
   }
   const id = genId('pod')
   const row = podcastToRow({ ...(data as MockPodcast), id, publishedAt: new Date().toISOString() })
-  const ok = await sbInsert('podcast_episodes', [row])
-  return ok ? { ok: true, id, mock: false } : { ok: false, error: 'فشل النشر' }
+  const res = await sbInsert('podcast_episodes', [row])
+  return res.ok ? { ok: true, id, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeUpdatePodcast(id: string, updates: Partial<MockPodcast>): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -810,8 +828,8 @@ export async function storeUpdatePodcast(id: string, updates: Partial<MockPodcas
     if (v2 !== undefined) row[`description_${l}`] = v2
     if (v3 !== undefined) row[`show_notes_${l}`] = v3
   }
-  const ok = await sbUpdate('podcast_episodes', id, row)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل التحديث' }
+  const res = await sbUpdate('podcast_episodes', id, row)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeDeletePodcast(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -822,8 +840,8 @@ export async function storeDeletePodcast(id: string): Promise<{ ok: boolean; err
     store.podcasts.splice(idx, 1)
     return { ok: true, mock: true }
   }
-  const ok = await sbDelete('podcast_episodes', id)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل الحذف' }
+  const res = await sbDelete('podcast_episodes', id)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeDeleteSubscriber(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
@@ -834,8 +852,8 @@ export async function storeDeleteSubscriber(id: string): Promise<{ ok: boolean; 
     store.subscribers.splice(idx, 1)
     return { ok: true, mock: true }
   }
-  const ok = await sbDelete('newsletter_subscribers', id)
-  return ok ? { ok: true, mock: false } : { ok: false, error: 'فشل الحذف' }
+  const res = await sbDelete('newsletter_subscribers', id)
+  return res.ok ? { ok: true, mock: false } : { ok: false, error: res.error }
 }
 
 export async function storeAddSubscriber(email: string, locale: Locale): Promise<{ ok: boolean; error?: string }> {
@@ -854,10 +872,10 @@ export async function storeAddSubscriber(email: string, locale: Locale): Promise
     await sbUpdate('newsletter_subscribers', existing[0].id, { active: true, locale })
     return { ok: true }
   }
-  const ok = await sbInsert('newsletter_subscribers', [{
+  const res = await sbInsert('newsletter_subscribers', [{
     id: genId('sub'), email, locale, active: true, created_at: new Date().toISOString(),
   }])
-  return ok ? { ok: true } : { ok: false, error: 'فشل الحفظ' }
+  return res.ok ? { ok: true } : { ok: false, error: res.error }
 }
 
 export async function storeGetSettings(): Promise<Record<string, string>> {
@@ -894,3 +912,6 @@ export async function storeSaveSettings(updates: Record<string, string>): Promis
   }
   return { ok: true, mock: false }
 }
+
+
+

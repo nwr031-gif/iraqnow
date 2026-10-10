@@ -27,6 +27,7 @@ interface ArticleFormData {
   categorySlug: string
   governorateSlug: string
   image: string
+  gallery: string[]
   readingTime: number
   tagSlugs: string[]
   authorId: string
@@ -91,6 +92,7 @@ export function ArticleForm({
       categorySlug: 'politics',
       governorateSlug: 'baghdad',
       image: '',
+      gallery: [],
       readingTime: 5,
       tagSlugs: [],
       authorId: currentUserId,
@@ -100,6 +102,7 @@ export function ArticleForm({
   const [activeLocale, setActiveLocale] = useState<'ar' | 'ku' | 'en'>('ar')
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [uploadingGallery, setUploadingGallery] = useState(false)
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [tagInput, setTagInput] = useState('')
 
@@ -176,6 +179,7 @@ export function ArticleForm({
         breaking: form.breaking,
         featured: form.featured,
         image: form.image,
+        gallery: form.gallery,
         tagSlugs: form.tagSlugs,
         readingTime: form.readingTime,
       }
@@ -493,6 +497,76 @@ export function ArticleForm({
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* معرض الصور المتعدد */}
+          <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-5">
+            <h3 className="mb-1 flex items-center gap-2 text-xs font-bold text-sand-100/70">
+              <ImageIcon className="h-4 w-4 text-gold-400" />
+              معرض الصور الإضافية
+            </h3>
+            <p className="mb-3 text-[10px] text-sand-100/35">أضف عدة صور لتظهر كمعرض تفاعلي في صفحة المقال</p>
+
+            {form.gallery.length > 0 && (
+              <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {form.gallery.map((img: string, i: number) => (
+                  <div key={i} className="group relative overflow-hidden rounded-xl border border-white/10">
+                    <img src={img} alt="" className="aspect-video w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setForm((prev) => ({ ...prev, gallery: prev.gallery.filter((_: string, x: number) => x !== i) }))}
+                      className="absolute end-1.5 top-1.5 rounded-lg bg-black/70 p-1 text-white transition-colors hover:bg-red-500"
+                      aria-label="حذف الصورة"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                    <span className="absolute bottom-1 start-1.5 rounded bg-black/60 px-1.5 text-[9px] font-bold text-white">
+                      {i + 1}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <label className={cn(
+              'flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed py-3.5 text-xs font-medium transition-all',
+              uploadingGallery
+                ? 'border-gold-500/40 text-gold-400'
+                : 'border-white/10 text-sand-100/40 hover:border-gold-500/40 hover:bg-gold-500/[0.03] hover:text-gold-400'
+            )}>
+              {uploadingGallery ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> جاري رفع الصور...</>
+              ) : (
+                <><Upload className="h-4 w-4" /> إضافة صور للمعرض (يمكن اختيار عدة صور)</>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                disabled={uploadingGallery}
+                onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+                  const files = Array.from(e.target.files || [])
+                  if (files.length === 0) return
+                  setUploadingGallery(true)
+                  const uploaded: string[] = []
+                  for (const file of files) {
+                    try {
+                      const fd = new FormData()
+                      fd.append('file', file)
+                      const res = await fetch('/api/upload', { method: 'POST', body: fd })
+                      const data = await res.json()
+                      if (res.ok) uploaded.push(data.url)
+                    } catch { /* تجاهل */ }
+                  }
+                  if (uploaded.length > 0) {
+                    setForm((prev) => ({ ...prev, gallery: [...prev.gallery, ...uploaded] }))
+                    showToast('success', `تم رفع ${uploaded.length} صورة`)
+                  }
+                  setUploadingGallery(false)
+                }}
+              />
+            </label>
           </div>
 
           {/* الوسوم */}

@@ -129,6 +129,7 @@ export function createArticle(data: Partial<MockArticle>): MockArticle {
     tagSlugs: data.tagSlugs || [],
     governorateSlug: data.governorateSlug || 'baghdad',
     image: data.image || '',
+    gallery: data.gallery || [],
     translations: data.translations || [
       { locale: 'ar', title: '', excerpt: '', content: '' },
       { locale: 'ku', title: '', excerpt: '', content: '' },

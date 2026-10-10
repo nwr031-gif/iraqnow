@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Mic, Plus, Trash2, X, Loader2, CheckCircle2, AlertCircle, RefreshCw,
-  Play, Clock, Eye, Star,
+  Play, Clock, Eye, Star, Upload,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -215,6 +215,7 @@ function CreatePodcastModal({
     showNotesAr: '',
   })
   const [saving, setSaving] = useState(false)
+  const [uploadingAudio, setUploadingAudio] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -317,7 +318,48 @@ function CreatePodcastModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-sand-100/70">رابط الملف الصوتي (MP3)</label>
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-sand-100/70">
+              <Mic className="h-3.5 w-3.5" />
+              رفع الملف الصوتي (MP3)
+            </label>
+            <div className="flex gap-2">
+              <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/10 py-3 text-xs text-sand-100/50 transition-colors hover:border-gold-500/40 hover:text-gold-400">
+                {uploadingAudio ? (
+                  <><Loader2 className="h-4 w-4 animate-spin text-gold-400" /> جاري الرفع...</>
+                ) : (
+                  <><Upload className="h-4 w-4" /> اضغط لرفع ملف صوتي (MP3, M4A, WAV)</>
+                )}
+                <input
+                  type="file"
+                  accept="audio/*,.mp3,.m4a,.wav"
+                  className="hidden"
+                  disabled={uploadingAudio}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    setUploadingAudio(true)
+                    try {
+                      const fd = new FormData()
+                      fd.append('file', file)
+                      const res = await fetch('/api/upload', { method: 'POST', body: fd })
+                      const data = await res.json()
+                      if (res.ok) setForm((prev) => ({ ...prev, audioUrl: data.url }))
+                    } catch { /* ignore */ }
+                    setUploadingAudio(false)
+                  }}
+                />
+              </label>
+            </div>
+            {form.audioUrl && (
+              <div className="mt-2 flex items-center gap-2 rounded-lg bg-green-500/10 px-3 py-2">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-400" />
+                <span className="truncate text-[10px] text-green-300" dir="ltr">{form.audioUrl}</span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-sand-100/70">أو الصق رابط الملف الصوتي</label>
             <input
               type="url"
               value={form.audioUrl}
@@ -375,3 +417,4 @@ function CreatePodcastModal({
     </div>
   )
 }
+

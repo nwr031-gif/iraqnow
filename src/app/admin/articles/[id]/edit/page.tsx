@@ -21,6 +21,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
     categorySlug: article.categorySlug,
     governorateSlug: article.governorateSlug,
     image: article.image,
+    gallery: (article as any).gallery || [],
     readingTime: article.readingTime,
     tagSlugs: article.tagSlugs,
     authorId: article.authorId,

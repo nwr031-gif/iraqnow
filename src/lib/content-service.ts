@@ -25,6 +25,7 @@ export async function createArticle(data: {
   breaking?: boolean
   featured?: boolean
   image?: string
+  gallery?: string[]
   governorateSlug?: string
   tagSlugs?: string[]
   readingTime?: number
@@ -47,6 +48,7 @@ export async function createArticle(data: {
         governorateSlug: data.governorateSlug || 'baghdad',
         tagSlugs: data.tagSlugs || [],
         image: data.image || '',
+        gallery: data.gallery || [],
         readingTime: data.readingTime || Math.max(2, Math.ceil(ar.content.split(/\s+/).length / 200)),
         translations: data.translations.map((t) => ({
           locale: t.locale,

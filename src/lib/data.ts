@@ -116,7 +116,8 @@ function toMockArticle(a: any): MockArticle {
     categorySlug: a.category?.slug || a.categorySlug || '',
     tagSlugs: (a.tags || []).map((t: any) => t.tag?.slug || t.slug || t),
     governorateSlug: a.locations?.[0]?.governorate?.code || a.governorateSlug || '',
-    image: a.media?.[0]?.media?.url || a.image || '',
+    image: a.gallery?.[0] || a.media?.[0]?.media?.url || a.image || '',
+    gallery: (a.gallery || (a.media || []).map((m: any) => m.media?.url).filter(Boolean)) as string[] | undefined,
     translations: (a.translations || a.mockTranslations || []).map((t: any) => ({
       locale: t.locale,
       title: t.title,
@@ -468,6 +469,7 @@ export async function getSubscribers() {
 }
 
 export { MOCK_GOVERNORATES }
+
 
 
 

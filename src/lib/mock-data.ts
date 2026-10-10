@@ -49,6 +49,7 @@ export interface MockArticle {
   tagSlugs: string[]
   governorateSlug: string
   image: string
+  gallery?: string[]
   translations: {
     locale: Locale
     title: string
@@ -301,6 +302,12 @@ export const MOCK_ARTICLES: MockArticle[] = HEADLINES.map((h, i) => {
     tagSlugs: ['العراق', h.cat],
     governorateSlug: h.gov,
     image: IMAGES[i % IMAGES.length],
+    gallery: [
+      IMAGES[i % IMAGES.length],
+      `https://images.unsplash.com/photo-${['1495020689067-958852a7765e', '1504711434969-e33886168f5c', '1454165804606-c3d57bc86b40', '1517245386807-bb43f82c33c4', '1523995462485-3d171b5c8fa9', '1529148482759-b97b251f9a0c'][i % 6]}?w=1200&q=80`,
+      `https://images.unsplash.com/photo-${['1467232004584-a241de8bcf5d', '1431540015161-0bf868a2d407', '1476244206217-6bd54d17b438', '1509024671445-4b65c1e6a41f', '1457369804613-52c61a468e7d', '1518458028785-8fbcd101ebb9'][i % 6]}?w=1200&q=80`,
+      `https://images.unsplash.com/photo-${['1526304640581-d334cdbbf45e', '1519389950473-47ba0277781c', '1497032628192-86f99bcd76bc', '1531482615713-2afd69097998', '1454165833767-027ffea9e778', '1486312338219-ce68d2c6f44d'][i % 6]}?w=1200&q=80`,
+    ],
     translations: [
       { locale: 'ar', title: h.ar, excerpt: h.excerptAr, content: MOCK_CONTENT_AR },
       { locale: 'ku', title: h.ku, excerpt: h.excerptAr, content: MOCK_CONTENT_AR },

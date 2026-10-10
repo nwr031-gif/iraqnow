@@ -30,9 +30,9 @@ const UI: Record<Locale, any> = {
 }
 
 const ROLE_LABELS: Record<string, Record<Locale, string>> = {
-  ADMIN: { ar: 'رئيس التحرير', ku: 'سەرۆک دەستکاری', en: 'Editor-in-Chief' },
+  ADMIN: { ar: 'مدير عام — رئيس التحرير', ku: 'بەڕێوەبەری گشتی', en: 'Editor-in-Chief' },
   EDITOR: { ar: 'محرر أول', ku: 'دەستکاریکاری باڵا', en: 'Senior Editor' },
-  JOURNALIST: { ar: 'صحفي', ku: 'ڕۆژنامەنووس', en: 'Journalist' },
+  JOURNALIST: { ar: 'صحفي ميداني', ku: 'ڕۆژنامەنووسی مەیدانی', en: 'Field Journalist' },
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
@@ -132,7 +132,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
                   <h1 className="font-kufi text-3xl font-bold text-[var(--foreground)] lg:text-4xl">{author.name}</h1>
                   <span className="flex items-center gap-1.5 rounded-xl border border-gold-500/30 bg-gold-500/10 px-3 py-1 text-xs font-bold text-gold-600">
                     <Sparkles className="h-3.5 w-3.5" />
-                    {t.verified}
+                    {ROLE_LABELS[author.role]?.[locale] || t.verified}
                   </span>
                 </div>
 

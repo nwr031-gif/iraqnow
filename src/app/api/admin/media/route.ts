@@ -1,25 +1,22 @@
 import { NextResponse } from 'next/server'
-import { readdir, stat } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
 import { requirePermission, isErrorResponse } from '@/lib/rbac'
 
 export async function GET() {
   const perm = await requirePermission('media.manage')
   if (isErrorResponse(perm)) return perm
 
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-  if (!existsSync(uploadDir)) {
-    return NextResponse.json({ items: [], total: 0 })
-  }
-
+  /* التخزين المحلي غير متاح على بيئات Edge/Workers — نرجع قائمة فارغة بأمان */
   try {
-    const files = await readdir(uploadDir)
+    const fs = await import('fs/promises')
+    const path = await import('path')
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+
+    const files = await fs.readdir(uploadDir)
     const items = await Promise.all(
       files
         .filter((f) => /\.(jpe?g|png|webp|avif|gif)$/i.test(f))
         .map(async (filename) => {
-          const stats = await stat(path.join(uploadDir, filename))
+          const stats = await fs.stat(path.join(uploadDir, filename))
           return {
             url: `/uploads/${filename}`,
             filename,
@@ -31,6 +28,6 @@ export async function GET() {
     items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     return NextResponse.json({ items, total: items.length })
   } catch {
-    return NextResponse.json({ items: [], total: 0 })
+    return NextResponse.json({ items: [], total: 0, cloud: true })
   }
 }

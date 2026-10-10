@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { getPrisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +11,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const db = await getPrisma()
+    if (!db) {
+      return NextResponse.json({ error: 'الخدمة غير متاحة حالياً' }, { status: 503 })
+    }
+
     const body = await request.json()
     const { articleId } = body
 
@@ -18,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Article ID required' }, { status: 400 })
     }
 
-    const existing = await prisma.bookmark.findUnique({
+    const existing = await db.bookmark.findUnique({
       where: {
         userId_articleId: {
           userId: user.id,
@@ -28,12 +33,12 @@ export async function POST(request: NextRequest) {
     })
 
     if (existing) {
-      await prisma.bookmark.delete({
+      await db.bookmark.delete({
         where: { id: existing.id },
       })
       return NextResponse.json({ bookmarked: false })
     } else {
-      await prisma.bookmark.create({
+      await db.bookmark.create({
         data: {
           userId: user.id,
           articleId,
@@ -56,11 +61,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const db = await getPrisma()
+    if (!db) {
+      return NextResponse.json([])
+    }
+
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    const bookmarks = await prisma.bookmark.findMany({
+    const bookmarks = await db.bookmark.findMany({
       where: { userId: user.id },
       include: {
         article: {

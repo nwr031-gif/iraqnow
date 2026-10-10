@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   if (format === 'csv') {
     const csv = [
       'email,locale,active,subscribed_at',
-      ...subscribers.map((s) => `${s.email},${s.locale},${s.active},${s.createdAt}`),
+      ...subscribers.map((s: any) => `${s.email},${s.locale},${s.active},${s.createdAt}`),
     ].join('\n')
 
     return new NextResponse('\uFEFF' + csv, {
@@ -41,3 +41,4 @@ export async function DELETE(request: NextRequest) {
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
   return NextResponse.json({ success: true, demo: result.mock })
 }
+

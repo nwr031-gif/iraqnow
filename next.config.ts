@@ -1,6 +1,15 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  outputFileTracingExcludes: {
+    '/**': [
+      './node_modules/@prisma/**',
+      './node_modules/.prisma/**',
+      './node_modules/pg/**',
+      './node_modules/pg-*/**',
+      './node_modules/@auth/prisma-adapter/**',
+    ],
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },

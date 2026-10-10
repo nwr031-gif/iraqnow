@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { getPrisma } from '@/lib/prisma'
 import { getStore } from '@/lib/memory-store'
 import {
   MOCK_GOVERNORATES,
@@ -19,7 +19,12 @@ export async function isDbAvailable(): Promise<boolean> {
 
   lastCheck = now
   try {
-    await prisma.$queryRaw`SELECT 1`
+    const client = await getPrisma()
+    if (!client) {
+      dbAvailable = false
+      return false
+    }
+    await client.$queryRaw`SELECT 1`
     dbAvailable = true
   } catch {
     dbAvailable = false
@@ -27,10 +32,12 @@ export async function isDbAvailable(): Promise<boolean> {
   return dbAvailable
 }
 
-async function safeDb<T>(fn: () => Promise<T>, fallback: () => T | Promise<T>): Promise<T> {
+async function safeDb<T>(fn: (db: any) => Promise<T>, fallback: () => T | Promise<T>): Promise<T> {
   if (!(await isDbAvailable())) return fallback()
   try {
-    return await fn()
+    const client = await getPrisma()
+    if (!client) return fallback()
+    return await fn(client)
   } catch {
     dbAvailable = false
     return fallback()
@@ -41,18 +48,18 @@ async function safeDb<T>(fn: () => Promise<T>, fallback: () => T | Promise<T>): 
 
 export async function getCategories(): Promise<MockCategory[]> {
   return safeDb(
-    async () => {
-      const cats = await prisma.category.findMany({
+    async (db) => {
+      const cats = await db.category.findMany({
         where: { isActive: true },
         include: { translations: true, _count: { select: { articles: true } } },
         orderBy: { order: 'asc' },
       })
-      return cats.map((c) => ({
+      return cats.map((c: any) => ({
         id: c.id,
         slug: c.slug,
         order: c.order,
         articleCount: c._count.articles,
-        translations: c.translations.map((t) => ({ locale: t.locale as Locale, name: t.name, description: t.description || '' })),
+        translations: c.translations.map((t: any) => ({ locale: t.locale as Locale, name: t.name, description: t.description || '' })),
       }))
     },
     () => getStore().categories
@@ -61,8 +68,8 @@ export async function getCategories(): Promise<MockCategory[]> {
 
 export async function getCategoryBySlug(slug: string): Promise<MockCategory | null> {
   return safeDb(
-    async () => {
-      const c = await prisma.category.findUnique({
+    async (db) => {
+      const c = await db.category.findUnique({
         where: { slug },
         include: { translations: true, _count: { select: { articles: true } } },
       })
@@ -72,10 +79,10 @@ export async function getCategoryBySlug(slug: string): Promise<MockCategory | nu
         slug: c.slug,
         order: c.order,
         articleCount: c._count.articles,
-        translations: c.translations.map((t) => ({ locale: t.locale as Locale, name: t.name, description: t.description || '' })),
+        translations: c.translations.map((t: any) => ({ locale: t.locale as Locale, name: t.name, description: t.description || '' })),
       }
     },
-    () => getStore().categories.find((c) => c.slug === slug) || null
+    () => getStore().categories.find((c: any) => c.slug === slug) || null
   )
 }
 
@@ -120,12 +127,12 @@ function toMockArticle(a: any): MockArticle {
 }
 
 function filterMockArticles(query: ArticleQuery): MockArticle[] {
-  let articles = getStore().articles.filter((a) => a.status === 'PUBLISHED')
-  if (query.categorySlug) articles = articles.filter((a) => a.categorySlug === query.categorySlug)
-  if (query.authorId) articles = articles.filter((a) => a.authorId === query.authorId)
-  if (query.governorateSlug) articles = articles.filter((a) => a.governorateSlug === query.governorateSlug)
-  if (query.tagSlug) articles = articles.filter((a) => a.tagSlugs.includes(query.tagSlug!))
-  if (query.excludeId) articles = articles.filter((a) => a.id !== query.excludeId)
+  let articles = getStore().articles.filter((a: any) => a.status === 'PUBLISHED')
+  if (query.categorySlug) articles = articles.filter((a: any) => a.categorySlug === query.categorySlug)
+  if (query.authorId) articles = articles.filter((a: any) => a.authorId === query.authorId)
+  if (query.governorateSlug) articles = articles.filter((a: any) => a.governorateSlug === query.governorateSlug)
+  if (query.tagSlug) articles = articles.filter((a: any) => a.tagSlugs.includes(query.tagSlug!))
+  if (query.excludeId) articles = articles.filter((a: any) => a.id !== query.excludeId)
   if (query.sort === 'views') articles.sort((a, b) => b.viewCount - a.viewCount)
   else articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
   return articles
@@ -136,7 +143,7 @@ export async function getArticles(query: ArticleQuery = {}): Promise<{ articles:
   const limit = query.limit || 12
 
   return safeDb(
-    async () => {
+    async (db) => {
       const where: any = {
         status: query.status ? { in: query.status } : 'PUBLISHED',
       }
@@ -147,7 +154,7 @@ export async function getArticles(query: ArticleQuery = {}): Promise<{ articles:
       if (query.excludeId) where.id = { not: query.excludeId }
 
       const [articles, total] = await Promise.all([
-        prisma.article.findMany({
+        db.article.findMany({
           where,
           include: {
             translations: true,
@@ -161,7 +168,7 @@ export async function getArticles(query: ArticleQuery = {}): Promise<{ articles:
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.article.count({ where }),
+        db.article.count({ where }),
       ])
       return { articles: articles.map(toMockArticle), total, pages: Math.ceil(total / limit) }
     },
@@ -179,8 +186,8 @@ export async function getArticles(query: ArticleQuery = {}): Promise<{ articles:
 
 export async function getArticleBySlug(slug: string): Promise<MockArticle | null> {
   return safeDb(
-    async () => {
-      const a = await prisma.article.findUnique({
+    async (db) => {
+      const a = await db.article.findUnique({
         where: { slug },
         include: {
           translations: true,
@@ -193,14 +200,14 @@ export async function getArticleBySlug(slug: string): Promise<MockArticle | null
       })
       return a ? toMockArticle(a) : null
     },
-    () => getStore().articles.find((a) => a.slug === slug) || null
+    () => getStore().articles.find((a: any) => a.slug === slug) || null
   )
 }
 
 export async function getFeaturedArticles(limit = 5): Promise<MockArticle[]> {
   return safeDb(
-    async () => {
-      const articles = await prisma.article.findMany({
+    async (db) => {
+      const articles = await db.article.findMany({
         where: { status: 'PUBLISHED', featured: true },
         include: {
           translations: true,
@@ -214,7 +221,7 @@ export async function getFeaturedArticles(limit = 5): Promise<MockArticle[]> {
       })
       return articles.map(toMockArticle)
     },
-    () => getStore().articles.filter((a) => a.featured && a.status === 'PUBLISHED').slice(0, limit)
+    () => getStore().articles.filter((a: any) => a.featured && a.status === 'PUBLISHED').slice(0, limit)
   )
 }
 
@@ -222,13 +229,13 @@ export async function getFeaturedArticles(limit = 5): Promise<MockArticle[]> {
 
 export async function getAuthors(includeInactive = false): Promise<MockAuthor[]> {
   return safeDb(
-    async () => {
-      const users = await prisma.user.findMany({
+    async (db) => {
+      const users = await db.user.findMany({
         where: includeInactive ? { role: { in: ['ADMIN', 'EDITOR', 'JOURNALIST'] } } : { role: { in: ['ADMIN', 'EDITOR', 'JOURNALIST'] }, isActive: true },
         include: { _count: { select: { articles: true } } },
         orderBy: { createdAt: 'asc' },
       })
-      return users.map((u) => ({
+      return users.map((u: any) => ({
         id: u.id,
         name: u.name || 'محرر',
         slug: u.slug || u.id,
@@ -248,14 +255,14 @@ export async function getAuthors(includeInactive = false): Promise<MockAuthor[]>
         articleCount: u._count.articles,
       }))
     },
-    () => (includeInactive ? getStore().authors : getStore().authors.filter((a) => a.isActive))
+    () => (includeInactive ? getStore().authors : getStore().authors.filter((a: any) => a.isActive))
   )
 }
 
 export async function getAuthorById(id: string): Promise<MockAuthor | null> {
   return safeDb(
-    async () => {
-      const u = await prisma.user.findFirst({
+    async (db) => {
+      const u = await db.user.findFirst({
         where: { OR: [{ id }, { slug: id }] },
         include: { _count: { select: { articles: true } } },
       })
@@ -280,7 +287,7 @@ export async function getAuthorById(id: string): Promise<MockAuthor | null> {
         articleCount: u._count.articles,
       }
     },
-    () => getStore().authors.find((a) => a.id === id || a.slug === id) || null
+    () => getStore().authors.find((a: any) => a.id === id || a.slug === id) || null
   )
 }
 
@@ -288,14 +295,14 @@ export async function getAuthorById(id: string): Promise<MockAuthor | null> {
 
 export async function getPodcasts(limit?: number): Promise<MockPodcast[]> {
   return safeDb(
-    async () => {
-      const episodes = await prisma.podcastEpisode.findMany({
+    async (db) => {
+      const episodes = await db.podcastEpisode.findMany({
         where: { isPublished: true },
         include: { translations: true },
         orderBy: { episodeNumber: 'desc' },
         take: limit,
       })
-      return episodes.map((e) => ({
+      return episodes.map((e: any) => ({
         id: e.id,
         slug: e.slug,
         episodeNumber: e.episodeNumber,
@@ -308,11 +315,11 @@ export async function getPodcasts(limit?: number): Promise<MockPodcast[]> {
         isFeatured: e.isFeatured,
         views: e.views,
         guest: {
-          ar: e.translations.find((t) => t.locale === 'ar')?.guest || '',
-          ku: e.translations.find((t) => t.locale === 'ku')?.guest || '',
-          en: e.translations.find((t) => t.locale === 'en')?.guest || '',
+          ar: e.translations.find((t: any) => t.locale === 'ar')?.guest || '',
+          ku: e.translations.find((t: any) => t.locale === 'ku')?.guest || '',
+          en: e.translations.find((t: any) => t.locale === 'en')?.guest || '',
         },
-        translations: e.translations.map((t) => ({
+        translations: e.translations.map((t: any) => ({
           locale: t.locale as Locale,
           title: t.title,
           description: t.description || '',
@@ -326,8 +333,8 @@ export async function getPodcasts(limit?: number): Promise<MockPodcast[]> {
 
 export async function getPodcastBySlug(slug: string): Promise<MockPodcast | null> {
   return safeDb(
-    async () => {
-      const e = await prisma.podcastEpisode.findUnique({
+    async (db) => {
+      const e = await db.podcastEpisode.findUnique({
         where: { slug },
         include: { translations: true },
       })
@@ -345,11 +352,11 @@ export async function getPodcastBySlug(slug: string): Promise<MockPodcast | null
         isFeatured: e.isFeatured,
         views: e.views,
         guest: {
-          ar: e.translations.find((t) => t.locale === 'ar')?.guest || '',
-          ku: e.translations.find((t) => t.locale === 'ku')?.guest || '',
-          en: e.translations.find((t) => t.locale === 'en')?.guest || '',
+          ar: e.translations.find((t: any) => t.locale === 'ar')?.guest || '',
+          ku: e.translations.find((t: any) => t.locale === 'ku')?.guest || '',
+          en: e.translations.find((t: any) => t.locale === 'en')?.guest || '',
         },
-        translations: e.translations.map((t) => ({
+        translations: e.translations.map((t: any) => ({
           locale: t.locale as Locale,
           title: t.title,
           description: t.description || '',
@@ -365,10 +372,10 @@ export async function getPodcastBySlug(slug: string): Promise<MockPodcast | null
 
 export async function getAdminArticles(statusFilter?: string): Promise<MockArticle[]> {
   return safeDb(
-    async () => {
+    async (db) => {
       const where: any = {}
       if (statusFilter && statusFilter !== 'all') where.status = statusFilter
-      const articles = await prisma.article.findMany({
+      const articles = await db.article.findMany({
         where,
         include: {
           translations: true,
@@ -384,36 +391,36 @@ export async function getAdminArticles(statusFilter?: string): Promise<MockArtic
     () => {
       const all = [...getStore().articles]
       if (!statusFilter || statusFilter === 'all') return all
-      return all.filter((a) => a.status === statusFilter)
+      return all.filter((a: any) => a.status === statusFilter)
     }
   )
 }
 
 export async function getAdminStats() {
   return safeDb(
-    async () => {
+    async (db) => {
       const [articles, published, users, comments, pending, subscribers, podcasts] = await Promise.all([
-        prisma.article.count(),
-        prisma.article.count({ where: { status: 'PUBLISHED' } }),
-        prisma.user.count(),
-        prisma.comment.count(),
-        prisma.comment.count({ where: { status: 'pending' } }),
-        prisma.newsletter.count({ where: { active: true } }),
-        prisma.podcastEpisode.count(),
+        db.article.count(),
+        db.article.count({ where: { status: 'PUBLISHED' } }),
+        db.user.count(),
+        db.comment.count(),
+        db.comment.count({ where: { status: 'pending' } }),
+        db.newsletter.count({ where: { active: true } }),
+        db.podcastEpisode.count(),
       ])
-      const views = await prisma.article.aggregate({ _sum: { viewCount: true } })
+      const views = await db.article.aggregate({ _sum: { viewCount: true } })
       return { articles, published, users, comments, pending, subscribers, podcasts, views: views._sum.viewCount || 0 }
     },
     () => {
       const store = getStore()
-      const published = store.articles.filter((a) => a.status === 'PUBLISHED')
+      const published = store.articles.filter((a: any) => a.status === 'PUBLISHED')
       return {
         articles: store.articles.length,
         published: published.length,
         users: store.authors.length,
         comments: store.comments.length,
-        pending: store.comments.filter((c) => c.status === 'pending').length,
-        subscribers: store.subscribers.filter((s) => s.active).length,
+        pending: store.comments.filter((c: any) => c.status === 'pending').length,
+        subscribers: store.subscribers.filter((s: any) => s.active).length,
         podcasts: store.podcasts.length,
         views: published.reduce((sum, a) => sum + a.viewCount, 0),
       }
@@ -423,16 +430,16 @@ export async function getAdminStats() {
 
 export async function getAdminComments(statusFilter?: string): Promise<MockComment[]> {
   return safeDb(
-    async () => {
+    async (db) => {
       const where: any = {}
       if (statusFilter && statusFilter !== 'all') where.status = statusFilter
-      const comments = await prisma.comment.findMany({
+      const comments = await db.comment.findMany({
         where,
         include: { user: true, article: { include: { translations: { where: { locale: 'ar' } } } } },
         orderBy: { createdAt: 'desc' },
         take: 100,
       })
-      return comments.map((c) => ({
+      return comments.map((c: any) => ({
         id: c.id,
         articleId: c.articleId,
         articleTitle: c.article.translations[0]?.title || '',
@@ -445,20 +452,22 @@ export async function getAdminComments(statusFilter?: string): Promise<MockComme
     },
     () => {
       if (!statusFilter || statusFilter === 'all') return getStore().comments
-      return getStore().comments.filter((c) => c.status === statusFilter)
+      return getStore().comments.filter((c: any) => c.status === statusFilter)
     }
   )
 }
 
 export async function getSubscribers() {
   return safeDb(
-    async () => {
-      const subs = await prisma.newsletter.findMany({ orderBy: { createdAt: 'desc' }, take: 200 })
-      return subs.map((s) => ({ id: s.id, email: s.email, locale: s.locale as Locale, active: s.active, createdAt: s.createdAt.toISOString() }))
+    async (db) => {
+      const subs = await db.newsletter.findMany({ orderBy: { createdAt: 'desc' }, take: 200 })
+      return subs.map((s: any) => ({ id: s.id, email: s.email, locale: s.locale as Locale, active: s.active, createdAt: s.createdAt.toISOString() }))
     },
     () => getStore().subscribers
   )
 }
 
 export { MOCK_GOVERNORATES }
+
+
 

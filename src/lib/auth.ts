@@ -1,13 +1,19 @@
 import NextAuth from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
 import Google from 'next-auth/providers/google'
 import Facebook from 'next-auth/providers/facebook'
 import Credentials from 'next-auth/providers/credentials'
-import { prisma } from '@/lib/prisma'
 import { compare } from 'bcryptjs'
+import { getPrisma } from '@/lib/prisma'
+
+/* حسابات تجريبية تعمل عندما لا تكون قاعدة البيانات متاحة */
+const DEMO_ACCOUNTS: Record<string, { password: string; name: string; role: string; id: string }> = {
+  'admin@iraqnow.com': { password: 'admin123', name: 'مدير التحرير', role: 'ADMIN', id: 'user-admin' },
+  'editor@iraqnow.com': { password: 'editor123', name: 'زينب الموسوي', role: 'EDITOR', id: 'user-editor' },
+  'ahmed@iraqnow.com': { password: 'journo123', name: 'أحمد الزبيدي', role: 'JOURNALIST', id: 'user-journo-1' },
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  trustHost: true,
   session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
   pages: {
     signIn: '/ar/auth/signin',
@@ -31,37 +37,39 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
+        const email = credentials.email as string
+        const password = credentials.password as string
+
         try {
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email as string },
-          })
+          const db = await getPrisma()
+          if (db) {
+            const user = await db.user.findUnique({ where: { email } })
 
-          if (!user || !user.passwordHash) return null
-          if (!user.isActive) return null
-
-          const isValid = await compare(credentials.password as string, user.passwordHash)
-          if (!isValid) return null
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            image: user.avatar,
-            role: user.role,
+            if (user?.passwordHash && user.isActive) {
+              const isValid = await compare(password, user.passwordHash)
+              if (isValid) {
+                return {
+                  id: user.id,
+                  email: user.email,
+                  name: user.name,
+                  image: user.avatar,
+                  role: user.role,
+                }
+              }
+              return null
+            }
           }
         } catch {
-          // قاعدة البيانات غير متاحة — تحقق تجريبي للمطور
-          const DEMO_ACCOUNTS: Record<string, { password: string; name: string; role: string; id: string }> = {
-            'admin@iraqnow.com': { password: 'admin123', name: 'مدير التحرير', role: 'ADMIN', id: 'user-admin' },
-            'editor@iraqnow.com': { password: 'editor123', name: 'زينب الموسوي', role: 'EDITOR', id: 'user-editor' },
-            'ahmed@iraqnow.com': { password: 'journo123', name: 'أحمد الزبيدي', role: 'JOURNALIST', id: 'user-journo-1' },
-          }
-          const demo = DEMO_ACCOUNTS[credentials.email as string]
-          if (demo && credentials.password === demo.password) {
-            return { id: demo.id, email: credentials.email as string, name: demo.name, role: demo.role } as any
-          }
-          return null
+          /* قاعدة البيانات غير متاحة — التابع للحسابات التجريبية */
         }
+
+        /* الحسابات التجريبية */
+        const demo = DEMO_ACCOUNTS[email]
+        if (demo && password === demo.password) {
+          return { id: demo.id, email, name: demo.name, role: demo.role } as any
+        }
+
+        return null
       },
     }),
   ],

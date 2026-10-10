@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getPrisma } from '@/lib/prisma'
 
 interface RssArticle {
   slug: string
@@ -22,7 +22,14 @@ function escapeXml(unsafe: string) {
 
 export async function GET() {
   try {
-    const articles = await prisma.article.findMany({
+    const db = await getPrisma()
+    if (!db) {
+      return new NextResponse('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>IraqNow</title></channel></rss>', {
+        headers: { 'Content-Type': 'application/xml; charset=utf-8' },
+      })
+    }
+
+    const articles = await db.article.findMany({
       where: { status: 'PUBLISHED' },
       include: {
         translations: true,

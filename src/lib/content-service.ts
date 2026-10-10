@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { getPrisma } from '@/lib/prisma'
 import { isDbAvailable } from '@/lib/data'
 import * as mem from '@/lib/memory-store'
 import { hash } from 'bcryptjs'
@@ -62,10 +62,10 @@ export async function createArticle(data: {
   }
 
   try {
-    const category = await prisma.category.findUnique({ where: { slug: data.categorySlug } })
+    const category = await (await getPrisma()).category.findUnique({ where: { slug: data.categorySlug } })
     if (!category) return { ok: false, error: 'القسم غير موجود' }
 
-    const article = await prisma.article.create({
+    const article = await (await getPrisma()).article.create({
       data: {
         slug,
         status: (data.status as any) || 'DRAFT',
@@ -100,7 +100,7 @@ export async function updateArticleStatus(id: string, status: string): Promise<{
     return updated ? { ok: true, mock: true } : { ok: false, error: 'المقال غير موجود' }
   }
   try {
-    await prisma.article.update({
+    await (await getPrisma()).article.update({
       where: { id },
       data: { status: status as any, ...(status === 'PUBLISHED' ? { publishedAt: new Date() } : {}) },
     })
@@ -117,7 +117,7 @@ export async function updateArticleFull(id: string, data: Partial<MockArticle>):
   }
   try {
     const ar = data.translations?.find((t) => t.locale === 'ar')
-    await prisma.article.update({
+    await (await getPrisma()).article.update({
       where: { id },
       data: {
         ...(data.status ? { status: data.status as any } : {}),
@@ -138,7 +138,7 @@ export async function deleteArticle(id: string): Promise<{ ok: boolean; error?: 
     return mem.deleteArticle(id) ? { ok: true, mock: true } : { ok: false, error: 'المقال غير موجود' }
   }
   try {
-    await prisma.article.delete({ where: { id } })
+    await (await getPrisma()).article.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -176,13 +176,13 @@ export async function createEditor(data: {
   }
 
   try {
-    const existing = await prisma.user.findUnique({ where: { email: data.email } })
+    const existing = await (await getPrisma()).user.findUnique({ where: { email: data.email } })
     if (existing) return { ok: false, error: 'البريد الإلكتروني مستخدم مسبقاً' }
 
     const passwordHash = await hash(data.password, 12)
     const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '') || undefined
 
-    const user = await prisma.user.create({
+    const user = await (await getPrisma()).user.create({
       data: {
         name: data.name,
         email: data.email,
@@ -208,7 +208,7 @@ export async function updateUser(id: string, data: Partial<MockAuthor> & { passw
   }
   try {
     const { password, ...rest } = data
-    await prisma.user.update({
+    await (await getPrisma()).user.update({
       where: { id },
       data: {
         ...(rest.name ? { name: rest.name } : {}),
@@ -237,7 +237,7 @@ export async function deleteUser(id: string): Promise<{ ok: boolean; error?: str
     return mem.deleteAuthor(id) ? { ok: true, mock: true } : { ok: false, error: 'المستخدم غير موجود' }
   }
   try {
-    await prisma.user.delete({ where: { id } })
+    await (await getPrisma()).user.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -252,7 +252,7 @@ export async function moderateComment(id: string, status: MockComment['status'])
     return updated ? { ok: true, mock: true } : { ok: false, error: 'التعليق غير موجود' }
   }
   try {
-    await prisma.comment.update({ where: { id }, data: { status } })
+    await (await getPrisma()).comment.update({ where: { id }, data: { status } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -264,7 +264,7 @@ export async function removeComment(id: string): Promise<{ ok: boolean; error?: 
     return mem.deleteComment(id) ? { ok: true, mock: true } : { ok: false, error: 'التعليق غير موجود' }
   }
   try {
-    await prisma.comment.delete({ where: { id } })
+    await (await getPrisma()).comment.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -290,7 +290,7 @@ export async function createCategory(data: {
     return { ok: true, id: cat.id, mock: true }
   }
   try {
-    const cat = await prisma.category.create({
+    const cat = await (await getPrisma()).category.create({
       data: {
         slug: data.slug,
         translations: {
@@ -313,10 +313,10 @@ export async function updateCategoryFull(id: string, data: { slug?: string; tran
     return updated ? { ok: true, mock: true } : { ok: false, error: 'القسم غير موجود' }
   }
   try {
-    if (data.slug) await prisma.category.update({ where: { id }, data: { slug: data.slug } })
+    if (data.slug) await (await getPrisma()).category.update({ where: { id }, data: { slug: data.slug } })
     if (data.translations) {
       for (const t of data.translations) {
-        await prisma.categoryTranslation.upsert({
+        await (await getPrisma()).categoryTranslation.upsert({
           where: { categoryId_locale: { categoryId: id, locale: t.locale as any } },
           update: { name: t.name, description: t.description },
           create: { categoryId: id, locale: t.locale as any, name: t.name, description: t.description },
@@ -334,7 +334,7 @@ export async function removeCategory(id: string): Promise<{ ok: boolean; error?:
     return mem.deleteCategory(id) ? { ok: true, mock: true } : { ok: false, error: 'القسم غير موجود' }
   }
   try {
-    await prisma.category.delete({ where: { id } })
+    await (await getPrisma()).category.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: 'لا يمكن حذف قسم يحتوي على مقالات' }
@@ -354,7 +354,7 @@ export async function createPodcastEpisode(data: Partial<MockPodcast>): Promise<
   }
   try {
     const slug = `episode-${data.episodeNumber || Date.now().toString(36)}`
-    const ep = await prisma.podcastEpisode.create({
+    const ep = await (await getPrisma()).podcastEpisode.create({
       data: {
         slug,
         episodeNumber: data.episodeNumber || 1,
@@ -386,7 +386,7 @@ export async function removePodcast(id: string): Promise<{ ok: boolean; error?: 
     return mem.deletePodcast(id) ? { ok: true, mock: true } : { ok: false, error: 'الحلقة غير موجودة' }
   }
   try {
-    await prisma.podcastEpisode.delete({ where: { id } })
+    await (await getPrisma()).podcastEpisode.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -399,7 +399,7 @@ export async function updatePodcastFull(id: string, data: Partial<MockPodcast>):
     return updated ? { ok: true, mock: true } : { ok: false, error: 'الحلقة غير موجودة' }
   }
   try {
-    await prisma.podcastEpisode.update({
+    await (await getPrisma()).podcastEpisode.update({
       where: { id },
       data: {
         ...(data.episodeNumber ? { episodeNumber: data.episodeNumber } : {}),
@@ -422,7 +422,7 @@ export async function removeSubscriber(id: string): Promise<{ ok: boolean; error
     return mem.deleteSubscriber(id) ? { ok: true, mock: true } : { ok: false, error: 'المشترك غير موجود' }
   }
   try {
-    await prisma.newsletter.delete({ where: { id } })
+    await (await getPrisma()).newsletter.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -438,7 +438,7 @@ export async function saveSettings(updates: Record<string, string>): Promise<{ o
   }
   try {
     for (const [key, value] of Object.entries(updates)) {
-      await prisma.siteSetting.upsert({
+      await (await getPrisma()).siteSetting.upsert({
         where: { key },
         update: { value },
         create: { key, value },
@@ -454,3 +454,4 @@ export async function saveSettings(updates: Record<string, string>): Promise<{ o
 export function loadSettings(): Record<string, string> {
   return mem.getSettings()
 }
+

@@ -14,7 +14,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "search:setup": "tsx scripts/setup-meilisearch.ts",
     "search:index": "tsx scripts/index-articles.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && node scripts/patch-opennext.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
@@ -36,6 +36,7 @@
     "next": "16.4.0",
     "next-auth": "^5.0.0-beta.32",
     "pg": "^8.23.1",
+    "pg-cloudflare": "^1.4.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-hook-form": "^7.89.0",
@@ -44,6 +45,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.10",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20.19.43",
@@ -56,6 +58,7 @@
     "prisma": "^7.10.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.149.0"
   }
 }

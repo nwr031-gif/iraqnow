@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { getPrisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +11,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const db = await getPrisma()
+    if (!db) {
+      return NextResponse.json({ error: 'الخدمة غير متاحة حالياً' }, { status: 503 })
+    }
+
     const body = await request.json()
     const { articleId, content, parentId } = body
 
@@ -18,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Article ID and content required' }, { status: 400 })
     }
 
-    const comment = await prisma.comment.create({
+    const comment = await db.comment.create({
       data: {
         articleId,
         userId: user.id,
@@ -51,7 +56,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Article ID required' }, { status: 400 })
     }
 
-    const comments = await prisma.comment.findMany({
+    const db = await getPrisma()
+    if (!db) {
+      return NextResponse.json([])
+    }
+
+    const comments = await db.comment.findMany({
       where: {
         articleId,
         parentId: null,

@@ -28,6 +28,27 @@ let worker = readFileSync(join(OPEN_NEXT, 'worker.js'), 'utf8')
 worker = worker.replace(/\/\/\s*@ts-expect-error[^\n]*\n\s*export \{[^}]+\} from "\.\/\.build\/[^"]+";?\n?/g, '')
 /* إزالة أي أسطر export متبقية لـ .build */
 worker = worker.replace(/^\s*export \{[^}]+\} from "\.\/\.build\/[^"]+";?\s*$/gm, '')
+
+/* 3.5) حقن خدمة الأصول الثابتة — في Pages advanced mode كل الطلبات تذهب للـ Worker،
+   وطلب /_next/static/* يصل لخادم Next الذي يفشل في قراءة الملفات → 404.
+   الحل: خدمة الأصول عبر env.ASSETS.fetch() قبل تمريرها لـ Next */
+const staticAssetPatch = `
+            // [iraqnow-patch] Pages advanced mode: serve static assets via ASSETS binding
+            if ((request.method === "GET" || request.method === "HEAD") && env.ASSETS !== void 0 && (url.pathname.startsWith("/_next/static/") || /\\.(css|js|mjs|svg|png|jpg|jpeg|gif|webp|avif|ico|woff|woff2|ttf|otf|eot|map)$/i.test(url.pathname))) {
+                const assetRes = await env.ASSETS.fetch(request);
+                if (assetRes.status !== 404) {
+                    return assetRes;
+                }
+            }`
+
+const needleUrl = 'const url = new URL(request.url);'
+if (worker.includes(needleUrl)) {
+  worker = worker.replace(needleUrl, () => needleUrl + staticAssetPatch)
+  console.log('✓ static asset serving injected into _worker.js')
+} else {
+  console.log('⚠ could not find injection point in worker.js')
+}
+
 writeFileSync(join(OUT, '_worker.js'), worker)
 console.log('✓ _worker.js created')
 

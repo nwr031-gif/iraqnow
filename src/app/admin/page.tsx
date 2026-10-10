@@ -3,7 +3,7 @@ import {
   Newspaper, Users, MessageSquare, Mail, Mic, Eye, TrendingUp,
   ArrowLeft, Clock, PenSquare, CheckCircle2, AlertCircle, Database,
 } from 'lucide-react'
-import { getAdminStats, getAdminArticles, getAdminComments, isDbAvailable } from '@/lib/data'
+import { getAdminStats, getAdminArticles, getAdminComments, isDbAvailable, isSupabaseReady } from '@/lib/data'
 import { getSessionUser } from '@/lib/rbac'
 
 export const dynamic = 'force-dynamic'
@@ -27,16 +27,18 @@ function timeAgo(dateStr: string, locale = 'ar'): string {
 }
 
 export default async function AdminDashboard() {
-  const [stats, articles, comments, dbUp] = await Promise.all([
+  const [stats, articles, comments, dbUp, sbUp] = await Promise.all([
     getAdminStats(),
     getAdminArticles(),
     getAdminComments('pending'),
     isDbAvailable(),
+    isSupabaseReady(),
   ])
   const user = await getSessionUser()
 
   const recentArticles = articles.slice(0, 6)
   const pendingComments = comments.slice(0, 5)
+  const connected = dbUp || sbUp
 
   const statCards = [
     { icon: Newspaper, label: 'إجمالي المقالات', value: stats.articles, sub: `${stats.published} منشور`, color: 'from-lapis-500 to-lapis-700' },
@@ -59,7 +61,12 @@ export default async function AdminDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {!dbUp && (
+          {connected ? (
+            <span className="flex items-center gap-2 rounded-xl border border-green-500/30 bg-green-500/10 px-3.5 py-2 text-xs font-medium text-green-400">
+              <Database className="h-3.5 w-3.5" />
+              {dbUp ? 'متصل — PostgreSQL' : 'متصل — Supabase ✓ الحفظ يعمل'}
+            </span>
+          ) : (
             <span className="flex items-center gap-2 rounded-xl border border-gold-500/30 bg-gold-500/10 px-3.5 py-2 text-xs font-medium text-gold-400">
               <Database className="h-3.5 w-3.5" />
               وضع تجريبي — قاعدة البيانات غير متصلة

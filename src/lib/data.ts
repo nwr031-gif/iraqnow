@@ -452,6 +452,7 @@ export async function getSubscribers() {
 }
 
 export { MOCK_GOVERNORATES }
+export { isSupabaseReady } from '@/lib/supabase-store'
 
 
 

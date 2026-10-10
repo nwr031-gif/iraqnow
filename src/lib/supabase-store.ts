@@ -24,7 +24,8 @@ function headers(extra: Record<string, string> = {}): Record<string, string> {
 
 let sbReady: boolean | null = null
 let sbCheckedAt = 0
-let seedAttempted = false
+let seedAttemptedAt = 0
+const SEED_RETRY_MS = 5 * 60_000
 
 export async function isSupabaseReady(): Promise<boolean> {
   if (!SB_URL || !SB_KEY) return false
@@ -40,10 +41,11 @@ export async function isSupabaseReady(): Promise<boolean> {
   return sbReady
 }
 
-/* ═══════════ Bذر تلقائي — عند أول استخدام بعد إنشاء الجداول ═══════════ */
+/* ═══════════ بذر تلقائي — يعيد المحاولة كل 5 دقائق عند الفشل ═══════════ */
 async function ensureSeeded() {
-  if (seedAttempted) return
-  seedAttempted = true
+  const now = Date.now()
+  if (now - seedAttemptedAt < SEED_RETRY_MS) return
+  seedAttemptedAt = now
   try {
     const countRes = await fetch(`${SB_URL}/rest/v1/articles?select=id&limit=1`, { headers: headers() })
     if (countRes.status !== 200) return

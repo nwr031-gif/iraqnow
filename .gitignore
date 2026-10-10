@@ -68,3 +68,9 @@ logs
 skills-lock.json
 prisma7.config.ts
 AGENTS.md
+
+# Build outputs
+pages-deploy/
+.open-next/
+.dev.vars
+wrangler.workers.toml

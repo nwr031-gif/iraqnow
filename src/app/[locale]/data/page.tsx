@@ -7,6 +7,8 @@ import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { BarChart, LineChart, DonutChart } from '@/components/data/Charts'
 import { DatasetDownload } from '@/components/data/Interactive'
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title: 'العراق بالأرقام — صحافة البيانات',
   description: 'منصة صحافة البيانات العراقية: مؤشرات اقتصادية واجتماعية حية، رسوم تفاعلية، وقواعد بيانات مفتوحة للتحميل',
@@ -82,7 +84,7 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
     '@type': 'Dataset',
     name: t.title,
     description: t.subtitle,
-    url: `https://iraqnow.iq/${locale}/data`,
+    url: `https://iraqnow.pages.dev/${locale}/data`,
     creator: { '@type': 'Organization', name: 'Iraq Now' },
   }
 
@@ -207,4 +209,5 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
     </div>
   )
 }
+
 

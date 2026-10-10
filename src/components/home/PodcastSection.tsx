@@ -52,7 +52,7 @@ const EPISODES = [
     },
     guest: { ar: 'د. مظهر محمد صالح', ku: 'د. مظەهر محەمەد سالح', en: 'Dr. Mazhar Mohammed' },
     color: 'from-lapis-600 to-lapis-900',
-    cover: 'https://picsum.photos/seed/podcast1/600/600',
+    cover: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80',
     isNew: true,
   },
   {
@@ -66,7 +66,7 @@ const EPISODES = [
     },
     guest: { ar: 'م. أحمد العبيدي', ku: 'ئەحمەد عوبەیدی', en: 'Eng. Ahmed Al-Obaidi' },
     color: 'from-terra-500 to-terra-800',
-    cover: 'https://picsum.photos/seed/podcast2/600/600',
+    cover: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80',
     isNew: false,
   },
   {
@@ -80,7 +80,7 @@ const EPISODES = [
     },
     guest: { ar: 'د. سهام الربيعي', ku: 'د. سهام ڕوبەیعی', en: 'Dr. Siham Al-Rubaie' },
     color: 'from-emerald-600 to-emerald-900',
-    cover: 'https://picsum.photos/seed/podcast3/600/600',
+    cover: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80',
     isNew: false,
   },
 ]

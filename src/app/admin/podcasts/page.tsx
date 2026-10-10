@@ -110,7 +110,7 @@ export default function AdminPodcastsPage() {
               >
                 <div className="relative aspect-video overflow-hidden">
                   <img
-                    src={pod.coverUrl || `https://picsum.photos/seed/${pod.slug}/600/340`}
+                    src={pod.coverUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80&sig=${pod.slug}/600/340`}
                     alt=""
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />

@@ -160,7 +160,7 @@ export const MOCK_CATEGORIES: MockCategory[] = [
 export const MOCK_AUTHORS: MockAuthor[] = [
   {
     id: 'user-admin', name: 'مدير التحرير', slug: 'admin', email: 'admin@iraqnow.com', role: 'ADMIN',
-    avatar: 'https://i.pravatar.cc/300?img=12', coverImage: 'https://picsum.photos/seed/cover-admin/1600/400',
+    avatar: 'https://i.pravatar.cc/300?img=12', coverImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&h=400&fit=crop&q=80',
     jobTitle: { ar: 'رئيس التحرير', ku: 'سەرۆکی دەستکاری', en: 'Editor-in-Chief' },
     bio: {
       ar: 'صحفي عراقي بخبرة تمتد لأكثر من 15 عاماً في الصحافة الاستقصائية والتغطيات الميدانية. عمل في عدة مؤسسات إعلامية عربية ودولية، ويشرف على المحتوى التحريري في العراق الآن.',
@@ -172,7 +172,7 @@ export const MOCK_AUTHORS: MockAuthor[] = [
   },
   {
     id: 'user-editor', name: 'زينب الموسوي', slug: 'zainab-almusawi', email: 'editor@iraqnow.com', role: 'EDITOR',
-    avatar: 'https://i.pravatar.cc/300?img=47', coverImage: 'https://picsum.photos/seed/cover-zainab/1600/400',
+    avatar: 'https://i.pravatar.cc/300?img=47', coverImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&h=400&fit=crop&q=80',
     jobTitle: { ar: 'محرر أول — الشؤون الاقتصادية', ku: 'دەستکاریکار — کاروباری ئابووری', en: 'Senior Editor — Economy' },
     bio: {
       ar: 'محررة متخصصة في الشؤون الاقتصادية والنفطية، حاصلة على ماجستير في الاقتصاد من جامعة بغداد. تغطي أسواق المال والموازنة العامة منذ 2018.',
@@ -184,7 +184,7 @@ export const MOCK_AUTHORS: MockAuthor[] = [
   },
   {
     id: 'user-journo-1', name: 'أحمد الزبيدي', slug: 'ahmed-alzubaidi', email: 'ahmed@iraqnow.com', role: 'JOURNALIST',
-    avatar: 'https://i.pravatar.cc/300?img=33', coverImage: 'https://picsum.photos/seed/cover-ahmed/1600/400',
+    avatar: 'https://i.pravatar.cc/300?img=33', coverImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&h=400&fit=crop&q=80',
     jobTitle: { ar: 'مراسل سياسي — بغداد', ku: 'پەیامنێری سیاسی — بەغداد', en: 'Political Correspondent — Baghdad' },
     bio: {
       ar: 'مراسل سياسي مقيم في بغداد، يتابع مجلس النواب والحكومة منذ 2017. شارك في تغطية أربع دورات انتخابية.',
@@ -195,7 +195,7 @@ export const MOCK_AUTHORS: MockAuthor[] = [
   },
   {
     id: 'user-journo-2', name: 'سوران محمد', slug: 'soran-mohammed', email: 'soran@iraqnow.com', role: 'JOURNALIST',
-    avatar: 'https://i.pravatar.cc/300?img=59', coverImage: 'https://picsum.photos/seed/cover-soran/1600/400',
+    avatar: 'https://i.pravatar.cc/300?img=59', coverImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&h=400&fit=crop&q=80',
     jobTitle: { ar: 'مدير مكتب أربيل', ku: 'بەڕێوەبەری نووسینگەی هەولێر', en: 'Erbil Bureau Chief' },
     bio: {
       ar: 'صحفي كردي مقيم في أربيل، يغطي أخبار إقليم كردستان والعلاقات بين بغداد وأربيل منذ 2016.',
@@ -206,7 +206,7 @@ export const MOCK_AUTHORS: MockAuthor[] = [
   },
   {
     id: 'user-journo-3', name: 'ليلى حسن', slug: 'laila-hassan', email: 'laila@iraqnow.com', role: 'JOURNALIST',
-    avatar: 'https://i.pravatar.cc/300?img=44', coverImage: 'https://picsum.photos/seed/cover-laila/1600/400',
+    avatar: 'https://i.pravatar.cc/300?img=44', coverImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&h=400&fit=crop&q=80',
     jobTitle: { ar: 'مراسلة محليات — البصرة', ku: 'پەیامنێری ناوخۆ — بەسرە', en: 'Local Reporter — Basra' },
     bio: {
       ar: 'مراسلة ميدانية تغطي محافظات الجنوب من البصرة. متخصصة في قضايا المياه والبيئة والخدمات.',
@@ -217,7 +217,7 @@ export const MOCK_AUTHORS: MockAuthor[] = [
   },
   {
     id: 'user-journo-4', name: 'عمر عبد الله', slug: 'omar-abdullah', email: 'omar@iraqnow.com', role: 'JOURNALIST',
-    avatar: 'https://i.pravatar.cc/300?img=68', coverImage: 'https://picsum.photos/seed/cover-omar/1600/400',
+    avatar: 'https://i.pravatar.cc/300?img=68', coverImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&h=400&fit=crop&q=80',
     jobTitle: { ar: 'مراسل رياضة وتكنولوجيا', ku: 'پەیامنێری وەرزش و تەکنەلۆژی', en: 'Sports & Tech Reporter' },
     bio: {
       ar: 'مراسل شغوف بالرياضة والتقنية، يغطي دوري نجوم العراق والمنتخبات الوطنية وأخبار التحول الرقمي.',
@@ -359,7 +359,7 @@ export const MOCK_PODCASTS: MockPodcast[] = [
   {
     id: 'pod-1', slug: 'post-oil-economy', episodeNumber: 42, season: 3, duration: '38:24',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    coverUrl: 'https://picsum.photos/seed/pod42/600/600',
+    coverUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=600&fit=crop&q=80',
     publishedAt: new Date(Date.now() - 2 * 86400000).toISOString(), isPublished: true, isFeatured: true, views: 15400,
     guest: { ar: 'د. مظهر محمد صالح - الخبير الاقتصادي', ku: 'د. مەزهەر محەمەد سالح', en: 'Dr. Mazhar Mohammed - Economic Expert' },
     translations: [
@@ -371,7 +371,7 @@ export const MOCK_PODCASTS: MockPodcast[] = [
   {
     id: 'pod-2', slug: 'mosul-reconstruction', episodeNumber: 41, season: 3, duration: '45:10',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    coverUrl: 'https://picsum.photos/seed/pod41/600/600',
+    coverUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=600&fit=crop&q=80',
     publishedAt: new Date(Date.now() - 9 * 86400000).toISOString(), isPublished: true, isFeatured: false, views: 9800,
     guest: { ar: 'م. أحمد العبيدي - مهندس إعمار', ku: 'ئەحمەد عوبەیدی', en: 'Eng. Ahmed Al-Obaidi' },
     translations: [
@@ -383,7 +383,7 @@ export const MOCK_PODCASTS: MockPodcast[] = [
   {
     id: 'pod-3', slug: 'water-crisis-mesopotamia', episodeNumber: 40, season: 3, duration: '32:55',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    coverUrl: 'https://picsum.photos/seed/pod40/600/600',
+    coverUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=600&fit=crop&q=80',
     publishedAt: new Date(Date.now() - 16 * 86400000).toISOString(), isPublished: true, isFeatured: false, views: 11200,
     guest: { ar: 'د. سهام الربيعي - خبيرة الموارد المائية', ku: 'د. سهام ڕوبەیعی', en: 'Dr. Siham Al-Rubaie' },
     translations: [
@@ -395,7 +395,7 @@ export const MOCK_PODCASTS: MockPodcast[] = [
   {
     id: 'pod-4', slug: 'iraqi-cinema-return', episodeNumber: 39, season: 2, duration: '28:40',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    coverUrl: 'https://picsum.photos/seed/pod39/600/600',
+    coverUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=600&fit=crop&q=80',
     publishedAt: new Date(Date.now() - 23 * 86400000).toISOString(), isPublished: true, isFeatured: false, views: 7600,
     guest: { ar: 'المخرج محمد الدراجي', ku: 'دەرهێنەر محەمەد دەراجی', en: 'Director Mohamed Al-Daradji' },
     translations: [
@@ -407,7 +407,7 @@ export const MOCK_PODCASTS: MockPodcast[] = [
   {
     id: 'pod-5', slug: 'youth-entrepreneurship', episodeNumber: 38, season: 2, duration: '41:15',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-    coverUrl: 'https://picsum.photos/seed/pod38/600/600',
+    coverUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=600&fit=crop&q=80',
     publishedAt: new Date(Date.now() - 30 * 86400000).toISOString(), isPublished: true, isFeatured: false, views: 6400,
     guest: { ar: 'رند الخطيب - مؤسسة شركة ناشئة', ku: 'ڕەند خەتیب', en: 'Rand Al-Khatib - Startup Founder' },
     translations: [
@@ -419,7 +419,7 @@ export const MOCK_PODCASTS: MockPodcast[] = [
   {
     id: 'pod-6', slug: 'baghdad-coffee-houses', episodeNumber: 37, season: 2, duration: '35:50',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
-    coverUrl: 'https://picsum.photos/seed/pod37/600/600',
+    coverUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=600&fit=crop&q=80',
     publishedAt: new Date(Date.now() - 37 * 86400000).toISOString(), isPublished: true, isFeatured: false, views: 5200,
     guest: { ar: 'د. نجم والي - أديب وروائي', ku: 'د. نەجم والی', en: 'Dr. Najm Wali - Novelist' },
     translations: [
@@ -477,3 +477,4 @@ export const MOCK_TAGS = [
   'كردستان', 'الانتخابات', 'الموازنة', 'الكهرباء', 'المياه', 'التعليم', 'الصحة',
   'الرياضة', 'كأس آسيا', 'التكنولوجيا', 'البيئة', 'المناخ', 'الآثار', 'الثقافة',
 ]
+

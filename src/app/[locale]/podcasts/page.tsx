@@ -173,7 +173,7 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                   <div className="lg:col-span-2">
                     <div className="relative overflow-hidden rounded-3xl border border-gold-500/25 shadow-2xl shadow-lapis-950/20">
                       <img
-                        src={featured.coverUrl || `https://picsum.photos/seed/${featured.slug}/800/800`}
+                        src={featured.coverUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80&sig=${featured.slug}/800/800`}
                         alt=""
                         className="aspect-square w-full object-cover"
                       />

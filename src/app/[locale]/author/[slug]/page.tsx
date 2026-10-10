@@ -9,7 +9,15 @@ import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { getAuthorById, getArticles, getCategories } from '@/lib/data'
 import type { Locale } from '@/lib/mock-data'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  try {
+    const { getAuthors } = await import('@/lib/data')
+    const authors = await getAuthors()
+    return authors.map((a) => ({ slug: a.slug }))
+  } catch { return [] }
+}
 
 const UI: Record<Locale, any> = {
   ar: {
@@ -80,7 +88,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
     jobTitle: author.jobTitle[locale] || author.jobTitle.ar,
     description: author.bio[locale] || author.bio.ar,
     image: author.avatar,
-    url: `https://iraqnow.iq/${locale}/author/${author.slug}`,
+    url: `https://iraqnow.pages.dev/${locale}/author/${author.slug}`,
     sameAs: socials.map((s) => s.href),
     worksFor: { '@type': 'NewsMediaOrganization', name: 'Iraq Now' },
   }
@@ -245,4 +253,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
     </div>
   )
 }
+
+
+
 

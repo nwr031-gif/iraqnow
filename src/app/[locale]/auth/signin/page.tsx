@@ -1,6 +1,8 @@
 import { Metadata } from 'next'
 import { SignInForm } from '@/components/auth/SignInForm'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'تسجيل الدخول',
   description: 'سجل دخولك للوصول إلى ميزات مخصصة',

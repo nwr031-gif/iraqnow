@@ -9,7 +9,13 @@ import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { getCategoryBySlug, getArticles, getCategories } from '@/lib/data'
 import type { Locale } from '@/lib/mock-data'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  const slugs = ['politics', 'economy', 'security', 'society', 'culture', 'sports', 'technology', 'health', 'education', 'environment', 'local', 'world']
+  const locales = ['ar', 'ku', 'en']
+  return slugs.flatMap((slug) => locales.map((locale) => ({ slug, locale })))
+}
 
 const SORT_OPTIONS = [
   { value: 'latest', ar: 'الأحدث', ku: 'نوێترین', en: 'Latest' },
@@ -58,21 +64,18 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function CategoryPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>
-  searchParams: Promise<{ page?: string; sort?: string }>
 }) {
   const { locale: rawLocale, slug } = await params
-  const { page: pageParam, sort: sortParam } = await searchParams
   const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as Locale
   const t = UI[locale]
 
   const category = await getCategoryBySlug(slug)
   if (!category) notFound()
 
-  const page = Math.max(1, parseInt(pageParam || '1') || 1)
-  const sort = (sortParam === 'views' ? 'views' : 'latest') as 'latest' | 'views'
+  const page = 1
+  const sort = 'latest' as 'latest' | 'views'
 
   const [{ articles, total, pages }, allCategories] = await Promise.all([
     getArticles({ categorySlug: slug, page, limit: PAGE_SIZE, sort }),
@@ -296,3 +299,4 @@ export default async function CategoryPage({
     </div>
   )
 }
+

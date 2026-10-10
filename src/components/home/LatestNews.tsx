@@ -45,7 +45,7 @@ const MOCK: ArticleData[] = Array.from({ length: 9 }, (_, i) => ({
     { locale: 'ku' as const, title: `هەواڵی گرنگی ژمارە ${i + 1} لە عێراق ئێستا`, excerpt: 'وردەکاری گشتگیر دەربارەی ئەم هەواڵە گرنگە لەگەڵ شیکاری قووڵ.' },
     { locale: 'en' as const, title: `Breaking: Major Development in Iraq's ${['Political', 'Economic', 'Security', 'Social', 'Cultural', 'Sports', 'Tech', 'Health', 'Education'][i] ?? 'National'} Sector`, excerpt: 'Comprehensive details on this important story with in-depth analysis and exclusive coverage from Iraq Now correspondents in the field.' },
   ],
-  media: [{ media: { url: `https://picsum.photos/seed/iraqnow${i + 10}/800/500`, alt: '' } }],
+  media: [{ media: { url: `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80&sig=iraqnow${i + 10}/800/500`, alt: '' } }],
   category: { slug: categories[i % categories.length], translations: [{ locale: 'ar' as const, name: catNames.ar[i % catNames.ar.length] }, { locale: 'ku' as const, name: catNames.ku[i % catNames.ku.length] }, { locale: 'en' as const, name: catNames.en[i % catNames.en.length] }] },
   author: { name: ['أحمد الزبيدي', 'ليلى حسن', 'سوران محمد', 'عمر عبد الله', 'زينب الكعبي', 'حسين العلي', 'فاطمة الجابري', 'علي الشمري', 'نور الدين'][i] },
   location: { governorate: { translations: [{ locale: 'ar' as const, name: govs.ar[i % govs.ar.length] }, { locale: 'ku' as const, name: govs.ku[i % govs.ku.length] }, { locale: 'en' as const, name: govs.en[i % govs.en.length] }] } },

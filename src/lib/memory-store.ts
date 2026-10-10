@@ -204,7 +204,7 @@ export function createPodcast(data: Partial<MockPodcast>): MockPodcast {
     season: data.season || 3,
     duration: data.duration || '0:00',
     audioUrl: data.audioUrl || '',
-    coverUrl: data.coverUrl || `https://picsum.photos/seed/${genId('cover')}/600/600`,
+    coverUrl: data.coverUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80'cover')}/600/600`,
     publishedAt: new Date().toISOString(),
     isPublished: data.isPublished ?? true,
     isFeatured: data.isFeatured || false,

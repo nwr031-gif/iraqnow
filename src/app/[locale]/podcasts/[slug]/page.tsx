@@ -97,7 +97,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
             <Reveal className="lg:col-span-1">
               <div className="relative mx-auto max-w-sm overflow-hidden rounded-3xl border border-gold-500/25 shadow-2xl shadow-lapis-950/50 lg:max-w-none">
                 <img
-                  src={episode.coverUrl || `https://picsum.photos/seed/${episode.slug}/800/800`}
+                  src={episode.coverUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80&sig=${episode.slug}/800/800`}
                   alt=""
                   className="aspect-square w-full object-cover"
                 />

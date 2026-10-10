@@ -8,6 +8,8 @@ import { Reveal } from '@/components/ui/Reveal'
 import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { GOVERNORATES_19 } from '@/components/map/Iraq3DMapCanvas'
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title: 'خريطة العراق 3D التفاعلية',
   description: 'خريطة العراق ثلاثية الأبعاد التفاعلية — استكشف أخبار جميع المحافظات الـ 19 من زاخو إلى الفاو',
@@ -42,7 +44,7 @@ export default async function MapPage({ params }: { params: Promise<{ locale: st
     '@context': 'https://schema.org',
     '@type': 'Map',
     name: locale === 'en' ? 'Iraq Interactive 3D Map' : 'خريطة العراق 3D التفاعلية',
-    url: `https://iraqnow.iq/${locale}/map`,
+    url: `https://iraqnow.pages.dev/${locale}/map`,
   }
 
   return (
@@ -93,4 +95,5 @@ export default async function MapPage({ params }: { params: Promise<{ locale: st
     </div>
   )
 }
+
 

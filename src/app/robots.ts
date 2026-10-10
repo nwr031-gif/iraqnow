@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/auth/', '/dashboard/', '/profile/', '/bookmarks/'],
     },
-    sitemap: 'https://iraqnow.com/sitemap.xml',
-    host: 'https://iraqnow.com',
+    sitemap: 'https://iraqnow.pages.dev/sitemap.xml',
+    host: 'https://iraqnow.pages.dev',
   }
 }

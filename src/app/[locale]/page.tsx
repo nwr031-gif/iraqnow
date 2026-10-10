@@ -11,6 +11,8 @@ import { PodcastSection } from '@/components/home/PodcastSection'
 import { DataSection } from '@/components/home/DataSection'
 import { CuneiformDivider } from '@/components/brand/Brand'
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title: 'الرئيسية',
   description:

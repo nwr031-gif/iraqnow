@@ -22,7 +22,7 @@ const notoKufi = Noto_Kufi_Arabic({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://iraqnow.iq'),
+  metadataBase: new URL('https://iraqnow.pages.dev'),
   title: {
     default: 'العراق الآن | Iraq Now — صوت العراق الحقيقي',
     template: '%s | العراق الآن — Iraq Now',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     'أخبار كردية', 'بغداد', 'البصرة', 'أربيل', 'الموصل', 'كردستان',
     'اقتصاد العراق', 'سياسة العراق', 'رووداو', 'شفق نيوز',
   ],
-  authors: [{ name: 'فريق العراق الآن', url: 'https://iraqnow.iq/team' }],
+  authors: [{ name: 'فريق العراق الآن', url: 'https://iraqnow.pages.dev/team' }],
   creator: 'Iraq Now — العراق الآن',
   publisher: 'Iraq Now Media',
   robots: {
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'ar_IQ',
     alternateLocale: ['ku_IQ', 'en_US'],
-    url: 'https://iraqnow.iq',
+    url: 'https://iraqnow.pages.dev',
     siteName: 'العراق الآن — Iraq Now',
     title: 'العراق الآن | Iraq Now — صوت العراق الحقيقي',
     description: 'تغطية شاملة ومستقلة من بغداد إلى أربيل والبصرة والموصل — بثلاث لغات',
@@ -76,6 +76,10 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   colorScheme: 'light dark',
+}
+
+export async function generateStaticParams() {
+  return [{ locale: 'ar' }, { locale: 'ku' }, { locale: 'en' }]
 }
 
 export default async function RootLayout({
@@ -121,3 +125,4 @@ export default async function RootLayout({
     </html>
   )
 }
+

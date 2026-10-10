@@ -5,6 +5,8 @@ import { Reveal, CountUp } from '@/components/ui/Reveal'
 import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { NewsletterForm } from '@/components/home/NewsletterForm'
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title: 'النشرة البريدية — صوت الرافدين',
   description: 'اشترك في نشرة العراق الآن البريدية — موجز يومي مدته 5 دقائق بأهم أخبار العراق، بثلاث لغات، مجاناً',
@@ -201,7 +203,7 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
               </ul>
               <div className="border-t border-dashed border-[var(--border)] bg-gold-500/[0.04] px-6 py-3 text-center">
                 <p className="text-[11px] text-[var(--muted)]">
-                  {locale === 'en' ? 'Read the full stories on iraqnow.iq' : 'اقرأ الأخبار كاملة على iraqnow.iq'}
+                  {locale === 'en' ? 'Read the full stories on iraqnow.pages.dev' : 'اقرأ الأخبار كاملة على iraqnow.pages.dev'}
                 </p>
               </div>
             </div>
@@ -229,3 +231,4 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
     </div>
   )
 }
+

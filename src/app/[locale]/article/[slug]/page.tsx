@@ -10,7 +10,17 @@ import { CuneiformDivider } from '@/components/brand/Brand'
 import { getArticleBySlug, getArticles, getAuthorById, getCategories } from '@/lib/data'
 import type { Locale } from '@/lib/mock-data'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  try {
+    const { getArticles } = await import('@/lib/data')
+    const { articles } = await getArticles({ limit: 100 })
+    return articles.map((a) => ({ slug: a.slug }))
+  } catch {
+    return []
+  }
+}
 
 const UI: Record<Locale, any> = {
   ar: {
@@ -86,9 +96,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
     inLanguage: locale === 'ku' ? 'ckb' : locale,
-    author: author ? { '@type': 'Person', name: author.name, url: `https://iraqnow.iq/${locale}/author/${author.slug}` } : { '@type': 'Organization', name: 'Iraq Now' },
+    author: author ? { '@type': 'Person', name: author.name, url: `https://iraqnow.pages.dev/${locale}/author/${author.slug}` } : { '@type': 'Organization', name: 'Iraq Now' },
     publisher: { '@type': 'NewsMediaOrganization', name: 'العراق الآن — Iraq Now' },
-    mainEntityOfPage: `https://iraqnow.iq/${locale}/article/${slug}`,
+    mainEntityOfPage: `https://iraqnow.pages.dev/${locale}/article/${slug}`,
   }
 
   return (
@@ -182,7 +192,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
               </div>
             </div>
 
-            <ShareButtons url={`https://iraqnow.iq/${locale}/article/${slug}`} title={title} />
+            <ShareButtons url={`https://iraqnow.pages.dev/${locale}/article/${slug}`} title={title} />
           </div>
         </Reveal>
 
@@ -285,3 +295,5 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     </div>
   )
 }
+
+

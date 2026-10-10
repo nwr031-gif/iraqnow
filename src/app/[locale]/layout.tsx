@@ -4,6 +4,8 @@ import './globals.css'
 import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { AnalyticsScripts } from '@/components/integrations/AnalyticsScripts'
+import { PWAProvider } from '@/components/pwa/PWAProvider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
 const notoArabic = Noto_Sans_Arabic({
@@ -98,15 +100,22 @@ export default async function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="العراق الآن" />
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className={`${dir === 'rtl' ? 'font-arabic' : 'font-inter'} min-h-screen antialiased`}>
         <Providers locale={locale}>
+          <AnalyticsScripts />
           <div className="flex min-h-screen flex-col">
             <Header locale={locale} />
             <main className="flex-1">{children}</main>
             <Footer locale={locale} />
           </div>
+          <PWAProvider />
         </Providers>
       </body>
     </html>

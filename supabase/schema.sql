@@ -146,3 +146,17 @@ create policy "public write subscribers" on newsletter_subscribers for all using
 
 create policy "public read settings" on site_settings for select using (true);
 create policy "public write settings" on site_settings for all using (true) with check (true);
+
+-- ?????? ???? ?????? (Web Vitals RUM)
+create table if not exists web_vitals (
+  id bigint generated always as identity primary key,
+  metric text not null,
+  value int not null,
+  rating text,
+  path text,
+  created_at timestamptz default now()
+);
+create index if not exists idx_vitals_metric on web_vitals(metric, created_at);
+alter table web_vitals enable row level security;
+create policy "public write vitals" on web_vitals for insert with check (true);
+create policy "public read vitals" on web_vitals for select using (true);

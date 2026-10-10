@@ -7,7 +7,7 @@ import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Newspaper, FolderTree, Mic, MessageSquare, Mail,
   Users, Image as ImageIcon, Settings, UserCircle, LogOut, ExternalLink,
-  Menu, X, ChevronDown, Shield, PenSquare,
+  Menu, X, ChevronDown, Shield, PenSquare, Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { IshtarStar } from '@/components/brand/Brand'
@@ -36,6 +36,7 @@ const NAV_ITEMS = [
   { href: '/admin/media', label: 'الوسائط', icon: ImageIcon, permission: 'media.manage' },
   { href: '/admin/newsletter', label: 'النشرة البريدية', icon: Mail, permission: 'newsletter.view' },
   { href: '/admin/users', label: 'فريق التحرير', icon: Users, permission: 'users.manage' },
+  { href: '/admin/integrations', label: 'التكاملات', icon: Zap, permission: 'settings.manage' },
   { href: '/admin/settings', label: 'الإعدادات', icon: Settings, permission: 'settings.manage' },
 ]
 
@@ -49,6 +50,7 @@ const PERMISSION_MIN: Record<string, string> = {
   'media.manage': 'EDITOR',
   'newsletter.view': 'EDITOR',
   'users.manage': 'ADMIN',
+  'integrations.manage': 'ADMIN',
   'settings.manage': 'ADMIN',
 }
 
@@ -215,3 +217,4 @@ export function AdminShell({ user, children }: { user: AdminUser; children: Reac
     </div>
   )
 }
+

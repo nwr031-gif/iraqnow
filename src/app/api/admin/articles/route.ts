@@ -2,6 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requirePermission, isErrorResponse } from '@/lib/rbac'
 import { createArticle, updateArticleFull, updateArticleStatus, deleteArticle } from '@/lib/content-service'
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://iraqnow.pages.dev'
+
+/** Ping IndexNow — فهرسة فورية في Bing وYandex عند النشر */
+async function pingIndexNow(slug: string) {
+  try {
+    const urls = ['ar', 'ku', 'en'].map((l) => `${APP_URL}/${l}/article/${slug}`)
+    urls.push(`${APP_URL}/ar`)
+    await fetch(`${APP_URL}/api/indexnow`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls }),
+      signal: AbortSignal.timeout(9000),
+    })
+  } catch { /* الفهرسة ليست حرجة */ }
+}
+
 export async function POST(request: NextRequest) {
   const perm = await requirePermission('articles.create')
   if (isErrorResponse(perm)) return perm
@@ -44,12 +60,20 @@ export async function PATCH(request: NextRequest) {
     if (body.action === 'status' && body.id) {
       const result = await updateArticleStatus(body.id, body.status)
       if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
+      /* فهرسة فورية عند النشر */
+      if (body.status === 'PUBLISHED' && body.slug) {
+        pingIndexNow(body.slug).catch(() => {})
+      }
       return NextResponse.json({ success: true, demo: result.mock })
     }
 
     if (body.id) {
       const result = await updateArticleFull(body.id, body.data || body)
       if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
+      /* فهرسة فورية عند التعديل والنشر */
+      if ((body.data?.status || body.status) === 'PUBLISHED' && (body.data?.slug || body.slug)) {
+        pingIndexNow(body.data?.slug || body.slug).catch(() => {})
+      }
       return NextResponse.json({ success: true, demo: result.mock })
     }
 

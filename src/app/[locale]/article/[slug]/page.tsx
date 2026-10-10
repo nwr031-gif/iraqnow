@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Home, ChevronLeft, Clock, Eye, MapPin, Calendar, Sparkles, Tag } from 'lucide-react'
 import { ArticleCard } from '@/components/home/ArticleCard'
 import { ArticleGallery, ReadingProgress, ShareButtons } from '@/components/article/ArticleExtras'
+import { GiscusComments } from '@/components/integrations/GiscusComments'
 import { Reveal } from '@/components/ui/Reveal'
 import { CuneiformDivider } from '@/components/brand/Brand'
 import { getArticleBySlug, getArticles, getAuthorById, getCategories } from '@/lib/data'
@@ -229,6 +230,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
             ))}
           </div>
         )}
+
+        {/* نظام التعليقات — Giscus (يظهر عند تفعيله) */}
+        <GiscusComments locale={locale} title={title} />
 
         <CuneiformDivider variant="star" className="my-10 opacity-40" />
 

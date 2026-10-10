@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Mail, Check, Loader2, AlertCircle, Send } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Turnstile } from '@/components/integrations/Turnstile'
 
 type Locale = 'ar' | 'ku' | 'en'
 
@@ -29,6 +30,7 @@ export function NewsletterForm({ locale }: { locale: Locale }) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,18 +41,19 @@ export function NewsletterForm({ locale }: { locale: Locale }) {
       const response = await fetch(`/${locale}/api/newsletter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, locale }),
+        body: JSON.stringify({ email, locale, turnstileToken }),
       })
       if (response.ok) {
         setStatus('success')
         setMessage(t.success)
         setEmail('')
       } else {
-        throw new Error()
+        const data = await response.json().catch(() => null)
+        throw new Error(data?.error)
       }
-    } catch {
+    } catch (err: any) {
       setStatus('error')
-      setMessage(t.error)
+      setMessage(err?.message || t.error)
     }
   }
 
@@ -87,6 +90,9 @@ export function NewsletterForm({ locale }: { locale: Locale }) {
           )}
         </button>
       </form>
+
+      {/* Cloudflare Turnstile — يظهر فقط إذا كان مفعّلاً */}
+      <Turnstile onToken={setTurnstileToken} />
 
       {message && (
         <p className={cn(

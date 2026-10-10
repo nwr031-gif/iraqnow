@@ -19,20 +19,26 @@ export function AnalyticsScripts() {
   const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC
   const umamiId = process.env.NEXT_PUBLIC_UMAMI_ID
   const oneSignalAppId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID
+  const oneSignalSafariId = process.env.NEXT_PUBLIC_ONESIGNAL_SAFARI_ID
 
   useEffect(() => {
     /* OneSignal */
     if (oneSignalAppId && !document.querySelector('script[src*="OneSignalSDK"]')) {
       window.OneSignalDeferred = window.OneSignalDeferred || []
       window.OneSignalDeferred.push(async (OneSignal: any) => {
-        await OneSignal.init({ appId: oneSignalAppId })
+        const initOpts: any = {
+          appId: oneSignalAppId,
+          notifyButton: { enable: true },
+        }
+        if (oneSignalSafariId) initOpts.safari_web_id = oneSignalSafariId
+        await OneSignal.init(initOpts)
       })
       const script = document.createElement('script')
       script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js'
       script.defer = true
       document.head.appendChild(script)
     }
-  }, [oneSignalAppId])
+  }, [oneSignalAppId, oneSignalSafariId])
 
   return (
     <>

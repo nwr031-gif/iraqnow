@@ -1,0 +1,34 @@
+name = "iraqnow"
+pages_build_output_dir = "pages-deploy"
+compatibility_date = "2025-03-25"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+NEXT_PUBLIC_SUPABASE_URL = "https://afwbjyfnhchoqgqbqrfg.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "YOUR_ANON_KEY"
+MEILISEARCH_HOST = "https://ms-7fba9866c156-55153.par.meilisearch.io"
+MEILISEARCH_SEARCH_KEY = "YOUR_SEARCH_KEY"
+MEILISEARCH_MASTER_KEY = "YOUR_MASTER_KEY"
+MEILISEARCH_ADMIN_KEY = "YOUR_ADMIN_KEY"
+NEXT_PUBLIC_APP_URL = "https://iraqnow.pages.dev"
+NEXT_PUBLIC_APP_NAME = "IraqNow"
+NEXTAUTH_URL = "https://iraqnow.pages.dev"
+NEXTAUTH_SECRET = "GENERATE_RANDOM_64_HEX"
+AUTH_SECRET = "GENERATE_RANDOM_64_HEX"
+
+
+# ----------- ????????? ???????? (?????? ????? ??? ???? ?? ??????)
+NEXT_PUBLIC_CF_ANALYTICS_TOKEN = "YOUR_TOKEN"
+NEXT_PUBLIC_UMAMI_SRC = "https://cloud.umami.is/script.js"
+NEXT_PUBLIC_UMAMI_ID = "YOUR_UMAMI_ID"
+NEXT_PUBLIC_ONESIGNAL_APP_ID = "YOUR_APP_ID"
+NEXT_PUBLIC_ONESIGNAL_SAFARI_ID = "YOUR_SAFARI_ID"
+NEXT_PUBLIC_GISCUS_REPO = ""
+NEXT_PUBLIC_GISCUS_REPO_ID = ""
+NEXT_PUBLIC_GISCUS_CATEGORY = ""
+NEXT_PUBLIC_GISCUS_CATEGORY_ID = ""
+NEXT_PUBLIC_TURNSTILE_SITE_KEY = "YOUR_SITE_KEY"
+TURNSTILE_SECRET_KEY = "YOUR_TURNSTILE_SECRET_KEY"
+RESEND_API_KEY = "YOUR_RESEND_API_KEY"
+NEWS_FROM_EMAIL = "onboarding@resend.dev"
+

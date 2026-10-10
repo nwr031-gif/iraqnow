@@ -74,3 +74,6 @@ pages-deploy/
 .open-next/
 .dev.vars
 wrangler.workers.toml
+
+# wrangler config contains secrets - keep local only
+wrangler.toml

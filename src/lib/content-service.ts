@@ -1,13 +1,12 @@
+/**
+ * خدمة المحتوى — الكتابة/التعديل/الحذف
+ * سلسلة التخزين: Prisma (قاعدة بيانات حقيقية) ← Supabase REST ← الذاكرة
+ */
+
 import { getPrisma } from '@/lib/prisma'
 import { isDbAvailable } from '@/lib/data'
-import * as mem from '@/lib/memory-store'
-import { hash } from 'bcryptjs'
+import * as store from '@/lib/supabase-store'
 import type { MockAuthor, MockArticle, MockComment, MockPodcast } from '@/lib/mock-data'
-
-/**
- * خدمة المحتوى — كتابة/تعديل/حذف مع دعم قاعدة البيانات أو مخزن الذاكرة
- * Content service handling both Prisma and in-memory modes
- */
 
 type Locale = 'ar' | 'ku' | 'en'
 
@@ -34,40 +33,32 @@ export async function createArticle(data: {
   const ar = data.translations.find((t) => t.locale === 'ar')
   if (!ar?.title) return { ok: false, error: 'العنوان العربي مطلوب' }
 
-  const slug = `${ar.title.slice(0, 40).trim().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '')}-${Date.now().toString(36)}`
-
   if (!(await useDb())) {
-    try {
-      const created = mem.createArticle({
-        slug,
-        status: (data.status as MockArticle['status']) || 'DRAFT',
-        breaking: data.breaking || false,
-        featured: data.featured || false,
-        authorId: data.authorId,
-        categorySlug: data.categorySlug,
-        governorateSlug: data.governorateSlug || 'baghdad',
-        tagSlugs: data.tagSlugs || [],
-        image: data.image || '',
-        gallery: data.gallery || [],
-        readingTime: data.readingTime || Math.max(2, Math.ceil(ar.content.split(/\s+/).length / 200)),
-        translations: data.translations.map((t) => ({
-          locale: t.locale,
-          title: t.title,
-          excerpt: t.excerpt,
-          content: t.content,
-        })),
-      })
-      return { ok: true, id: created.id, mock: true }
-    } catch (e: any) {
-      return { ok: false, error: e.message }
-    }
+    return store.storeCreateArticle({
+      status: data.status as MockArticle['status'] | undefined,
+      breaking: data.breaking,
+      featured: data.featured,
+      authorId: data.authorId,
+      categorySlug: data.categorySlug,
+      governorateSlug: data.governorateSlug,
+      tagSlugs: data.tagSlugs,
+      image: data.image,
+      gallery: data.gallery,
+      readingTime: data.readingTime || Math.max(2, Math.ceil(ar.content.split(/\s+/).length / 200)),
+      translations: data.translations.map((t) => ({
+        locale: t.locale, title: t.title, excerpt: t.excerpt, content: t.content,
+      })),
+    })
   }
 
   try {
-    const category = await (await getPrisma()).category.findUnique({ where: { slug: data.categorySlug } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    const category = await db.category.findUnique({ where: { slug: data.categorySlug } })
     if (!category) return { ok: false, error: 'القسم غير موجود' }
 
-    const article = await (await getPrisma()).article.create({
+    const slug = `${ar.title.slice(0, 40).trim().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '')}-${Date.now().toString(36)}`
+    const article = await db.article.create({
       data: {
         slug,
         status: (data.status as any) || 'DRAFT',
@@ -98,11 +89,12 @@ export async function createArticle(data: {
 
 export async function updateArticleStatus(id: string, status: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    const updated = mem.updateArticle(id, { status: status as MockArticle['status'] })
-    return updated ? { ok: true, mock: true } : { ok: false, error: 'المقال غير موجود' }
+    return store.storeUpdateArticle(id, { status: status as MockArticle['status'] })
   }
   try {
-    await (await getPrisma()).article.update({
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.article.update({
       where: { id },
       data: { status: status as any, ...(status === 'PUBLISHED' ? { publishedAt: new Date() } : {}) },
     })
@@ -114,21 +106,27 @@ export async function updateArticleStatus(id: string, status: string): Promise<{
 
 export async function updateArticleFull(id: string, data: Partial<MockArticle>): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    const updated = mem.updateArticle(id, data)
-    return updated ? { ok: true, mock: true } : { ok: false, error: 'المقال غير موجود' }
+    return store.storeUpdateArticle(id, data)
   }
   try {
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
     const ar = data.translations?.find((t) => t.locale === 'ar')
-    await (await getPrisma()).article.update({
+    await db.article.update({
       where: { id },
       data: {
         ...(data.status ? { status: data.status as any } : {}),
         ...(data.breaking !== undefined ? { breaking: data.breaking } : {}),
         ...(data.featured !== undefined ? { featured: data.featured } : {}),
         ...(data.slug ? { slug: data.slug } : {}),
-        ...(ar ? { title: ar.title, excerpt: ar.excerpt, content: ar.content } : {}),
       },
     })
+    if (ar) {
+      await db.articleTranslation.updateMany({
+        where: { articleId: id, locale: 'ar' },
+        data: { title: ar.title, excerpt: ar.excerpt, content: ar.content },
+      })
+    }
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -137,10 +135,12 @@ export async function updateArticleFull(id: string, data: Partial<MockArticle>):
 
 export async function deleteArticle(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    return mem.deleteArticle(id) ? { ok: true, mock: true } : { ok: false, error: 'المقال غير موجود' }
+    return store.storeDeleteArticle(id)
   }
   try {
-    await (await getPrisma()).article.delete({ where: { id } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.article.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -165,35 +165,22 @@ export async function createEditor(data: {
   }
 
   if (!(await useDb())) {
-    const existing = mem.getStore().authors.find((a) => a.email === data.email)
-    if (existing) return { ok: false, error: 'البريد الإلكتروني مستخدم مسبقاً' }
-    const author = mem.createAuthor({
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      jobTitle: data.jobTitle,
-      bio: data.bio,
-    })
-    return { ok: true, id: author.id, mock: true }
+    return store.storeCreateEditor(data)
   }
 
   try {
-    const existing = await (await getPrisma()).user.findUnique({ where: { email: data.email } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    const { hash } = await import('bcryptjs')
+    const existing = await db.user.findUnique({ where: { email: data.email } })
     if (existing) return { ok: false, error: 'البريد الإلكتروني مستخدم مسبقاً' }
 
     const passwordHash = await hash(data.password, 12)
     const slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u0600-\u06FF-]/g, '') || undefined
-
-    const user = await (await getPrisma()).user.create({
+    const user = await db.user.create({
       data: {
-        name: data.name,
-        email: data.email,
-        passwordHash,
-        role: data.role as any,
-        slug,
-        jobTitle: data.jobTitle,
-        bio: data.bio,
-        staffSince: new Date(),
+        name: data.name, email: data.email, passwordHash, role: data.role as any,
+        slug, jobTitle: data.jobTitle, bio: data.bio, staffSince: new Date(),
       },
     })
     return { ok: true, id: user.id }
@@ -204,13 +191,13 @@ export async function createEditor(data: {
 
 export async function updateUser(id: string, data: Partial<MockAuthor> & { password?: string }): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    const { password, ...rest } = data
-    const updated = mem.updateAuthor(id, rest)
-    return updated ? { ok: true, mock: true } : { ok: false, error: 'المستخدم غير موجود' }
+    return store.storeUpdateUser(id, data)
   }
   try {
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
     const { password, ...rest } = data
-    await (await getPrisma()).user.update({
+    await db.user.update({
       where: { id },
       data: {
         ...(rest.name ? { name: rest.name } : {}),
@@ -225,7 +212,7 @@ export async function updateUser(id: string, data: Partial<MockAuthor> & { passw
         ...(rest.instagram !== undefined ? { instagram: rest.instagram } : {}),
         ...(rest.website !== undefined ? { website: rest.website } : {}),
         ...(rest.specialties ? { specialties: rest.specialties } : {}),
-        ...(password ? { passwordHash: await hash(password, 12) } : {}),
+        ...(password ? { passwordHash: await (await import('bcryptjs')).hash(password, 12) } : {}),
       },
     })
     return { ok: true }
@@ -236,10 +223,12 @@ export async function updateUser(id: string, data: Partial<MockAuthor> & { passw
 
 export async function deleteUser(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    return mem.deleteAuthor(id) ? { ok: true, mock: true } : { ok: false, error: 'المستخدم غير موجود' }
+    return store.storeDeleteUser(id)
   }
   try {
-    await (await getPrisma()).user.delete({ where: { id } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.user.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -250,11 +239,12 @@ export async function deleteUser(id: string): Promise<{ ok: boolean; error?: str
 
 export async function moderateComment(id: string, status: MockComment['status']): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    const updated = mem.updateComment(id, status)
-    return updated ? { ok: true, mock: true } : { ok: false, error: 'التعليق غير موجود' }
+    return store.storeModerateComment(id, status)
   }
   try {
-    await (await getPrisma()).comment.update({ where: { id }, data: { status } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.comment.update({ where: { id }, data: { status } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -263,10 +253,12 @@ export async function moderateComment(id: string, status: MockComment['status'])
 
 export async function removeComment(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    return mem.deleteComment(id) ? { ok: true, mock: true } : { ok: false, error: 'التعليق غير موجود' }
+    return store.storeDeleteComment(id)
   }
   try {
-    await (await getPrisma()).comment.delete({ where: { id } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.comment.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -283,16 +275,12 @@ export async function createCategory(data: {
     return { ok: false, error: 'المعرف والاسم العربي مطلوبان' }
   }
   if (!(await useDb())) {
-    const existing = mem.getStore().categories.find((c) => c.slug === data.slug)
-    if (existing) return { ok: false, error: 'معرف القسم مستخدم مسبقاً' }
-    const cat = mem.createCategory({
-      slug: data.slug,
-      translations: data.translations.map((t) => ({ locale: t.locale, name: t.name, description: t.description || '' })),
-    })
-    return { ok: true, id: cat.id, mock: true }
+    return store.storeCreateCategory(data)
   }
   try {
-    const cat = await (await getPrisma()).category.create({
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    const cat = await db.category.create({
       data: {
         slug: data.slug,
         translations: {
@@ -308,17 +296,15 @@ export async function createCategory(data: {
 
 export async function updateCategoryFull(id: string, data: { slug?: string; translations?: { locale: Locale; name: string; description?: string }[] }): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    const updated = mem.updateCategory(id, {
-      ...(data.slug ? { slug: data.slug } : {}),
-      ...(data.translations ? { translations: data.translations.map((t) => ({ locale: t.locale, name: t.name, description: t.description || '' })) } : {}),
-    })
-    return updated ? { ok: true, mock: true } : { ok: false, error: 'القسم غير موجود' }
+    return store.storeUpdateCategory(id, data)
   }
   try {
-    if (data.slug) await (await getPrisma()).category.update({ where: { id }, data: { slug: data.slug } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    if (data.slug) await db.category.update({ where: { id }, data: { slug: data.slug } })
     if (data.translations) {
       for (const t of data.translations) {
-        await (await getPrisma()).categoryTranslation.upsert({
+        await db.categoryTranslation.upsert({
           where: { categoryId_locale: { categoryId: id, locale: t.locale as any } },
           update: { name: t.name, description: t.description },
           create: { categoryId: id, locale: t.locale as any, name: t.name, description: t.description },
@@ -333,12 +319,14 @@ export async function updateCategoryFull(id: string, data: { slug?: string; tran
 
 export async function removeCategory(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    return mem.deleteCategory(id) ? { ok: true, mock: true } : { ok: false, error: 'القسم غير موجود' }
+    return store.storeDeleteCategory(id)
   }
   try {
-    await (await getPrisma()).category.delete({ where: { id } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.category.delete({ where: { id } })
     return { ok: true }
-  } catch (e: any) {
+  } catch {
     return { ok: false, error: 'لا يمكن حذف قسم يحتوي على مقالات' }
   }
 }
@@ -350,13 +338,13 @@ export async function createPodcastEpisode(data: Partial<MockPodcast>): Promise<
   if (!ar?.title) return { ok: false, error: 'العنوان العربي مطلوب' }
 
   if (!(await useDb())) {
-    const slug = data.slug || `episode-${data.episodeNumber || Date.now().toString(36)}`
-    const created = mem.createPodcast({ ...data, slug })
-    return { ok: true, id: created.id, mock: true }
+    return store.storeCreatePodcast(data)
   }
   try {
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
     const slug = `episode-${data.episodeNumber || Date.now().toString(36)}`
-    const ep = await (await getPrisma()).podcastEpisode.create({
+    const ep = await db.podcastEpisode.create({
       data: {
         slug,
         episodeNumber: data.episodeNumber || 1,
@@ -371,7 +359,7 @@ export async function createPodcastEpisode(data: Partial<MockPodcast>): Promise<
             locale: t.locale as any,
             title: t.title,
             description: t.description,
-            guest: data.guest?.[t.locale] || '',
+            guest: data.guest?.[t.locale as Locale] || '',
             showNotes: t.showNotes,
           })),
         },
@@ -383,25 +371,14 @@ export async function createPodcastEpisode(data: Partial<MockPodcast>): Promise<
   }
 }
 
-export async function removePodcast(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
-  if (!(await useDb())) {
-    return mem.deletePodcast(id) ? { ok: true, mock: true } : { ok: false, error: 'الحلقة غير موجودة' }
-  }
-  try {
-    await (await getPrisma()).podcastEpisode.delete({ where: { id } })
-    return { ok: true }
-  } catch (e: any) {
-    return { ok: false, error: e.message }
-  }
-}
-
 export async function updatePodcastFull(id: string, data: Partial<MockPodcast>): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    const updated = mem.updatePodcast(id, data)
-    return updated ? { ok: true, mock: true } : { ok: false, error: 'الحلقة غير موجودة' }
+    return store.storeUpdatePodcast(id, data)
   }
   try {
-    await (await getPrisma()).podcastEpisode.update({
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.podcastEpisode.update({
       where: { id },
       data: {
         ...(data.episodeNumber ? { episodeNumber: data.episodeNumber } : {}),
@@ -417,14 +394,30 @@ export async function updatePodcastFull(id: string, data: Partial<MockPodcast>):
   }
 }
 
+export async function removePodcast(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
+  if (!(await useDb())) {
+    return store.storeDeletePodcast(id)
+  }
+  try {
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.podcastEpisode.delete({ where: { id } })
+    return { ok: true }
+  } catch (e: any) {
+    return { ok: false, error: e.message }
+  }
+}
+
 /* ═══════════ Newsletter ═══════════ */
 
 export async function removeSubscriber(id: string): Promise<{ ok: boolean; error?: string; mock?: boolean }> {
   if (!(await useDb())) {
-    return mem.deleteSubscriber(id) ? { ok: true, mock: true } : { ok: false, error: 'المشترك غير موجود' }
+    return store.storeDeleteSubscriber(id)
   }
   try {
-    await (await getPrisma()).newsletter.delete({ where: { id } })
+    const db = await getPrisma()
+    if (!db) return { ok: false, error: 'قاعدة البيانات غير متاحة' }
+    await db.newsletter.delete({ where: { id } })
     return { ok: true }
   } catch (e: any) {
     return { ok: false, error: e.message }
@@ -435,12 +428,13 @@ export async function removeSubscriber(id: string): Promise<{ ok: boolean; error
 
 export async function saveSettings(updates: Record<string, string>): Promise<{ ok: boolean; mock?: boolean }> {
   if (!(await useDb())) {
-    mem.updateSettings(updates)
-    return { ok: true, mock: true }
+    return store.storeSaveSettings(updates)
   }
   try {
+    const db = await getPrisma()
+    if (!db) return { ok: false }
     for (const [key, value] of Object.entries(updates)) {
-      await (await getPrisma()).siteSetting.upsert({
+      await db.siteSetting.upsert({
         where: { key },
         update: { value },
         create: { key, value },
@@ -448,12 +442,21 @@ export async function saveSettings(updates: Record<string, string>): Promise<{ o
     }
     return { ok: true }
   } catch {
-    mem.updateSettings(updates)
-    return { ok: true, mock: true }
+    return store.storeSaveSettings(updates)
   }
 }
 
-export function loadSettings(): Record<string, string> {
-  return mem.getSettings()
+export async function loadSettings(): Promise<Record<string, string>> {
+  if (await useDb()) {
+    try {
+      const db = await getPrisma()
+      if (db) {
+        const rows = await db.siteSetting.findMany()
+        const settings: Record<string, string> = {}
+        for (const r of rows) settings[r.key] = r.value
+        return settings
+      }
+    } catch { /* fallback */ }
+  }
+  return store.storeGetSettings()
 }
-

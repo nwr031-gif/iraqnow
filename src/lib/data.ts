@@ -1,5 +1,6 @@
 import { getPrisma } from '@/lib/prisma'
 import { getStore } from '@/lib/memory-store'
+import * as sbStore from '@/lib/supabase-store'
 import {
   MOCK_GOVERNORATES,
   type Locale, type MockArticle, type MockCategory, type MockAuthor, type MockPodcast, type MockComment,
@@ -62,7 +63,7 @@ export async function getCategories(): Promise<MockCategory[]> {
         translations: c.translations.map((t: any) => ({ locale: t.locale as Locale, name: t.name, description: t.description || '' })),
       }))
     },
-    () => getStore().categories
+    () => sbStore.storeCategories()
   )
 }
 
@@ -82,7 +83,7 @@ export async function getCategoryBySlug(slug: string): Promise<MockCategory | nu
         translations: c.translations.map((t: any) => ({ locale: t.locale as Locale, name: t.name, description: t.description || '' })),
       }
     },
-    () => getStore().categories.find((c: any) => c.slug === slug) || null
+    () => sbStore.storeCategoryBySlug(slug) || null
   )
 }
 
@@ -173,8 +174,8 @@ export async function getArticles(query: ArticleQuery = {}): Promise<{ articles:
       ])
       return { articles: articles.map(toMockArticle), total, pages: Math.ceil(total / limit) }
     },
-    () => {
-      const filtered = filterMockArticles(query)
+    async () => {
+      const filtered = await sbStore.storePublishedArticles(query)
       const start = (page - 1) * limit
       return {
         articles: filtered.slice(start, start + limit),
@@ -201,7 +202,7 @@ export async function getArticleBySlug(slug: string): Promise<MockArticle | null
       })
       return a ? toMockArticle(a) : null
     },
-    () => getStore().articles.find((a: any) => a.slug === slug) || null
+    () => sbStore.storeArticleBySlug(slug) || null
   )
 }
 
@@ -222,7 +223,7 @@ export async function getFeaturedArticles(limit = 5): Promise<MockArticle[]> {
       })
       return articles.map(toMockArticle)
     },
-    () => getStore().articles.filter((a: any) => a.featured && a.status === 'PUBLISHED').slice(0, limit)
+    () => sbStore.storeFeaturedArticles(limit)
   )
 }
 
@@ -256,7 +257,7 @@ export async function getAuthors(includeInactive = false): Promise<MockAuthor[]>
         articleCount: u._count.articles,
       }))
     },
-    () => (includeInactive ? getStore().authors : getStore().authors.filter((a: any) => a.isActive))
+    () => sbStore.storeAuthors(includeInactive)
   )
 }
 
@@ -288,7 +289,7 @@ export async function getAuthorById(id: string): Promise<MockAuthor | null> {
         articleCount: u._count.articles,
       }
     },
-    () => getStore().authors.find((a: any) => a.id === id || a.slug === id) || null
+    () => sbStore.storeAuthorById(id) || null
   )
 }
 
@@ -328,7 +329,7 @@ export async function getPodcasts(limit?: number): Promise<MockPodcast[]> {
         })),
       }))
     },
-    () => (limit ? getStore().podcasts.slice(0, limit) : getStore().podcasts)
+    () => sbStore.storePodcasts(limit)
   )
 }
 
@@ -365,7 +366,7 @@ export async function getPodcastBySlug(slug: string): Promise<MockPodcast | null
         })),
       }
     },
-    () => getStore().podcasts.find((p) => p.slug === slug) || null
+    () => sbStore.storePodcastBySlug(slug) || null
   )
 }
 
@@ -389,11 +390,7 @@ export async function getAdminArticles(statusFilter?: string): Promise<MockArtic
       })
       return articles.map(toMockArticle)
     },
-    () => {
-      const all = [...getStore().articles]
-      if (!statusFilter || statusFilter === 'all') return all
-      return all.filter((a: any) => a.status === statusFilter)
-    }
+    () => sbStore.storeAdminArticles(statusFilter || undefined)
   )
 }
 
@@ -412,20 +409,7 @@ export async function getAdminStats() {
       const views = await db.article.aggregate({ _sum: { viewCount: true } })
       return { articles, published, users, comments, pending, subscribers, podcasts, views: views._sum.viewCount || 0 }
     },
-    () => {
-      const store = getStore()
-      const published = store.articles.filter((a: any) => a.status === 'PUBLISHED')
-      return {
-        articles: store.articles.length,
-        published: published.length,
-        users: store.authors.length,
-        comments: store.comments.length,
-        pending: store.comments.filter((c: any) => c.status === 'pending').length,
-        subscribers: store.subscribers.filter((s: any) => s.active).length,
-        podcasts: store.podcasts.length,
-        views: published.reduce((sum, a) => sum + a.viewCount, 0),
-      }
-    }
+    () => sbStore.storeStats()
   )
 }
 
@@ -452,8 +436,7 @@ export async function getAdminComments(statusFilter?: string): Promise<MockComme
       }))
     },
     () => {
-      if (!statusFilter || statusFilter === 'all') return getStore().comments
-      return getStore().comments.filter((c: any) => c.status === statusFilter)
+      return sbStore.storeComments(statusFilter || undefined)
     }
   )
 }
@@ -464,11 +447,17 @@ export async function getSubscribers() {
       const subs = await db.newsletter.findMany({ orderBy: { createdAt: 'desc' }, take: 200 })
       return subs.map((s: any) => ({ id: s.id, email: s.email, locale: s.locale as Locale, active: s.active, createdAt: s.createdAt.toISOString() }))
     },
-    () => getStore().subscribers
+    () => sbStore.storeSubscribers()
   )
 }
 
 export { MOCK_GOVERNORATES }
+
+
+
+
+
+
 
 
 

@@ -60,7 +60,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           }
         } catch {
-          /* قاعدة البيانات غير متاحة — التابع للحسابات التجريبية */
+          /* قاعدة البيانات غير متاحة — التابع للمصادر الأخرى */
+        }
+
+        /* Supabase — فريق التحرير المحفوظ سحابياً */
+        try {
+          const { storeVerifyLogin } = await import('@/lib/supabase-store')
+          const supabaseUser = await storeVerifyLogin(email, password, compare)
+          if (supabaseUser) {
+            return {
+              id: supabaseUser.id,
+              email,
+              name: supabaseUser.name,
+              role: supabaseUser.role,
+            } as any
+          }
+        } catch {
+          /* تجاهل */
         }
 
         /* الحسابات التجريبية */

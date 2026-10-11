@@ -2,11 +2,11 @@
  * يزور كل الصفحات ويحفظ HTML ثابت + ينشئ _routes.json
  * الاستخدام: node scripts/generate-static-html.js (بعد تشغيل wrangler pages dev)
  */
-const http = require('http')
+const https = require('https')
 const fs = require('fs')
 const path = require('path')
 
-const BASE = 'http://localhost:8788'
+const BASE = 'https://iraqnow.pages.dev'
 const OUT = path.resolve(__dirname, '..', 'pages-deploy')
 const LOCALES = ['ar', 'ku', 'en']
 
@@ -24,7 +24,7 @@ const PATHS = [
 
 function fetchPage(url) {
   return new Promise((resolve, reject) => {
-    http.get(url, { timeout: 30000 }, (res) => {
+    https.get(url, { timeout: 30000 }, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         // Follow redirect
         const loc = res.headers.location.startsWith('http') ? res.headers.location : BASE + res.headers.location

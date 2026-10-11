@@ -66,8 +66,26 @@ export default async function LatestPage({
       </section>
 
       <div className="container-main py-10">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article, i) => {
+        {articles.length === 0 ? (
+          <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-gold-500/30 py-24 text-center" dir={dir}>
+            <IshtarStar size={48} />
+            <p className="font-kufi text-xl font-bold text-[var(--foreground)]">
+              {locale === 'en' ? 'Coming Soon' : locale === 'ku' ? 'بەم زووانە' : 'قريباً'}
+            </p>
+            <p className="max-w-md text-sm text-[var(--muted)]">
+              {locale === 'en'
+                ? 'Our newsroom is preparing the first stories. Check back soon!'
+                : locale === 'ku'
+                  ? 'غرفة هەواڵەکان ئامادەی یەکەم ڕاپۆرتەکان دەکات. بەم زووانە بگەڕێوە!'
+                  : 'غرفة الأخبار تجهّز أول التقارير. عد قريباً!'}
+            </p>
+            <Link href={`/${locale}`} className="btn-primary mt-2 font-kufi">
+              {locale === 'en' ? 'Back to Home' : locale === 'ku' ? 'گەڕانەوە بۆ سەرەکی' : 'العودة للرئيسية'}
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article, i) => {
             const cat = allCategories.find((c) => c.slug === article.categorySlug)
             const cardArticle = {
               ...article,
@@ -80,7 +98,8 @@ export default async function LatestPage({
               </Reveal>
             )
           })}
-        </div>
+          </div>
+        )}
 
         {pages > 1 && (
           <nav aria-label="Pagination" className="mt-12 flex justify-center gap-2">

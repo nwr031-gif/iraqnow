@@ -12,7 +12,9 @@ export const metadata: Metadata = {
   alternates: { languages: { ar: '/ar/trending', ku: '/ku/trending', en: '/en/trending' } },
 }
 
-export default function TrendingPage() {
+export default async function TrendingPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale: rawLocale } = await params
+  const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as 'ar' | 'ku' | 'en'
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <div className="container-main pt-10">
@@ -22,7 +24,7 @@ export default function TrendingPage() {
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">ما يتحدث عنه العراق الآن</p>
       </div>
-      <TrendingTopics locale="ar" />
+      <TrendingTopics locale={locale} />
     </div>
   )
 }

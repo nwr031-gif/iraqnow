@@ -56,7 +56,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </Suspense>
 
       <Suspense fallback={<div className="h-96 animate-pulse bg-[var(--background)]" />}>
-        <PodcastSection locale={locale} />
+        <PodcastSection locale={locale} episodes={podcasts as any} />
       </Suspense>
 
       <Suspense fallback={<div className="h-96 animate-pulse bg-lapis-950" />}>

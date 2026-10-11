@@ -41,19 +41,19 @@ export async function isSupabaseReady(): Promise<boolean> {
   return sbReady
 }
 
-/* ═══════════ بذر تلقائي — يعيد المحاولة كل 5 دقائق عند الفشل ═══════════ */
+/* ═══════════ بذر تلقائي — الأقسام والمحررون فقط (لا مقالات تجريبية) ═══════════ */
 async function ensureSeeded() {
   const now = Date.now()
   if (now - seedAttemptedAt < SEED_RETRY_MS) return
   seedAttemptedAt = now
   try {
-    const countRes = await fetch(`${SB_URL}/rest/v1/articles?select=id&limit=1`, { headers: headers() })
+    const countRes = await fetch(`${SB_URL}/rest/v1/categories?select=id&limit=1`, { headers: headers() })
     if (countRes.status !== 200) return
     const existing = await countRes.json()
     if (Array.isArray(existing) && existing.length > 0) return
 
     const store = getStore()
-    const { MOCK_ARTICLES, MOCK_AUTHORS, MOCK_CATEGORIES, MOCK_PODCASTS } =
+    const { MOCK_AUTHORS, MOCK_CATEGORIES } =
       await import('@/lib/mock-data')
 
     /* الأقسام */
@@ -87,22 +87,6 @@ async function ensureSeeded() {
           is_active: a.isActive, article_count: a.articleCount,
         }))
       ),
-    })
-
-    /* المقالات */
-    await fetch(`${SB_URL}/rest/v1/articles`, {
-      method: 'POST',
-      headers: headers({ Prefer: 'return=minimal' }),
-      body: JSON.stringify(
-        MOCK_ARTICLES.map((a) => articleToRow(a))
-      ),
-    })
-
-    /* البودكاست */
-    await fetch(`${SB_URL}/rest/v1/podcast_episodes`, {
-      method: 'POST',
-      headers: headers({ Prefer: 'return=minimal' }),
-      body: JSON.stringify(MOCK_PODCASTS.map((p) => podcastToRow(p))),
     })
 
     /* الإعدادات */

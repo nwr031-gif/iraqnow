@@ -33,7 +33,8 @@ const metadata = {
     { type: 'ai', name: 'AI' },
     { type: 'plain_text', name: 'SUPABASE_URL', text: 'https://afwbjyfnhchoqgqbqrfg.supabase.co' },
     { type: 'plain_text', name: 'SUPABASE_KEY', text: 'sb_publishable_kLEM0R1eYNwEe9zZJrRL7A_E_Sh8CJh' },
-    { type: 'plain_text', name: 'AI_MODEL', text: '@cf/meta/llama-3.1-8b-instruct' },
+    { type: 'plain_text', name: 'AI_MODEL', text: '@cf/meta/llama-3.1-8b-instruct-fp8' },
+    { type: 'plain_text', name: 'SELF_TRIGGER_URL', text: 'https://iraqnow-ai.nwr04nwr04.workers.dev/trigger' },
     { type: 'plain_text', name: 'MAX_PER_RUN', text: '1' },
     { type: 'plain_text', name: 'MAX_AI_PER_DAY', text: '30' },
     { type: 'plain_text', name: 'GITHUB_REPO', text: 'nwr031-gif/iraqnow' },
@@ -45,7 +46,7 @@ const metadata = {
 
 const form = new FormData()
 form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }))
-form.append('index.js', new Blob([script], { type: 'application/javascript+module' }))
+form.append('index.js', new File([script], 'index.js', { type: 'application/javascript+module' }))
 
 console.log('📤 رفع العامل...')
 const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/scripts/${WORKER}`, {

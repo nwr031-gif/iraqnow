@@ -229,19 +229,18 @@ function buildPrompt(items) {
 الملخص: ${it.desc || 'غير متوفر'}
 الرابط: ${it.link}`).join('\n\n')
 
-  return `أنت رئيس تحرير محترف في وكالة "العراق الآن" الإخبارية. أمامك ${items.length} خبر من مصادر موثوقة. لكل خبر، اكتب مقالاً إخبارياً جاهزاً للنشر بثلاث لغات.
+  return `أنت رئيس تحرير محترف في وكالة "العراق الآن" الإخبارية. أمامك ${items.length} خبر من مصادر موثوقة. لكل خبر، اكتب مقالاً إخبارياً جاهزاً للنشر بلغتين: العربية والإنجليزية.
 
 القواعد الصارمة:
-- اعتمد حصراً على المعلومات الواردة في العنوان والملخص. لا تختلق حقائق أو أرقاماً أو تصريحات غير موجودة.
-- إن كانت المعلومات قليلة، اكتب نصاً قصيراً مع سياق عام موثوق دون تخمين أسماء أو تفاصيل.
-- المحتوى نص عادي فقط: فقرات مفصولة بسطر جديد (\\n). ممنوع HTML أو Markdown أو عناوين فرعية.
-- اذكر اسم المصدر المذكور أعلاه في الفقرة الأخيرة من كل لغة.
-- الأسلوب: مهني، محايد، واضح. العربية فصحى مبسطة، الكردية سورانية، الإنجليزية صحفية قياسية.
+- اعتمد حصراً على المعلومات الواردة في العنوان والملخص. لا تختلق حقائق أو أرقاماً أو أسماء أو تصريحات غير موجودة.
+- إن كانت المعلومات قليلة، اكتب نصاً قصيراً مع سياق عام موثوق دون تخمين أي تفاصيل.
+- المحتوى نص عادي فقط: فقرات مفصولة بسطر جديد (\\n). ممنوع HTML أو Markdown أو عناوين فرعية أو تعداد نقطي.
+- العربية: 4 فقرات على الأقل — فقرة افتتاحية تجيب ماذا/متى/أين/من، ثم فقرة تفاصيل، ثم فقرة تحليلية تبدأ بـ"لماذا يهم؟" تشرح أهمية الخبر بإيجاز، وآخر فقرة هي بالضبط: "المصدر: <اسم المصدر>".
+- الإنجليزية: 2-3 فقرات موجزة، وآخر سطر فيها: "Source: <source name>".
+- الأسلوب: مهني، محايد، واضح. العربية فصحى مبسطة.
 
-لكل خبر اكتب 4-6 فقرات عربية: فقرة افتتاحية تجيب ماذا/متى/أين/من، ثم التفاصيل، ثم فقرة "لماذا يهم؟" تحليلية موجزة، ثم فقرة المصدر. النسخة الإنجليزية والكردية 3 فقرات موجزة.
-
-أعد النتيجة كمصفوفة JSON فقط بدون أي نص خارجها، بهذا الشكل:
-[{"index":1,"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":false,"tags":["كلمة","كلمة"],"slug_hint":"english-slug-4-words","ar":{"title":"...","excerpt":"سطران","content":"..."},"en":{"title":"...","excerpt":"...","content":"..."},"ku":{"title":"...","excerpt":"...","content":"..."}}]
+أعد النتيجة كمصفوفة JSON فقط بدون أي نص خارجها أو شرح، بهذا الشكل:
+[{"index":1,"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":false,"tags":["كلمة","كلمة"],"slug_hint":"english-slug-4-words","ar":{"title":"...","excerpt":"سطر أو سطران","content":"الفقرة الأولى\\nالفقرة الثانية\\nلماذا يهم؟...\\nالمصدر: ..."},"en":{"title":"...","excerpt":"...","content":"..."}}]
 
 الأخبار:
 ${lines}`
@@ -251,7 +250,10 @@ function extractJson(text) {
   const start = text.indexOf('[')
   const end = text.lastIndexOf(']')
   if (start === -1 || end === -1 || end <= start) return null
-  try { return JSON.parse(text.slice(start, end + 1)) } catch { return null }
+  let slice = text.slice(start, end + 1)
+  /* إزالة الفواصل الزائدة قبل } أو ] */
+  slice = slice.replace(/,\s*([}\]])/g, '$1')
+  try { return JSON.parse(slice) } catch { return null }
 }
 
 async function generateArticles(env, items) {
@@ -290,7 +292,46 @@ function slugify(s) {
 }
 
 function validCategory(c) {
-  return CATEGORIES.includes(c) ? c : 'world'
+  if (!c) return null
+  const map = {
+    سياسة: 'politics', سياسي: 'politics', 'السياسة': 'politics',
+    اقتصاد: 'economy', 'الاقتصاد': 'economy', اقتصادي: 'economy',
+    أمن: 'security', امن: 'security', 'الأمن': 'security', أمني: 'security',
+    مجتمع: 'society', 'المجتمع': 'society', منوعات: 'society',
+    ثقافة: 'culture', 'الثقافة': 'culture', فن: 'culture', فنون: 'culture',
+    رياضة: 'sports', 'الرياضة': 'sports', رياضي: 'sports',
+    تكنولوجيا: 'technology', تقنية: 'technology', 'التكنولوجيا': 'technology',
+    صحة: 'health', 'الصحة': 'health', صحي: 'health',
+    تعليم: 'education', 'التعليم': 'education', تربوي: 'education',
+    بيئة: 'environment', 'البيئة': 'environment', مناخ: 'environment',
+    محليات: 'local', محلي: 'local', محافظات: 'local',
+    عالم: 'world', 'العالم': 'world', دولي: 'world', 'الشرق الأوسط': 'world',
+  }
+  const key = String(c).trim().toLowerCase()
+  if (CATEGORIES.includes(key)) return key
+  if (map[String(c).trim()]) return map[String(c).trim()]
+  if (map[key]) return map[key]
+  return null
+}
+
+/* تصنيف احتياطي بالكلمات المفتاحية */
+function classifyByKeywords(title, desc) {
+  const text = `${title} ${desc || ''}`
+  const rules = [
+    ['security', /انفجار|قتيل|قتلى|مقتل|هجوم|اشتباك|صاروخ|قصف|جرحى|إطلاق نار|اطلاق نار|خطف|اعتداء|درع|جيش|شرطة|أمن/i],
+    ['economy', /دولار|نفط|اقتصاد|بورصة|أسعار|اسعار|ميزانية|استثمار|تجارة|صرف|دين|تمويل|شركة/i],
+    ['sports', /كرة|منتخب|مباراة|بطولة|لاعب|أولمبياد|اولمبياد|نادي|دوري/i],
+    ['health', /صحة|مرض|مستشفى|وباء|دواء|تطعيم|إصابة صحية/i],
+    ['technology', /تكنولوجيا|ذكاء اصطناعي|انترنت|إنترنت|هاتف|تطبيق|حاسوب|رقمي/i],
+    ['education', /تعليم|مدرسة|جامعة|طلاب|امتحان|أستاذ/i],
+    ['environment', /بيئة|مناخ|جفاف|تلوث|تصحر|سيول/i],
+    ['culture', /ثقافة|فن|سينما|مسرح|تراث|معرض|مهرجان/i],
+    ['politics', /انتخابات|حكومة|برلمان|رئيس|وزير|مفاوضات|قمة|سياسي|قرار|مجلس/i],
+  ]
+  for (const [cat, re] of rules) {
+    if (re.test(text)) return cat
+  }
+  return 'world'
 }
 
 function validGovernorate(g) {
@@ -318,14 +359,22 @@ async function publishFromGenerated(env, generated, item, hash) {
 
   const arTitle = String(g.ar.title).slice(0, 180)
   const enTitle = String((g.en && g.en.title) || arTitle).slice(0, 180)
-  const kuTitle = String((g.ku && g.ku.title) || arTitle).slice(0, 180)
+  const kuTitle = arTitle
 
-  const arContent = cleanContent(g.ar.content)
-  const enContent = cleanContent(g.en && g.en.content) || arContent
-  const kuContent = cleanContent(g.ku && g.ku.content) || arContent
+  let arContent = cleanContent(g.ar.content)
+  let enContent = cleanContent(g.en && g.en.content) || arContent
+  const kuContent = arContent
+
+  /* فرض نسب المصدر إن غاب عن النص */
+  if (arContent && !arContent.includes('المصدر')) {
+    arContent += `\n\nالمصدر: ${item.sourceName}`
+  }
+  if (enContent && !/source\s*:/i.test(enContent)) {
+    enContent += `\n\nSource: ${item.sourceName}`
+  }
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
-  const category = validCategory(g.category)
+  const category = validCategory(g.category) || classifyByKeywords(arTitle, String(g.ar.excerpt || ''))
   const image = item.image || CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world
 
   const nowIso = new Date().toISOString()
@@ -349,7 +398,7 @@ async function publishFromGenerated(env, generated, item, hash) {
     tags: Array.isArray(g.tags) ? g.tags.slice(0, 8).map((t) => String(t).slice(0, 40)) : [],
     title_ar: arTitle, title_ku: kuTitle, title_en: enTitle,
     excerpt_ar: String(g.ar.excerpt || '').slice(0, 500),
-    excerpt_ku: String((g.ku && g.ku.excerpt) || g.ar.excerpt || '').slice(0, 500),
+    excerpt_ku: String(g.ar.excerpt || '').slice(0, 500),
     excerpt_en: String((g.en && g.en.excerpt) || g.ar.excerpt || '').slice(0, 500),
     content_ar: arContent, content_ku: kuContent, content_en: enContent,
   }
@@ -469,6 +518,14 @@ async function runEngine(env, trigger) {
 
 export default {
   async scheduled(event, env, ctx) {
+    /* نمط self-wake: الجدولة تستدعي HTTP endpoint (حد cron 30s على الخطة المجانية) */
+    const selfUrl = env.SELF_TRIGGER_URL
+    if (selfUrl) {
+      ctx.waitUntil(
+        fetch(selfUrl, { method: 'POST', headers: { 'x-trigger-key': env.TRIGGER_KEY } }).catch(() => {})
+      )
+      return
+    }
     ctx.waitUntil(runEngine(env, 'cron'))
   },
 

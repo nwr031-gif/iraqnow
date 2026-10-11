@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { TrendingUp } from 'lucide-react'
 import { TrendingTopics } from '@/components/home/TrendingTopics'
 
-export const revalidate = 120
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'الأكثر تداولاً',

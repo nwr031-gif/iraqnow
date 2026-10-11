@@ -8,7 +8,8 @@ import { Reveal } from '@/components/ui/Reveal'
 import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { GOVERNORATES_19 } from '@/components/map/Iraq3DMapCanvas'
 
-export const revalidate = 300
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'خريطة العراق 3D التفاعلية',

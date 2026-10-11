@@ -5,7 +5,8 @@ import { Reveal, CountUp } from '@/components/ui/Reveal'
 import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { NewsletterForm } from '@/components/home/NewsletterForm'
 
-export const revalidate = 300
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'النشرة البريدية — صوت الرافدين',

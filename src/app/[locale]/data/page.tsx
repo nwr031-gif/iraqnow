@@ -7,7 +7,8 @@ import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { BarChart, LineChart, DonutChart } from '@/components/data/Charts'
 import { DatasetDownload } from '@/components/data/Interactive'
 
-export const revalidate = 300
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'العراق بالأرقام — صحافة البيانات',

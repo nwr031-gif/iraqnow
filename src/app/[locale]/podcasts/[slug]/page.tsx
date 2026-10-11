@@ -8,7 +8,8 @@ import { PodcastPlayer } from '@/components/podcast/PodcastPlayer'
 import { getPodcastBySlug, getPodcasts } from '@/lib/data'
 import type { Locale } from '@/lib/mock-data'
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 const UI: Record<Locale, any> = {
   ar: {

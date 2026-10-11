@@ -10,7 +10,8 @@ import { CuneiformDivider } from '@/components/brand/Brand'
 import { getArticleBySlug, getArticles, getAuthorById, getCategories } from '@/lib/data'
 import type { Locale } from '@/lib/mock-data'
 
-export const revalidate = 300
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export async function generateStaticParams() {
   try {

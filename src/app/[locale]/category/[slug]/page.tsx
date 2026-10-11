@@ -9,7 +9,8 @@ import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
 import { getCategoryBySlug, getArticles, getCategories } from '@/lib/data'
 import type { Locale } from '@/lib/mock-data'
 
-export const revalidate = 300
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export async function generateStaticParams() {
   const slugs = ['politics', 'economy', 'security', 'society', 'culture', 'sports', 'technology', 'health', 'education', 'environment', 'local', 'world']

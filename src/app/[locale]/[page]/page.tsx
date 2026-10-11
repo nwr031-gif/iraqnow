@@ -110,6 +110,8 @@ export async function generateStaticParams() {
   )
 }
 
+export const dynamic = 'force-static'
+
 export default async function InfoPageView({ params }: { params: Promise<{ locale: string; page: string }> }) {
   const { locale: rawLocale, page } = await params
   const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as Locale

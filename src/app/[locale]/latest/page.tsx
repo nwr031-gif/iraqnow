@@ -8,7 +8,8 @@ import { IshtarStar } from '@/components/brand/Brand'
 import { getArticles } from '@/lib/data'
 import { getCategories } from '@/lib/data'
 
-export const revalidate = 120
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'آخر الأخبار',

@@ -2,6 +2,8 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { SearchResults } from '@/components/search/SearchResults'
 
+export const dynamic = 'force-static'
+
 export const metadata: Metadata = {
   title: 'البحث',
   description: 'ابحث في أخبار العراق الآن — مقالات، تحليلات، وتقارير',

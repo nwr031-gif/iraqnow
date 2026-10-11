@@ -8,7 +8,8 @@ import { IshtarStar } from '@/components/brand/Brand'
 import { getArticles } from '@/lib/data'
 import { getCategories } from '@/lib/data'
 
-export const revalidate = 120
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 const GOV_NAMES: Record<string, { ar: string; ku: string; en: string }> = {
   baghdad: { ar: 'بغداد', ku: 'بەغداد', en: 'Baghdad' },

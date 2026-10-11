@@ -521,11 +521,15 @@ export default {
     /* نمط self-wake: الجدولة تستدعي HTTP endpoint (حد cron 30s على الخطة المجانية) */
     const selfUrl = env.SELF_TRIGGER_URL
     if (selfUrl) {
-      ctx.waitUntil(
-        fetch(selfUrl, { method: 'POST', headers: { 'x-trigger-key': env.TRIGGER_KEY } }).catch(() => {})
-      )
-      return
+      const woke = await Promise.race([
+        fetch(selfUrl, { method: 'POST', headers: { 'x-trigger-key': env.TRIGGER_KEY || '' } })
+          .then((r) => r.ok)
+          .catch(() => false),
+        new Promise((res) => setTimeout(() => res(false), 8000)),
+      ])
+      if (woke) return
     }
+    /* احتياط: تنفيذ مباشر */
     ctx.waitUntil(runEngine(env, 'cron'))
   },
 

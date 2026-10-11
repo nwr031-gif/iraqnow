@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:pages": "next build && SKIP_WRANGLER_CONFIG_CHECK=yes opennextjs-cloudflare build && node scripts/prepare-pages-deploy.mjs && node scripts/extract-static-html.js",
+    "build:pages": "node scripts/build-pages.mjs",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",

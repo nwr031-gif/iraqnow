@@ -1,5 +1,12 @@
 import type { NextConfig } from 'next'
 
+/* حماية: لا تبنِ بدون Supabase — يمنع نشر بيانات الذاكرة الوهمية في CI */
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  throw new Error(
+    '❌ متغيرات Supabase مفقودة: NEXT_PUBLIC_SUPABASE_URL و NEXT_PUBLIC_SUPABASE_ANON_KEY مطلوبان للبناء (أضفهما كأسرار في GitHub Actions أو في .env محلياً)'
+  )
+}
+
 const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     '/**': [

@@ -1,7 +1,8 @@
 /**
  * محرك الذكاء الاصطناعي — العراق الآن
  * يعمل 24/7 عبر Cron: يقرأ RSS العراق/الشرق الأوسط/العالم →
- * يحلل ويكتب مقالات (عربي/كردي/إنجليزي) عبر Workers AI → ينشر في Supabase
+ * بحث مكثف (نص كامل + مصادر متقاطعة) → تحليل وكتابة عبر NVIDIA NIM (مع Workers AI احتياطاً)
+ * → نشر في Supabase → إشعار إعادة نشر الموقع
  */
 
 /* ═══════════ الإعدادات ═══════════ */
@@ -53,15 +54,24 @@ const AI_AUTHOR = {
   id: 'ai-newsroom', slug: 'ai-newsroom', email: 'ai@iraqnow.com',
   name: 'غرفة الأخبار الذكية', role: 'EDITOR',
   job_title: 'مدعومة بالذكاء الاصطناعي',
-  bio: 'غرفة أخبار آلية تعمل 24/7 على مدار الساعة، تحلل وتلخص التقارير الإخبارية من مصادر موثوقة وتنشرها مع الإشارة الكاملة إلى المصدر، بمساعدة الذكاء الاصطناعي.',
+  bio: 'غرفة أخبار آلية تعمل 24/7 على مدار الساعة، تبحث وتتحقق من التقارير الإخبارية عبر مصادر متعددة وتنشرها مع الإشارة الكاملة إلى المصادر، بمساعدة الذكاء الاصطناعي.',
 }
+
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36'
 
 const MAX_SEEN = 900
 const MAX_FEED_BYTES = 150000
-const MIN_ARTICLE_AGE = 0 /* ثانية */
+const MAX_ARTICLE_BYTES = 300000
+const MAX_FULLTEXT_CHARS = 6000
 const MAX_ARTICLE_AGE_MS = 8 * 3600_000
 const MIN_HOOK_INTERVAL_MS = 3 * 3600_000
 const SAFETY_HOOK_INTERVAL_MS = 12 * 3600_000
+
+/* كلمات وقف للعربية والإنجليزية (لتجميع القصص المتشابهة) */
+const STOPWORDS = new Set([
+  'في', 'من', 'على', 'إلى', 'الى', 'عن', 'مع', 'هذا', 'هذه', 'ذلك', 'التي', 'الذي', 'بعد', 'قبل', 'بين', 'أن', 'إن', 'او', 'أو', 'و', 'ما', 'لا', 'لم', 'لن', 'هو', 'هي', 'كان', 'كانت', 'قد', 'كل', 'بأن', 'عقد', 'خلال', 'ضد', 'حول', 'بشأن', 'بسبب', 'دون', 'حتى', 'ثم', 'أي', 'اي', 'كما', 'عند', 'عندما', 'اليوم', 'أمس', 'امس',
+  'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'and', 'or', 'as', 'is', 'are', 'was', 'were', 'after', 'before', 'over', 'under', 'into', 'about', 'says', 'said', 'new', 'amid',
+])
 
 /* ═══════════ أدوات Supabase ═══════════ */
 
@@ -183,100 +193,202 @@ function parseFeed(xml, feed) {
   return items
 }
 
+async function readCapped(res, maxBytes) {
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder()
+  let data = ''
+  while (data.length < maxBytes) {
+    const { done, value } = await reader.read()
+    if (done) break
+    data += decoder.decode(value, { stream: true })
+  }
+  try { reader.cancel() } catch { /* تجاهل */ }
+  return data
+}
+
 async function fetchFeed(feed) {
   try {
     const res = await fetch(feed.url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36',
-        Accept: 'application/rss+xml, application/xml, text/xml, */*',
-      },
+      headers: { 'User-Agent': UA, Accept: 'application/rss+xml, application/xml, text/xml, */*' },
       cf: { cacheTtl: 300 },
     })
     if (res.status !== 200) return []
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder()
-    let data = ''
-    while (data.length < MAX_FEED_BYTES) {
-      const { done, value } = await reader.read()
-      if (done) break
-      data += decoder.decode(value, { stream: true })
-    }
-    try { reader.cancel() } catch { /* تجاهل */ }
+    const data = await readCapped(res, MAX_FEED_BYTES)
     return parseFeed(data, feed)
   } catch { return [] }
 }
 
-/* ═══════════ تجزئة الروابط (منع التكرار) ═══════════ */
+/* ═══════════ البحث المكثف — جلب النص الكامل ═══════════ */
 
-async function hashUrl(url) {
-  const data = new TextEncoder().encode(url)
-  const digest = await crypto.subtle.digest('SHA-256', data)
+function extractParagraphs(html) {
+  const body = html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<nav[\s\S]*?<\/nav>/gi, ' ')
+    .replace(/<header[\s\S]*?<\/header>/gi, ' ')
+    .replace(/<footer[\s\S]*?<\/footer>/gi, ' ')
+    .replace(/<aside[\s\S]*?<\/aside>/gi, ' ')
+    .replace(/<svg[\s\S]*?<\/svg>/gi, ' ')
+
+  const paras = []
+  const re = /<p[^>]*>([\s\S]*?)<\/p>/gi
+  let m
+  let total = 0
+  while ((m = re.exec(body))) {
+    const text = stripTags(m[1])
+    if (text.length > 40) {
+      paras.push(text)
+      total += text.length
+      if (total > MAX_FULLTEXT_CHARS) break
+    }
+  }
+  return paras.join('\n')
+}
+
+async function fetchFullText(url) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': UA, Accept: 'text/html,application/xhtml+xml' },
+      cf: { cacheTtl: 600 },
+    })
+    if (res.status !== 200) return ''
+    const html = await readCapped(res, MAX_ARTICLE_BYTES)
+
+    /* صفحات جوجل الإخبارية قد تحوّل عبر meta refresh */
+    if (/news\.google\.com/.test(url)) {
+      const refresh = html.match(/http-equiv=["']refresh["'][^>]*url=(["']?)(https?:\/\/[^"'>\s]+)\1/i)
+      if (refresh) return fetchFullText(refresh[2])
+      const canon = html.match(/<a[^>]+href=["'](https?:\/\/(?!news\.google)[^"']+)["'][^>]*>\s*<h[23]/i)
+      if (canon) return fetchFullText(canon[1])
+      return ''
+    }
+
+    const full = extractParagraphs(html)
+    return full.length > 200 ? full.slice(0, MAX_FULLTEXT_CHARS) : ''
+  } catch { return '' }
+}
+
+/* ═══════════ التجزئة وتجميع القصص ═══════════ */
+
+async function hashText(text) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
   return Array.from(new Uint8Array(digest)).slice(0, 12).map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
-/* تجزئة العنوان الموحد — لمنع تكرار القصة نفسها من مصادر متعددة */
-async function hashTitle(title) {
-  const normalized = title.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 80)
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalized))
-  return 't' + Array.from(new Uint8Array(digest)).slice(0, 10).map((b) => b.toString(16).padStart(2, '0')).join('')
+function titleKey(title) {
+  const words = title
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !STOPWORDS.has(w))
+  if (words.length < 2) return ''
+  return [...new Set(words)].sort().slice(0, 8).join('|')
 }
 
-/* ═══════════ الذكاء الاصطناعي ═══════════ */
-
-function buildPrompt(items) {
-  const lines = items.map((it, i) => `[${i + 1}] المصدر: ${it.sourceName}
-العنوان: ${it.title}
-الملخص: ${it.desc || 'غير متوفر'}
-الرابط: ${it.link}`).join('\n\n')
-
-  return `أنت رئيس تحرير محترف في وكالة "العراق الآن" الإخبارية. أمامك ${items.length} خبر من مصادر موثوقة. لكل خبر، اكتب مقالاً إخبارياً جاهزاً للنشر بلغتين: العربية والإنجليزية.
-
-القواعد الصارمة:
-- اعتمد حصراً على المعلومات الواردة في العنوان والملخص. لا تختلق حقائق أو أرقاماً أو أسماء أو تصريحات غير موجودة.
-- إن كانت المعلومات قليلة، اكتب نصاً قصيراً مع سياق عام موثوق دون تخمين أي تفاصيل.
-- المحتوى نص عادي فقط: فقرات مفصولة بسطر جديد (\\n). ممنوع HTML أو Markdown أو عناوين فرعية أو تعداد نقطي.
-- العربية: 4 فقرات على الأقل — فقرة افتتاحية تجيب ماذا/متى/أين/من، ثم فقرة تفاصيل، ثم فقرة تحليلية تبدأ بـ"لماذا يهم؟" تشرح أهمية الخبر بإيجاز، وآخر فقرة هي بالضبط: "المصدر: <اسم المصدر>".
-- الإنجليزية: 2-3 فقرات موجزة، وآخر سطر فيها: "Source: <source name>".
-- الأسلوب: مهني، محايد، واضح. العربية فصحى مبسطة.
-
-أعد النتيجة كمصفوفة JSON فقط بدون أي نص خارجها أو شرح، بهذا الشكل:
-[{"index":1,"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":false,"tags":["كلمة","كلمة"],"slug_hint":"english-slug-4-words","ar":{"title":"...","excerpt":"سطر أو سطران","content":"الفقرة الأولى\\nالفقرة الثانية\\nلماذا يهم؟...\\nالمصدر: ..."},"en":{"title":"...","excerpt":"...","content":"..."}}]
-
-الأخبار:
-${lines}`
-}
+/* ═══════════ الذكاء الاصطناعي — NIM أولاً ثم Workers AI ═══════════ */
 
 function extractJson(text) {
-  const start = text.indexOf('[')
-  const end = text.lastIndexOf(']')
+  if (!text) return null
+  /* إزالة الكتل الداخلية (reasoning) */
+  const cleaned = text
+    .replace(/[\s\S]*?<\/think>/gi, '')
+    .replace(/<\|begin_of_thought\|>[\s\S]*?<\|end_of_thought\|>/gi, '')
+  const start = cleaned.indexOf('{')
+  const end = cleaned.lastIndexOf('}')
   if (start === -1 || end === -1 || end <= start) return null
-  let slice = text.slice(start, end + 1)
-  /* إزالة الفواصل الزائدة قبل } أو ] */
+  let slice = cleaned.slice(start, end + 1)
   slice = slice.replace(/,\s*([}\]])/g, '$1')
   try { return JSON.parse(slice) } catch { return null }
 }
 
-async function generateArticles(env, items) {
-  const model = env.AI_MODEL || '@cf/meta/llama-3.1-8b-instruct'
-  const prompt = buildPrompt(items)
+async function callNIM(env, messages, maxTokens) {
+  const model = env.NIM_MODEL || 'nvidia/nemotron-3-super-120b-a12b'
+  const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.NIM_KEY}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ model, messages, temperature: 0.3, top_p: 0.9, max_tokens: maxTokens }),
+  })
+  if (res.status !== 200) throw new Error(`NIM ${res.status}`)
+  const j = await res.json()
+  return j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content
+}
 
+async function callCF(env, messages, maxTokens) {
+  const model = env.AI_MODEL || '@cf/meta/llama-3.1-8b-instruct-fp8'
+  const out = await env.AI.run(model, { messages, max_tokens: maxTokens, temperature: 0.35 })
+  return out && out.response
+}
+
+function buildResearchPrompt(story) {
+  const item = story.primary
+  const corroborating = story.corroborating.map((c) => `- [${c.sourceName}] ${c.title}`).join('\n')
+
+  return `مهمتك: تحليل هذا الحدث الإخباري تحليلاً عميقاً ثم كتابة تقرير صحفي احترافي.
+
+## خطوة 1 — البحث والتحقق (داخلياً قبل الكتابة)
+راجع جميع المواد أدناه بدقة: النص الكامل للتقرير الأساسي + عناوين تغطيات مصادر أخرى للحدث نفسه.
+استخرج الحقائق المؤكدة فقط: ماذا حدث؟ متى؟ أين؟ من الأطراف؟ ما الأرقام والتصريحات الموثقة؟
+أي معلومة غير موجودة صراحة في المواد أدناه ممنوع ذكرها. لا تفترض دوافع أو نتائج أو أرقاماً لم تُذكر.
+
+## خطوة 2 — التحليل
+طبّق عدسة المحلل الخبير المناسبة لطبيعة الخبر:
+- أمني: طبيعة الحادث، الأطراف، خطر التصعيد، الردود المحتملة
+- سياسي: الأطراف ومصالحهم، السيناريوهات المحتملة، ما يعنيه للاستقرار
+- اقتصادي: أثر القرار على الدينار والنفط والأسواق والمواطن
+- اجتماعي/صحي/تعليمي/بيئي: الفئة المتأثرة، الخدمات، الأثر اليومي، ردود الفعل
+
+## المواد المصدرية
+المصدر الأساسي: ${item.sourceName}
+العنوان: ${item.title}
+الملخص: ${item.desc || 'غير متوفر'}
+النص الكامل المستخرج من الصفحة:
+"""
+${story.fullText || item.desc || 'غير متوفر'}
+"""
+${corroborating ? `\nتغطيات مصادر أخرى لنفس الحدث:\n${corroborating}\n` : '\nلا توجد تغطيات متقاطعة إضافية — اعتمد على المصدر الأساسي وحده، ولا تستنتج أي تفاصيل إضافية.\n'}
+
+## خطوة 3 — كتابة التقرير
+- عربي: 5-7 فقرات — فقرة افتتاحية (ماذا/متى/أين/من) ثم فقرات تفاصيل من النص الكامل ثم فقرة "لماذا يهم؟" تحليلية ثم فقرة "ما التالي؟" (نقاط المراقبة المستقبلية) وآخر سطر: "المصادر: <أسماء المصادر>"
+- إنجليزي: 3 فقرات موجزة، آخر سطر: "Sources: <names>"
+- النص عادي فقط، الفقرات مفصولة بـ \\n. ممنوع HTML وMarkdown والتعداد النقطي.
+- دقة مطلقة: كل جملة تستند إلى المواد أعلاه حصراً.
+- أسلوب صحفي طبيعي: لا تعلق أبداً على جودة المصادر أو نقص المعلومات، ولا تكتب جملاً مثل "لم يذكر المصدر" أو "لم يتوفر تاريخ". إن كانت معلومة غير متوفرة ببساطة تجاوزها. إن كانت المواد قليلة اجعل التقرير أقصر دون أي تعليق على ذلك.
+
+أعد JSON فقط دون أي نص خارجي بهذا الشكل:
+{"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":true|false,"tags":["كلمة","كلمة","كلمة"],"slug_hint":"english-slug-4-words","ar":{"title":"...","excerpt":"سطر أو سطران","content":"..."},"en":{"title":"...","excerpt":"...","content":"..."}}`
+}
+
+async function generateArticle(env, story) {
+  const messages = [
+    { role: 'system', content: 'أنت محلل أخبار استراتيجي محترف في وكالة "العراق الآن". تلتزم بالدقة المطلقة وعدم التخمين، وتُخرج دائماً JSON صالحاً فقط دون أي نص خارج JSON.' },
+    { role: 'user', content: buildResearchPrompt(story) },
+  ]
+
+  /* NVIDIA NIM — نموذج تحليلي قوي (محاولتان) */
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const out = await env.AI.run(model, {
-        messages: [
-          { role: 'system', content: 'أنت محرر أخبار محترف. تلتزم بالدقة وعدم التخمين، وتجيب دائماً بـ JSON صالح فقط.' },
-          { role: 'user', content: prompt },
-        ],
-        max_tokens: 2000,
-        temperature: attempt === 0 ? 0.35 : 0.6,
-      })
-      const parsed = extractJson(out.response || '')
-      if (Array.isArray(parsed) && parsed.length) return parsed
-    } catch (e) {
-      /* أعد المحاولة */
-    }
+      const content = await callNIM(env, messages, 2600)
+      const parsed = extractJson(content)
+      if (parsed && parsed.ar && parsed.ar.title && parsed.ar.content) {
+        return { data: parsed, engine: 'nim' }
+      }
+    } catch { /* المحاولة التالية */ }
   }
-  return []
+
+  /* Workers AI احتياطاً */
+  try {
+    const content = await callCF(env, messages, 2000)
+    const parsed = extractJson(content)
+    if (parsed && parsed.ar && parsed.ar.title && parsed.ar.content) {
+      return { data: parsed, engine: 'cf' }
+    }
+  } catch { /* فشل نهائي */ }
+
+  return null
 }
 
 /* ═══════════ بناء صف المقال ونشره ═══════════ */
@@ -291,39 +403,16 @@ function slugify(s) {
     .slice(0, 60)
 }
 
-function validCategory(c) {
-  if (!c) return null
-  const map = {
-    سياسة: 'politics', سياسي: 'politics', 'السياسة': 'politics',
-    اقتصاد: 'economy', 'الاقتصاد': 'economy', اقتصادي: 'economy',
-    أمن: 'security', امن: 'security', 'الأمن': 'security', أمني: 'security',
-    مجتمع: 'society', 'المجتمع': 'society', منوعات: 'society',
-    ثقافة: 'culture', 'الثقافة': 'culture', فن: 'culture', فنون: 'culture',
-    رياضة: 'sports', 'الرياضة': 'sports', رياضي: 'sports',
-    تكنولوجيا: 'technology', تقنية: 'technology', 'التكنولوجيا': 'technology',
-    صحة: 'health', 'الصحة': 'health', صحي: 'health',
-    تعليم: 'education', 'التعليم': 'education', تربوي: 'education',
-    بيئة: 'environment', 'البيئة': 'environment', مناخ: 'environment',
-    محليات: 'local', محلي: 'local', محافظات: 'local',
-    عالم: 'world', 'العالم': 'world', دولي: 'world', 'الشرق الأوسط': 'world',
-  }
-  const key = String(c).trim().toLowerCase()
-  if (CATEGORIES.includes(key)) return key
-  if (map[String(c).trim()]) return map[String(c).trim()]
-  if (map[key]) return map[key]
-  return null
-}
-
 /* تصنيف احتياطي بالكلمات المفتاحية */
 function classifyByKeywords(title, desc) {
   const text = `${title} ${desc || ''}`
   const rules = [
-    ['security', /انفجار|قتيل|قتلى|مقتل|هجوم|اشتباك|صاروخ|قصف|جرحى|إطلاق نار|اطلاق نار|خطف|اعتداء|درع|جيش|شرطة|أمن/i],
+    ['security', /انفجار|قتيل|قتلى|مقتل|هجوم|اشتباك|صاروخ|قصف|جرحى|إطلاق نار|اطلاق نار|خطف|اعتداء|جيش|شرطة|أمن/i],
     ['economy', /دولار|نفط|اقتصاد|بورصة|أسعار|اسعار|ميزانية|استثمار|تجارة|صرف|دين|تمويل|شركة/i],
     ['sports', /كرة|منتخب|مباراة|بطولة|لاعب|أولمبياد|اولمبياد|نادي|دوري/i],
-    ['health', /صحة|مرض|مستشفى|وباء|دواء|تطعيم|إصابة صحية/i],
+    ['health', /صحة|مرض|مستشفى|وباء|دواء|تطعيم/i],
     ['technology', /تكنولوجيا|ذكاء اصطناعي|انترنت|إنترنت|هاتف|تطبيق|حاسوب|رقمي/i],
-    ['education', /تعليم|مدرسة|جامعة|طلاب|امتحان|أستاذ/i],
+    ['education', /تعليم|مدرسة|جامعة|طلاب|امتحان/i],
     ['environment', /بيئة|مناخ|جفاف|تلوث|تصحر|سيول/i],
     ['culture', /ثقافة|فن|سينما|مسرح|تراث|معرض|مهرجان/i],
     ['politics', /انتخابات|حكومة|برلمان|رئيس|وزير|مفاوضات|قمة|سياسي|قرار|مجلس/i],
@@ -332,6 +421,29 @@ function classifyByKeywords(title, desc) {
     if (re.test(text)) return cat
   }
   return 'world'
+}
+
+function validCategory(c) {
+  if (!c) return null
+  const map = {
+    سياسة: 'politics', سياسي: 'politics', 'السياسة': 'politics',
+    اقتصاد: 'economy', 'الاقتصاد': 'economy', اقتصادي: 'economy', اقتصادية: 'economy',
+    أمن: 'security', امن: 'security', 'الأمن': 'security', أمني: 'security', أمنية: 'security',
+    مجتمع: 'society', 'المجتمع': 'society', منوعات: 'society', اجتماعي: 'society',
+    ثقافة: 'culture', 'الثقافة': 'culture', فن: 'culture', فنون: 'culture', ثقافي: 'culture',
+    رياضة: 'sports', 'الرياضة': 'sports', رياضي: 'sports', رياضية: 'sports',
+    تكنولوجيا: 'technology', تقنية: 'technology', 'التكنولوجيا': 'technology', تكنولوجي: 'technology',
+    صحة: 'health', 'الصحة': 'health', صحي: 'health', صحية: 'health',
+    تعليم: 'education', 'التعليم': 'education', تربوي: 'education', تعليمي: 'education',
+    بيئة: 'environment', 'البيئة': 'environment', مناخ: 'environment', بيئي: 'environment',
+    محليات: 'local', محلي: 'local', محافظات: 'local',
+    عالم: 'world', 'العالم': 'world', دولي: 'world', 'الشرق الأوسط': 'world', عالمية: 'world',
+  }
+  const key = String(c).trim().toLowerCase()
+  if (CATEGORIES.includes(key)) return key
+  if (map[String(c).trim()]) return map[String(c).trim()]
+  if (map[key]) return map[key]
+  return null
 }
 
 function validGovernorate(g) {
@@ -349,8 +461,9 @@ function cleanContent(s) {
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n')
 }
 
-async function publishFromGenerated(env, generated, item, hash) {
-  const g = generated
+async function publishFromGenerated(env, gen, story, hash) {
+  const g = gen.data
+  const item = story.primary
   if (!g || !g.ar || !g.ar.title || !g.ar.content) return null
 
   const shortHash = hash.slice(0, 6)
@@ -365,12 +478,15 @@ async function publishFromGenerated(env, generated, item, hash) {
   let enContent = cleanContent(g.en && g.en.content) || arContent
   const kuContent = arContent
 
-  /* فرض نسب المصدر إن غاب عن النص */
-  if (arContent && !arContent.includes('المصدر')) {
-    arContent += `\n\nالمصدر: ${item.sourceName}`
+  /* فرض نسب المصادر إن غاب سطر النسب */
+  const sourcesLine = [...new Set([item.sourceName, ...story.corroborating.map((c) => c.sourceName)])].join('، ')
+  const hasArSources = arContent.split('\n').some((l) => /^\s*(المصادر|المصدر)\s*:/.test(l))
+  const hasEnSources = enContent.split('\n').some((l) => /^\s*sources?\s*:/i.test(l))
+  if (arContent && !hasArSources) {
+    arContent += `\nالمصادر: ${sourcesLine}`
   }
-  if (enContent && !/source\s*:/i.test(enContent)) {
-    enContent += `\n\nSource: ${item.sourceName}`
+  if (enContent && !hasEnSources) {
+    enContent += `\nSources: ${sourcesLine}`
   }
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
@@ -405,21 +521,21 @@ async function publishFromGenerated(env, generated, item, hash) {
 
   const ok = await insertArticle(env, row)
   if (!ok) return null
-  return { id: row.id, slug: row.slug, title: arTitle, category, breaking: row.breaking }
+  return { id: row.id, slug: row.slug, title: arTitle, category, breaking: row.breaking, engine: gen.engine, sources: sourcesLine }
 }
 
 /* ═══════════ المحرك الرئيسي ═══════════ */
 
 async function runEngine(env, trigger) {
   const started = Date.now()
-  const result = { trigger, feeds: 0, candidates: 0, fresh: 0, published: [], skipped: 0, aiUsed: 0, hook: false, error: null }
+  const result = { trigger, feeds: 0, candidates: 0, fresh: 0, stories: 0, published: [], skipped: 0, hook: false, error: null }
 
   try {
     const state = (await loadState(env)) || {}
     const seen = state.seen || {}
     const today = new Date().toISOString().slice(0, 10)
     const daily = state.daily && state.daily.day === today ? state.daily : { day: today, used: 0 }
-    const maxPerRun = parseInt(env.MAX_PER_RUN || '2', 10)
+    const maxPerRun = parseInt(env.MAX_PER_RUN || '1', 10)
     const maxPerDay = parseInt(env.MAX_AI_PER_DAY || '30', 10)
 
     /* تدوير قنوات RSS حسب الوقت */
@@ -432,38 +548,57 @@ async function runEngine(env, trigger) {
     result.feeds = group.length
     result.candidates = items.length
 
-    /* فلترة: حديثة + غير معالجة سابقاً */
+    /* فلترة الحديث + غير المعالج */
     const now = Date.now()
     const unseen = []
     for (const it of items) {
-      if (now - it.pubMs > MAX_ARTICLE_AGE_MS || now - it.pubMs < MIN_ARTICLE_AGE * 1000) continue
-      const hash = await hashUrl(it.link)
-      const titleHash = await hashTitle(it.title)
+      if (now - it.pubMs > MAX_ARTICLE_AGE_MS) continue
+      const hash = await hashText(it.link)
       it.hash = hash
-      it.titleHash = titleHash
-      if (!seen[hash] && !seen[titleHash]) unseen.push(it)
+      if (!seen[hash]) unseen.push(it)
     }
-    unseen.sort((a, b) => b.pubMs - a.pubMs)
     result.fresh = unseen.length
 
-    /* تحديد الدفعة — ضمن الميزانية اليومية */
+    /* تجميع القصص المتشابهة — كل مجموعة قصة واحدة بمصادر متعددة */
+    const storyMap = new Map()
+    for (const it of unseen) {
+      const key = titleKey(it.title)
+      if (!key) continue
+      if (!storyMap.has(key)) storyMap.set(key, { primary: it, corroborating: [] })
+      else storyMap.get(key).corroborating.push(it)
+    }
+    const stories = [...storyMap.values()].sort((a, b) => b.primary.pubMs - a.primary.pubMs)
+    result.stories = stories.length
+
+    /* الميزانية */
     const budget = Math.max(0, Math.min(maxPerRun, maxPerDay - daily.used))
-    const batch = unseen.slice(0, budget)
+    const batch = stories.slice(0, budget)
 
-    /* تعليم كل المرشحين كمعالجين (منع التكرار مستقبلاً) */
-    for (const it of unseen) { seen[it.hash] = now; seen[it.titleHash] = now }
+    /* تعليم قصص الدفعة فقط كمعالجة — البقية تبقى مؤهلة للجولات القادمة */
+    for (const story of batch) {
+      seen[story.primary.hash] = now
+      for (const c of story.corroborating) seen[c.hash] = now
+    }
 
-    /* توليد ونشر */
-    await ensureAuthor(env)
-    if (batch.length) {
-      const generated = await generateArticles(env, batch)
-      result.aiUsed = batch.length
-      for (let i = 0; i < batch.length; i++) {
-        const g = generated.find((x) => x && x.index === i + 1) || generated[i]
-        const published = await publishFromGenerated(env, g, batch[i], batch[i].hash)
-        if (published) { result.published.push(published); daily.used++ }
-        else result.skipped++
+    /* البحث المكثف: النص الكامل من أول مصدر مباشر (تجنب روابط جوجل المحمية) */
+    for (const story of batch) {
+      story.corroborating = story.corroborating.slice(0, 4)
+      const members = [story.primary, ...story.corroborating]
+      const direct = members.find((c) => !/news\.google\.com/.test(c.link))
+      story.fullText = await fetchFullText((direct || story.primary).link)
+      if (!story.fullText) {
+        const alt = members.find((c) => c !== (direct || story.primary) && !/news\.google\.com/.test(c.link))
+        if (alt) story.fullText = await fetchFullText(alt.link)
       }
+    }
+
+    /* التحليل والكتابة والنشر */
+    await ensureAuthor(env)
+    for (const story of batch) {
+      const gen = await generateArticle(env, story)
+      const published = gen ? await publishFromGenerated(env, gen, story, story.primary.hash) : null
+      if (published) { result.published.push(published); daily.used++ }
+      else result.skipped++
     }
 
     /* تشذيب القائمة القديمة */
@@ -473,7 +608,7 @@ async function runEngine(env, trigger) {
       for (const h of sorted.slice(0, hashes.length - MAX_SEEN)) delete seen[h]
     }
 
-    /* إشعار إعادة النشر إلى GitHub (repository_dispatch) */
+    /* إشعار إعادة النشر */
     const lastHook = state.lastHook || 0
     const shouldHook =
       (result.published.length > 0 && now - lastHook > MIN_HOOK_INTERVAL_MS) ||
@@ -538,7 +673,7 @@ export default {
     const key = request.headers.get('x-trigger-key') || url.searchParams.get('key')
 
     if (url.pathname === '/' && request.method === 'GET') {
-      return Response.json({ ok: true, engine: 'iraqnow-ai', feeds: FEEDS.length })
+      return Response.json({ ok: true, engine: 'iraqnow-ai', feeds: FEEDS.length, nim: env.NIM_MODEL || null })
     }
 
     if (url.pathname === '/trigger' && (key === env.TRIGGER_KEY)) {

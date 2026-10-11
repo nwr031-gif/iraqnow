@@ -257,7 +257,7 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
                 <div className="flex items-center justify-between border-t border-line bg-cream px-4 py-2.5">
                   <div className="flex items-center gap-2 text-xs text-[var(--muted)]">
                     <IshtarStar size={12} />
-                    <span>{locale === 'en' ? 'Coverage across all 18 governorates' : 'تغطية في جميع المحافظات الـ 18'}</span>
+                    <span>{locale === 'en' ? 'Coverage across all 19 governorates' : 'تغطية في جميع المحافظات الـ 19'}</span>
                   </div>
                   <Link
                     href={`/${locale}/latest`}

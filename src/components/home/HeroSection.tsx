@@ -27,20 +27,20 @@ const UI: Record<Locale, any> = {
 
 const STATS: Record<Locale, { value: string; label: string }[]> = {
   ar: [
-    { value: '18', label: 'محافظة' },
-    { value: '3', label: 'لغات' },
+    { value: '19', label: 'محافظة' },
+    { value: '2', label: 'لغتان' },
     { value: '24/7', label: 'تغطية مستمرة' },
     { value: '12', label: 'قسماً إخبارياً' },
   ],
   ku: [
-    { value: '18', label: 'پارێزگا' },
+    { value: '19', label: 'پارێزگا' },
     { value: '3', label: 'زمان' },
     { value: '24/7', label: 'پەخشی بەردەوام' },
     { value: '12', label: 'بەشی هەواڵی' },
   ],
   en: [
-    { value: '18', label: 'Governorates' },
-    { value: '3', label: 'Languages' },
+    { value: '19', label: 'Governorates' },
+    { value: '2', label: 'Languages' },
     { value: '24/7', label: 'Live Coverage' },
     { value: '12', label: 'News Sections' },
   ],

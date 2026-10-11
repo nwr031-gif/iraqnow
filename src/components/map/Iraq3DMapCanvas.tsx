@@ -436,7 +436,7 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
             [t.capital, locale === 'en' ? 'Baghdad' : 'بغداد'],
             [t.govs, '19'],
             [t.area, t.areaVal],
-            [t.lang, '3'],
+            [t.lang, '2'],
           ].map(([k, v], i) => (
             <div key={i} className="flex items-center justify-between border-b border-line py-1.5 text-[11px] last:border-0">
               <span className="text-[var(--muted)]">{k}</span>

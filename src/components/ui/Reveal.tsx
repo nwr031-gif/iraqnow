@@ -137,7 +137,7 @@ export function RevealText({
  */
 export function CountUp({
   end,
-  duration = 2000,
+  duration = 1600,
   suffix = '',
   prefix = '',
   className,
@@ -148,13 +148,14 @@ export function CountUp({
   prefix?: string
   className?: string
 }) {
-  const [count, setCount] = useState(0)
+  /* القيمة الحقيقية تظهر مباشرة (SSR + بدون JS) ثم تُحرَّك عند الظهور */
+  const [count, setCount] = useState<number | null>(null)
   const ref = useRef<HTMLSpanElement>(null)
   const started = useRef(false)
 
   useEffect(() => {
     const el = ref.current
-    if (!el) return
+    if (!el || end === 0) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -171,15 +172,17 @@ export function CountUp({
           observer.disconnect()
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.2 }
     )
     observer.observe(el)
     return () => observer.disconnect()
   }, [end, duration])
 
+  const display = count === null ? end : count
+
   return (
     <span ref={ref} className={className}>
-      {prefix}{count.toLocaleString('ar-IQ')}{suffix}
+      {prefix}{display.toLocaleString('ar-IQ')}{suffix}
     </span>
   )
 }

@@ -8,11 +8,117 @@ type Locale = 'ar' | 'ku' | 'en'
 interface InfoSection { heading: string; body: string }
 interface InfoPageData { title: string; subtitle: string; sections: InfoSection[] }
 
-const INFO_PAGES: Record<string, Record<Locale, InfoPageData>> = {
+const INFO_PAGES: Record<string, Partial<Record<Locale, InfoPageData>>> = {
+  team: {
+    ar: { title: 'فريق التحرير', subtitle: 'من يقف خلف العراق الآن', sections: [
+      { heading: 'غرفة الأخبار الذكية', body: 'تُدار غرفة أخبار العراق الآن آلياً على مدار الساعة: محرك تحريري يراقب المصادر الإخبارية العراقية والعربية والعالمية، ويبحث ويتحقق ثم يصوغ التقارير بمساعدة الذكاء الاصطناعي.' },
+      { heading: 'المراجعة والجودة', body: 'يخضع كل تقرير لسلسلة تحقق صارمة: مقارنة المعلومات بالمصادر الأصلية، ونسب المصادر صراحة في نهاية كل مقال، ومنع أي معلومة غير موثقة. كما يراجع فريق التحرير المحتوى دورياً.' },
+      { heading: 'التغطية', body: 'تغطي المنصة أحداث العراق والشرق الأوسط والعالم — من بغداد إلى البصرة وأربيل والموصل — بالعربية والإنجليزية، على مستوى محافظات العراق الـ 19.' },
+    ]},
+    en: { title: 'Editorial Team', subtitle: 'Who stands behind Iraq Now', sections: [
+      { heading: 'The Smart Newsroom', body: 'Iraq Now is operated around the clock by an automated editorial engine: it monitors Iraqi, Arab and international news sources, researches and verifies, then drafts reports with AI assistance.' },
+      { heading: 'Review & Quality', body: 'Every report goes through strict verification: facts are checked against original sources, sources are explicitly credited at the end of each article, and unverified information is never published. Editors also review content regularly.' },
+      { heading: 'Coverage', body: 'We cover Iraq, the Middle East and the world — from Baghdad to Basra, Erbil and Mosul — in Arabic and English, across all 19 Iraqi governorates.' },
+    ]},
+  },
+  'fact-check': {
+    ar: { title: 'التحقق من المعلومات', subtitle: 'منهجيتنا في الدقة والمصداقية', sections: [
+      { heading: 'منهجيتنا', body: 'كل خبر ننشره مبني على مصدر إخباري معروف يُذكر اسمه صراحة في نهاية التقرير. نعتمد على بيانات RSS الرسمية من وسائل الإعلام الموثوقة، ونمنع منعاً باتاً إضافة أي معلومة أو رقم أو تصريح غير موجود في المصادر الأصلية.' },
+      { heading: 'دور الذكاء الاصطناعي', body: 'نستخدم نماذج ذكاء اصطناعي متقدمة لتحليل الأخبار وصياغة التقارير. يُزوَّد المحرك بالنص الكامل للتقرير الأصلي ويُطالب بالالتزام الحرفي به، مع فقرة تحليلية مبنية على المعطيات المتوفرة فقط — دون تخمين أو استنتاج دوافع غير معلنة.' },
+      { heading: 'الإبلاغ عن خطأ', body: 'إن لاحظت أي خطأ في أي تقرير، راسلنا فوراً على info@iraqnow.iq مع رابط المقال، وسنقوم بالمراجعة والتصحيح خلال 24 ساعة.' },
+    ]},
+    en: { title: 'Fact Checking', subtitle: 'Our methodology for accuracy', sections: [
+      { heading: 'Our Methodology', body: 'Every story we publish is based on a known news source explicitly credited at the end of the report. We rely on official RSS feeds from trusted outlets, and never add any fact, number or statement not present in the original sources.' },
+      { heading: 'The Role of AI', body: 'We use advanced AI models to analyze news and draft reports. The engine receives the full text of the original report and is required to adhere strictly to it, adding only an analysis paragraph based on available facts — no guessing, no invented motives.' },
+      { heading: 'Report an Error', body: 'If you spot an error in any report, contact info@iraqnow.iq with the article link, and we will review and correct within 24 hours.' },
+    ]},
+  },
+  archive: {
+    ar: { title: 'الأرشيف', subtitle: 'كل ما نشرته المنصة في مكان واحد', sections: [
+      { heading: 'تصفح الأرشيف', body: 'يمكنك الوصول إلى كل المقالات المنشورة عبر صفحة «آخر الأخبار» التي تعرض أحدث 30 مقالاً مرتبة زمنياً، أو التنقل حسب القسم من صفحة الأقسام.' },
+      { heading: 'البحث النصي', body: 'استخدم زر البحث أعلى الموقع للبحث الفوري في جميع العناوين والمحتوى المنشور.' },
+      { heading: 'تحميل البيانات', body: 'أرشيف المقالات الكامل متاح للتحميل بصيغة CSV من صفحة «العراق بالأرقام» ضمن قسم قواعد البيانات المفتوحة.' },
+    ]},
+    en: { title: 'Archive', subtitle: 'Everything the platform has published', sections: [
+      { heading: 'Browse the Archive', body: 'Access all published articles through the Latest News page, which shows the most recent 30 stories in chronological order, or navigate by section.' },
+      { heading: 'Text Search', body: 'Use the search button at the top of the site for instant search across all published headlines and content.' },
+      { heading: 'Data Export', body: 'The full articles archive is available for download as CSV from the "Iraq in Numbers" page, under open datasets.' },
+    ]},
+  },
+  careers: {
+    ar: { title: 'فرص العمل', subtitle: 'انضم إلى فريق العراق الآن', sections: [
+      { heading: 'الوظائف الحالية', body: 'لا توجد وظائف متفرغة شاغرة حالياً. نبحث دائماً عن صحفيين ومحررين متعاونين من مختلف محافظات العراق لتوسيع التغطية المحلية.' },
+      { heading: 'كيف تتقدم', body: 'أرسل سيرتك الذاتية مع نماذج من أعمالك الصحفية إلى info@iraqnow.iq بعنوان «تعاون صحفي»، وسنتواصل معك عند توفر فرصة مناسبة.' },
+    ]},
+    en: { title: 'Careers', subtitle: 'Join the Iraq Now team', sections: [
+      { heading: 'Current Openings', body: 'There are no full-time openings at the moment. We are always looking for freelance journalists and editors from across Iraq to expand local coverage.' },
+      { heading: 'How to Apply', body: 'Send your CV and writing samples to info@iraqnow.iq with the subject "Journalism Collaboration", and we will reach out when a suitable opportunity opens.' },
+    ]},
+  },
+  app: {
+    ar: { title: 'تطبيق الجوال', subtitle: 'ثبّت العراق الآن على هاتفك', sections: [
+      { heading: 'تطبيق ويب تقدمي (PWA)', body: 'موقع العراق الآن يعمل كتطبيق جوال كامل — يمكنك تثبيته على الشاشة الرئيسية لتصفح أسرع وتجربة بلا شريط المتصفح، دون الحاجة لتحميله من متجر التطبيقات.' },
+      { heading: 'على iPhone و iPad', body: 'افتح الموقع في متصفح Safari، اضغط زر المشاركة، ثم اختر «إضافة إلى الشاشة الرئيسية».' },
+      { heading: 'على Android', body: 'افتح الموقع في متصفح Chrome، ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» من قائمة النقاط الثلاث.' },
+    ]},
+    en: { title: 'Mobile App', subtitle: 'Install Iraq Now on your phone', sections: [
+      { heading: 'Progressive Web App (PWA)', body: 'Iraq Now works as a full mobile app — install it to your home screen for faster browsing and a full-screen experience, with no app store download required.' },
+      { heading: 'On iPhone & iPad', body: 'Open the site in Safari, tap the Share button, then choose "Add to Home Screen".' },
+      { heading: 'On Android', body: 'Open the site in Chrome, then choose "Install app" or "Add to Home Screen" from the three-dot menu.' },
+    ]},
+  },
+  developers: {
+    ar: { title: 'واجهة API', subtitle: 'وصول برمجي لمحتوى المنصة', sections: [
+      { heading: 'خلاصات RSS', body: 'اشترك في تحديثات الموقع فورياً عبر خلاصة RSS جاهزة على الرابط: iraqnow.pages.dev/rss — وتتضمن أحدث المقالات المنشورة بالعربية.' },
+      { heading: 'خريطة الموقع', body: 'ملف sitemap.xml محدث تلقائياً بكل الصفحات والمقالات، جاهز لمحركات البحث والأدوات البرمجية: iraqnow.pages.dev/sitemap.xml' },
+      { heading: 'وصول موسّع', body: 'للحصول على وصول برمجي موسّع للمحتوى (بيانات منظمة، تدفقات JSON)، تواصل معنا على info@iraqnow.iq مع وصف لاستخدامك المقترح.' },
+    ]},
+    en: { title: 'Developer API', subtitle: 'Programmatic access to our content', sections: [
+      { heading: 'RSS Feeds', body: 'Subscribe to instant updates via our ready RSS feed at: iraqnow.pages.dev/rss — includes the latest published Arabic articles.' },
+      { heading: 'Sitemap', body: 'A sitemap.xml file is automatically updated with all pages and articles, ready for search engines and developer tools: iraqnow.pages.dev/sitemap.xml' },
+      { heading: 'Extended Access', body: 'For extended programmatic access (structured data, JSON feeds), contact info@iraqnow.iq describing your intended use.' },
+    ]},
+  },
+  advertise: {
+    ar: { title: 'أعلن معنا', subtitle: 'اوصل رسالتك إلى جمهور عراقي حقيقي', sections: [
+      { heading: 'لماذا العراق الآن؟', body: 'جمهور عراقي متابع للأخبار من جميع محافظات العراق الـ 19، يصلنا مباشرة من محركات البحث ووسائل التواصل، بقراءة سريعة وموثوقة بالعربية والإنجليزية.' },
+      { heading: 'الصيغ المتاحة', body: 'مساحات عرض داخل المقالات، رعاية أقسام إخبارية، رعاية حلقات البودكاست، وحملات محتوى مدفوعة. نصمم الحزمة بما يناسب أهدافك وميزانيتك.' },
+      { heading: 'تواصل معنا', body: 'راسلنا على info@iraqnow.iq بعنوان «إعلان» مع نبذة عن نشاطك، وسنرسل لك قائمة الأسعار والخيارات المتاحة.' },
+    ]},
+    en: { title: 'Advertise', subtitle: 'Reach a real Iraqi audience', sections: [
+      { heading: 'Why Iraq Now?', body: 'An Iraqi news audience from all 19 governorates, arriving directly from search engines and social platforms, for fast, trustworthy reading in Arabic and English.' },
+      { heading: 'Available Formats', body: 'In-article display placements, section sponsorships, podcast episode sponsorship, and sponsored content campaigns. We tailor the package to your goals and budget.' },
+      { heading: 'Contact Us', body: 'Email info@iraqnow.iq with the subject "Advertising" and a brief about your business, and we will send you the rate card and available options.' },
+    ]},
+  },
+  partnerships: {
+    ar: { title: 'الشراكات', subtitle: 'لنبنِ تغطية أفضل معاً', sections: [
+      { heading: 'شراكات المحتوى', body: 'نرحب بشراكات تبادل المحتوى مع المؤسسات الإخبارية العراقية والعربية: تغطية مشتركة للأحداث الكبرى، وتبادل التقارير والتحليلات مع نسب المصدر الكامل.' },
+      { heading: 'الجامعات ومراكز الأبحاث', body: 'نوفر للباحثين والطلاب وصولاً مجانياً لقواعد بياناتنا المفتوحة، ونستقبل مقترحات الدراسات التي تعتمد على بيانات المنصة.' },
+      { heading: 'تواصل معنا', body: 'راسلنا على info@iraqnow.iq بعنوان «شراكة» مع وصف المقترح، وسيعاود فريقنا التواصل معك خلال أيام.' },
+    ]},
+    en: { title: 'Partnerships', subtitle: 'Build better coverage together', sections: [
+      { heading: 'Content Partnerships', body: 'We welcome content-exchange partnerships with Iraqi and Arab news organizations: joint coverage of major events, and exchange of reports and analyses with full source attribution.' },
+      { heading: 'Universities & Research Centers', body: 'We provide researchers and students free access to our open datasets, and welcome study proposals based on platform data.' },
+      { heading: 'Contact Us', body: 'Email info@iraqnow.iq with the subject "Partnership" describing your proposal, and our team will get back to you within days.' },
+    ]},
+  },
+  licensing: {
+    ar: { title: 'ترخيص المحتوى', subtitle: 'حقوق استخدام المواد المنشورة', sections: [
+      { heading: 'حقوق النشر', body: 'كل المحتوى المنشور على منصة العراق الآن — من نصوص وصور وتصاميم — محمي بحقوق النشر ولا يجوز إعادة نشره تجارياً دون إذن كتابي مسبق.' },
+      { heading: 'إعادة النشر المجانية', body: 'يُسمح بإقتباس جزئي (حتى 3 فقرات) مع الإشارة الواضحة «المصدر: العراق الآن» وإرفاق رابط مباشر للمقال الأصلي.' },
+      { heading: 'طلبات الترخيص', body: 'للاستخدام التجاري الموسّع أوالتوزيع الكامل للمحتوى، تواصل معنا على info@iraqnow.iq بعنوان «ترخيص» مع تفاصيل الاستخدام المطلوب.' },
+    ]},
+    en: { title: 'Content Licensing', subtitle: 'Usage rights for published material', sections: [
+      { heading: 'Copyright', body: 'All content published on Iraq Now — text, images and design — is protected by copyright and may not be republished commercially without prior written permission.' },
+      { heading: 'Free Republishing', body: 'Partial quotation (up to 3 paragraphs) is permitted with clear credit "Source: Iraq Now" and a direct link to the original article.' },
+      { heading: 'License Requests', body: 'For extended commercial use or full content distribution, contact info@iraqnow.iq with the subject "Licensing" including details of the intended use.' },
+    ]},
+  },
   about: {
     ar: { title: 'عن العراق الآن', subtitle: 'من قلب بلاد الرافدين، إلى العالم', sections: [
       { heading: 'من نحن', body: 'العراق الآن منصة إخبارية عراقية مستقلة متعددة اللغات (العربية، الكردية، الإنكليزية). نؤمن بأن العراق يستحق صحافة نوعية — تحقيق، تحليل، وبيانات مفتوحة. نحن لسنا مملوكة لأي حزب أو حكومة أو دولة أجنبية.' },
-      { heading: 'رسالتنا', body: 'تقديم أخبار موثوقة بمعايير صحفية دولية، مع تغطية شاملة لجميع المحافظات الـ 18+1، وإعطاء صوت للمجتمعات المهمشة. نستخدم تقنية حديثة لتقديم الأخبار بسرعة ووضوح.' },
+      { heading: 'رسالتنا', body: 'تقديم أخبار موثوقة بمعايير صحفية دولية، مع تغطية شاملة لجميع المحافظات الـ 19، وإعطاء صوت للمجتمعات المهمشة. نستخدم تقنية حديثة لتقديم الأخبار بسرعة ووضوح.' },
       { heading: 'قيمنا', body: 'الدقة قبل السرعة. الاستقلالية التامة. الشفافية في التمويل والمصادر. احترام خصوصية القارئ.' },
     ]},
     ku: { title: 'دەربارەی عێراق ئێستا', subtitle: 'لە دڵی میزۆپۆتامیاوە بۆ جیهان', sections: [
@@ -100,7 +206,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, page } = await params
   const data = INFO_PAGES[page]
   if (!data) return { title: 'غير موجود' }
-  const info = data[locale as Locale] || data.ar
+  const info = data[locale as Locale] || data.ar || data.en!
   return { title: info.title, description: info.subtitle }
 }
 
@@ -125,7 +231,7 @@ export default async function InfoPageView({ params }: { params: Promise<{ local
       </div>
     )
   }
-  const info = data[locale] || data.ar
+  const info = data[locale] || data.ar || data.en!
   const dir = locale === 'en' ? 'ltr' : 'rtl'
 
   return (

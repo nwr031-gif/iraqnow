@@ -166,7 +166,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={s.label}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--muted)] transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/50 hover:text-gold-600"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--muted)] transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:text-lapis-900"
                       >
                         <s.icon className="h-4.5 w-4.5" />
                       </a>

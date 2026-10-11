@@ -39,24 +39,24 @@ export function LatestNews({ locale, articles: propArticles }: LatestNewsProps) 
   const articles = propArticles || []
 
   return (
-    <section className="py-14 lg:py-20 bg-[var(--background)]" aria-labelledby="latest-heading">
+    <section className="py-16 lg:py-24 bg-[var(--background)]" aria-labelledby="latest-heading">
       <div className="container-main">
         <Reveal>
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-600">
+          <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+            <div className="max-w-xl">
+              <p className="eyebrow mb-3">
                 <IshtarStar size={12} />
                 {locale === 'en' ? 'News Feed' : locale === 'ku' ? 'خۆری هەواڵ' : 'تدفق الأخبار'}
               </p>
-              <h2 id="latest-heading" className="section-title font-kufi text-3xl font-bold lg:text-4xl">
+              <h2 id="latest-heading" className="section-title text-3xl lg:text-4xl">
                 {t.title}
               </h2>
-              <p className="mt-2 text-sm text-[var(--muted)]">{t.subtitle}</p>
+              <p className="mt-3 text-[15px] text-[var(--muted)]">{t.subtitle}</p>
             </div>
 
             <Link
               href={`/${locale}/latest`}
-              className="group flex items-center gap-2 rounded-xl border border-gold-500/40 px-5 py-2.5 text-sm font-semibold text-gold-600 transition-all duration-300 hover:bg-gold-500 hover:text-lapis-950"
+              className="group flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-ink-700 transition-all duration-300 hover:border-lapis-900 hover:text-lapis-900"
             >
               {t.viewAll}
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
@@ -66,8 +66,8 @@ export function LatestNews({ locale, articles: propArticles }: LatestNewsProps) 
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {articles.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center gap-4 rounded-3xl border border-dashed border-gold-500/30 py-20 text-center">
-              <IshtarStar size={48} />
+            <div className="col-span-full flex flex-col items-center gap-4 rounded-3xl border border-dashed border-line-strong py-20 text-center">
+              <IshtarStar size={40} />
               <p className="font-kufi text-lg font-bold text-[var(--foreground)]">
                 {locale === 'en' ? 'Coming Soon' : locale === 'ku' ? 'بەم زووانە' : 'قريباً'}
               </p>

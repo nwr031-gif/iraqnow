@@ -140,7 +140,7 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2.5 text-xs font-medium text-sand-100/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-500/50 hover:text-gold-400"
+                  className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2.5 text-xs font-medium text-sand-100/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:text-gold-400"
                 >
                   <span aria-hidden="true">{link.icon}</span>
                   {link.label}
@@ -253,7 +253,7 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                   <Reveal key={ep.id} delay={(i % 3) * 80}>
                     <Link
                       href={`/${locale}/podcasts/${ep.slug}`}
-                      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] transition-all duration-400 hover:-translate-y-1.5 hover:border-gold-500/40 hover:shadow-2xl hover:shadow-lapis-900/15"
+                      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] transition-all duration-400 hover:-translate-y-1.5 hover:border-line-strong hover:shadow-2xl hover:shadow-lapis-900/15"
                     >
                       <div className="img-zoom relative aspect-video overflow-hidden">
                         <img
@@ -274,7 +274,7 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                       </div>
 
                       <div className="flex flex-1 flex-col p-4">
-                        <h3 className="font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-gold-600">
+                        <h3 className="font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-lapis-700">
                           {title}
                         </h3>
                         <p className="mt-2 text-[11px] text-[var(--muted)] line-clamp-1">{ep.guest[locale]}</p>

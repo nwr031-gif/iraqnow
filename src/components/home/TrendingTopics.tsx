@@ -65,7 +65,7 @@ export function TrendingTopics({ locale }: { locale: Locale }) {
                     'group relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl',
                     topic.hot
                       ? 'border-terra-500/30 bg-gradient-to-br from-terra-500/[0.07] to-transparent hover:border-terra-500/50'
-                      : 'border-[var(--border)] bg-[var(--card-bg)] hover:border-gold-500/40'
+                      : 'border-[var(--border)] bg-[var(--card-bg)] hover:border-line-strong'
                   )}
                 >
                   {/* الرقم */}
@@ -86,7 +86,7 @@ export function TrendingTopics({ locale }: { locale: Locale }) {
                     </span>
                   </div>
 
-                  <h3 className="relative font-kufi text-[15px] font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-gold-600">
+                  <h3 className="relative font-kufi text-[15px] font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-lapis-700">
                     {topic.label[locale]}
                   </h3>
 

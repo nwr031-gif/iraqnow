@@ -118,7 +118,7 @@ export function UsersManager({ currentUserId }: { currentUserId: string }) {
         <div className="flex items-center gap-2">
           <button
             onClick={loadUsers}
-            className="rounded-xl border border-white/10 p-2.5 text-sand-100/60 transition-colors hover:border-gold-500/40 hover:text-gold-400"
+            className="rounded-xl border border-white/10 p-2.5 text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
             aria-label="تحديث"
           >
             <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
@@ -143,7 +143,7 @@ export function UsersManager({ currentUserId }: { currentUserId: string }) {
               <div
                 key={user.id}
                 className={cn(
-                  'group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-gradient-to-b from-white/[0.04] to-transparent p-5 transition-all duration-300 hover:border-gold-500/30',
+                  'group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-gradient-to-b from-white/[0.04] to-transparent p-5 transition-all duration-300 hover:border-line-strong',
                   !user.isActive && 'opacity-50'
                 )}
               >
@@ -379,7 +379,7 @@ function CreateUserModal({
                     'rounded-xl border px-3 py-2.5 text-xs font-bold transition-all',
                     form.role === role
                       ? 'border-gold-500 bg-gold-500/15 text-gold-400'
-                      : 'border-white/[0.07] text-sand-100/50 hover:border-gold-500/30'
+                      : 'border-white/[0.07] text-sand-100/50 hover:border-line-strong'
                   )}
                 >
                   {ROLE_LABELS[role].label}
@@ -516,7 +516,7 @@ function EditUserModal({
                     'rounded-xl border px-3 py-2.5 text-xs font-bold transition-all',
                     form.role === role
                       ? 'border-gold-500 bg-gold-500/15 text-gold-400'
-                      : 'border-white/[0.07] text-sand-100/50 hover:border-gold-500/30'
+                      : 'border-white/[0.07] text-sand-100/50 hover:border-line-strong'
                   )}
                 >
                   {ROLE_LABELS[role].label}

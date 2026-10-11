@@ -225,7 +225,7 @@ export function ArticleForm({
         <div className="flex items-center gap-4">
           <Link
             href="/admin/articles"
-            className="rounded-xl border border-white/10 p-2.5 text-sand-100/60 transition-colors hover:border-gold-500/40 hover:text-gold-400"
+            className="rounded-xl border border-white/10 p-2.5 text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
           >
             <ArrowRight className="h-4 w-4" />
           </Link>
@@ -248,7 +248,7 @@ export function ArticleForm({
           <button
             onClick={() => handleSave('DRAFT')}
             disabled={saving}
-            className="rounded-xl border border-white/15 px-4 py-2.5 text-xs font-medium text-sand-100/70 transition-colors hover:border-gold-500/40 hover:text-gold-400 disabled:opacity-50"
+            className="rounded-xl border border-white/15 px-4 py-2.5 text-xs font-medium text-sand-100/70 transition-colors hover:border-line-strong hover:text-gold-400 disabled:opacity-50"
           >
             حفظ كمسودة
           </button>
@@ -382,7 +382,7 @@ export function ArticleForm({
                 </button>
               </div>
             ) : (
-              <label className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-white/10 py-8 transition-colors hover:border-gold-500/40 hover:bg-gold-500/[0.03]">
+              <label className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-white/10 py-8 transition-colors hover:border-line-strong hover:bg-gold-500/[0.03]">
                 {uploading ? (
                   <Loader2 className="h-6 w-6 animate-spin text-gold-400" />
                 ) : (
@@ -532,7 +532,7 @@ export function ArticleForm({
               'flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed py-3.5 text-xs font-medium transition-all',
               uploadingGallery
                 ? 'border-gold-500/40 text-gold-400'
-                : 'border-white/10 text-sand-100/40 hover:border-gold-500/40 hover:bg-gold-500/[0.03] hover:text-gold-400'
+                : 'border-white/10 text-sand-100/40 hover:border-line-strong hover:bg-gold-500/[0.03] hover:text-gold-400'
             )}>
               {uploadingGallery ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> جاري رفع الصور...</>

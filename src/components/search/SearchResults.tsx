@@ -102,13 +102,13 @@ export function SearchResults() {
             <Link
               key={hit.id}
               href={`/ar/article/${hit.slug}`}
-              className="group block rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/40 hover:shadow-lg"
+              className="group block rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-lg"
             >
               {hit.category && (
                 <span className="badge badge-gold mb-2 text-[10px]">{hit.category}</span>
               )}
               <h3
-                className="font-kufi text-base font-bold text-[var(--foreground)] transition-colors group-hover:text-gold-600 [&>mark]:bg-gold-500/25 [&>mark]:text-gold-700"
+                className="font-kufi text-base font-bold text-[var(--foreground)] transition-colors group-hover:text-lapis-700 [&>mark]:bg-gold-500/25 [&>mark]:text-gold-700"
                 dangerouslySetInnerHTML={{ __html: (hit._formatted?.title as any)?.snippet || hit.title || '' }}
               />
               <p

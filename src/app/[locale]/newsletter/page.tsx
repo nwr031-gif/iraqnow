@@ -166,7 +166,7 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {t.benefitsList.map((b: any, i: number) => (
             <Reveal key={i} delay={i * 70}>
-              <div className="group h-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-gold-500/40">
+              <div className="group h-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-line-strong">
                 <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-gold-500/12 text-gold-600 transition-transform duration-300 group-hover:scale-110">
                   <b.icon className="h-5 w-5" />
                 </span>

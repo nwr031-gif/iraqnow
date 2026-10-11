@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Send, MessageSquare, Rss, Globe, Mail, Shield, Scale, MapPin, Phone, ArrowUp } from 'lucide-react'
-import { Logo, IshtarStar, CuneiformDivider, CuneiformBand } from '@/components/brand/Brand'
+import { Logo, IshtarStar } from '@/components/brand/Brand'
 
 type Locale = 'ar' | 'ku' | 'en'
 
@@ -150,26 +150,16 @@ export function Footer({ locale }: { locale: Locale }) {
 
   return (
     <footer className="relative overflow-hidden bg-lapis-950 text-sand-100" dir={dir}>
-      {/* خلفية زخرفية */}
-      <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
-      <div
-        className="pointer-events-none absolute -top-40 start-1/2 h-80 w-[600px] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
-        style={{ background: 'radial-gradient(circle, #d4af37 0%, transparent 70%)' }}
-        aria-hidden="true"
-      />
-
-      <CuneiformBand />
-
       <div className="container-main relative py-14 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-12">
           {/* العمود الأول - الهوية */}
           <div className="lg:col-span-4">
             <Logo locale={locale} variant="light" showTagline />
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-sand-100/70">
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-sand-100/60">
               {data.description}
             </p>
 
-            <p className="mt-4 flex items-center gap-2 text-xs font-medium text-gold-400/90">
+            <p className="mt-4 flex items-center gap-2 text-xs font-medium text-sand-100/45">
               <IshtarStar size={14} />
               {data.tagline}
             </p>
@@ -182,20 +172,20 @@ export function Footer({ locale }: { locale: Locale }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="group flex h-10 w-10 items-center justify-center rounded-xl border border-sand-100/10 bg-white/5 text-sand-100/60 transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/50 hover:bg-gold-500/15 hover:text-gold-400"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-sand-100/50 transition-all duration-300 hover:border-white/25 hover:bg-white/5 hover:text-white"
                 >
-                  <Icon className="h-4.5 w-4.5" />
+                  <Icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
 
-            <div className="mt-6 space-y-2 text-xs text-sand-100/50">
+            <div className="mt-6 space-y-2 text-xs text-sand-100/45">
               <p className="flex items-center gap-2">
-                <MapPin className="h-3.5 w-3.5 text-gold-500/70" />
+                <MapPin className="h-3.5 w-3.5" />
                 {data.address}
               </p>
               <p className="flex items-center gap-2">
-                <Mail className="h-3.5 w-3.5 text-gold-500/70" />
+                <Mail className="h-3.5 w-3.5" />
                 info@iraqnow.iq
               </p>
             </div>
@@ -205,8 +195,7 @@ export function Footer({ locale }: { locale: Locale }) {
           <div className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
             {Object.entries(data.sections).map(([key, section]: [string, any]) => (
               <nav key={key} aria-labelledby={`footer-${key}`}>
-                <h3 id={`footer-${key}`} className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-gold-400">
-                  <span className="h-3 w-1 rounded-full bg-gradient-to-b from-gold-400 to-gold-700" />
+                <h3 id={`footer-${key}`} className="mb-4 font-kufi text-sm font-bold text-white/90">
                   {section.title}
                 </h3>
                 <ul className="space-y-3">
@@ -214,9 +203,8 @@ export function Footer({ locale }: { locale: Locale }) {
                     <li key={link.label}>
                       <Link
                         href={`/${locale}${link.href}`}
-                        className="group inline-flex items-center gap-2 text-sm text-sand-100/60 transition-all duration-200 hover:text-gold-400"
+                        className="text-sm text-sand-100/55 transition-colors duration-200 hover:text-white"
                       >
-                        <span className="h-px w-0 bg-gold-500 transition-all duration-300 group-hover:w-3" />
                         {link.label}
                       </Link>
                     </li>
@@ -227,28 +215,28 @@ export function Footer({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <CuneiformDivider variant="star" className="opacity-60" />
+        <div className="my-10 h-px bg-white/10" />
 
         {/* الشريط السفلي */}
-        <div className="flex flex-col items-center justify-between gap-4 text-xs text-sand-100/50 md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 text-xs text-sand-100/45 md:flex-row">
           <p>{data.copyright}</p>
 
           <div className="flex flex-wrap items-center justify-center gap-5">
             {data.trustBadges.map((badge: string, i: number) => (
               <span key={i} className="flex items-center gap-1.5">
-                {i === 0 && <Shield className="h-3.5 w-3.5 text-gold-500" />}
-                {i === 1 && <Scale className="h-3.5 w-3.5 text-gold-500" />}
-                {i === 2 && <Globe className="h-3.5 w-3.5 text-gold-500" />}
+                {i === 0 && <Shield className="h-3.5 w-3.5 text-sand-100/40" />}
+                {i === 1 && <Scale className="h-3.5 w-3.5 text-sand-100/40" />}
+                {i === 2 && <Globe className="h-3.5 w-3.5 text-sand-100/40" />}
                 {badge}
               </span>
             ))}
-            <span className="hidden text-sand-100/30 md:inline">•</span>
-            <span className="text-gold-500/80">{data.madeIn} 🇮🇶</span>
+            <span className="hidden text-sand-100/25 md:inline">•</span>
+            <span>{data.madeIn} 🇮🇶</span>
           </div>
 
           <a
             href="#top"
-            className="flex items-center gap-1.5 rounded-lg border border-sand-100/10 px-3 py-1.5 transition-all duration-300 hover:border-gold-500/50 hover:text-gold-400"
+            className="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 transition-colors duration-300 hover:border-white/25 hover:text-white"
             aria-label="Back to top"
           >
             <ArrowUp className="h-3.5 w-3.5" />

@@ -130,7 +130,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => skip(-15)}
-            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-sand-100/60 transition-colors hover:border-gold-500/40 hover:text-gold-400"
+            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
             title={`-15${t.sec}`}
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -151,7 +151,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
 
           <button
             onClick={() => skip(30)}
-            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-sand-100/60 transition-colors hover:border-gold-500/40 hover:text-gold-400"
+            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
             title={`+30${t.sec}`}
           >
             30
@@ -162,7 +162,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
         <div className="flex items-center gap-2">
           <button
             onClick={cycleSpeed}
-            className="flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-sand-100/60 transition-colors hover:border-gold-500/40 hover:text-gold-400"
+            className="flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
             title={t.speed}
           >
             <Gauge className="h-3.5 w-3.5" />

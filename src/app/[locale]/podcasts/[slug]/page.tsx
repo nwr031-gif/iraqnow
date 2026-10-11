@@ -146,7 +146,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
               <div className="mt-4 flex items-center gap-3">
                 <button
-                  className="flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-medium text-sand-100/70 transition-colors hover:border-gold-500/50 hover:text-gold-400"
+                  className="flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-medium text-sand-100/70 transition-colors hover:border-line-strong hover:text-gold-400"
                   title={t.share}
                 >
                   <Share2 className="h-3.5 w-3.5" />
@@ -194,7 +194,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
                   <Reveal key={ep.id} delay={i * 80}>
                     <Link
                       href={`/${locale}/podcasts/${ep.slug}`}
-                      className="group flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-3.5 transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/40 hover:shadow-xl"
+                      className="group flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-3.5 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-xl"
                     >
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
                         <img src={ep.coverUrl} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
@@ -203,7 +203,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
                         <p className="text-[10px] font-bold text-gold-600">
                           {t.episode} {ep.episodeNumber}
                         </p>
-                        <h3 className="mt-1 font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-gold-600">
+                        <h3 className="mt-1 font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-lapis-700">
                           {epTitle}
                         </h3>
                         <p className="mt-1.5 text-[10px] text-[var(--muted)]">{ep.duration}</p>

@@ -110,14 +110,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
       <article className="container-main max-w-4xl py-8 lg:py-12">
         {/* Breadcrumbs */}
         <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
-          <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-gold-600">
+          <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-lapis-900">
             <Home className="h-3.5 w-3.5" />
             {t.home}
           </Link>
           <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
           {category && (
             <>
-              <Link href={`/${locale}/category/${category.slug}`} className="transition-colors hover:text-gold-600">
+              <Link href={`/${locale}/category/${category.slug}`} className="transition-colors hover:text-lapis-900">
                 {catName}
               </Link>
               <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
@@ -170,7 +170,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
               )}
               <div>
                 {author ? (
-                  <Link href={`/${locale}/author/${author.slug}`} className="font-kufi text-sm font-bold text-[var(--foreground)] transition-colors hover:text-gold-600">
+                  <Link href={`/${locale}/author/${author.slug}`} className="font-kufi text-sm font-bold text-[var(--foreground)] transition-colors hover:text-lapis-900">
                     {t.by} {author.name}
                   </Link>
                 ) : (
@@ -252,11 +252,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
           <Reveal>
             <Link
               href={`/${locale}/author/${author.slug}`}
-              className="group flex flex-col items-center gap-4 rounded-3xl border border-gold-500/25 bg-gradient-to-b from-gold-500/[0.06] to-transparent p-6 text-center transition-all duration-300 hover:border-gold-500/50 sm:flex-row sm:text-start"
+              className="group flex flex-col items-center gap-4 rounded-3xl border border-gold-500/25 bg-gradient-to-b from-gold-500/[0.06] to-transparent p-6 text-center transition-all duration-300 hover:border-line-strong sm:flex-row sm:text-start"
             >
               <img src={author.avatar || ''} alt="" className="h-20 w-20 rounded-2xl object-cover ring-2 ring-gold-500/40" />
               <div className="flex-1">
-                <p className="font-kufi text-lg font-bold text-[var(--foreground)] transition-colors group-hover:text-gold-600">{author.name}</p>
+                <p className="font-kufi text-lg font-bold text-[var(--foreground)] transition-colors group-hover:text-lapis-700">{author.name}</p>
                 <p className="mt-0.5 text-xs text-gold-600">{author.jobTitle[locale] || author.jobTitle.ar}</p>
                 <p className="mt-2 text-sm leading-relaxed text-[var(--muted)] line-clamp-2">
                   {author.bio[locale] || author.bio.ar}

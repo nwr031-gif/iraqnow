@@ -26,13 +26,13 @@ export function GovernorateIndex({
         <Link
           key={gov.slug}
           href={`/${locale}/governorate/${gov.slug}`}
-          className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/40 hover:shadow-xl"
+          className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-xl"
         >
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lapis-700 to-lapis-950 font-kufi text-[10px] font-bold text-gold-400">
             {String(i + 1).padStart(2, '0')}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:text-gold-600">
+            <p className="truncate font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:text-lapis-700">
               {gov[locale]}
             </p>
             <p className="flex items-center gap-1 text-[11px] text-[var(--muted)]">
@@ -80,7 +80,7 @@ export function DatasetDownload({
 
   return (
     <div
-      className="group flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/40"
+      className="group flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
       dir={dir}
     >
       <div className="flex items-center gap-4">

@@ -135,7 +135,7 @@ export function DataSection({ locale }: { locale: Locale }) {
           <div className="flex flex-col gap-4">
             {DATASETS.map((ds, i) => (
               <Reveal key={ds.id} delay={i * 80}>
-                <div className="glass-card group flex items-center justify-between p-4 transition-all duration-300 hover:border-gold-500/40">
+                <div className="glass-card group flex items-center justify-between p-4 transition-all duration-300 hover:border-line-strong">
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-lapis-700/60 text-gold-400">
                       <TrendingUp className="h-4.5 w-4.5" />

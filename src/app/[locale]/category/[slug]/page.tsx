@@ -170,7 +170,7 @@ export default async function CategoryPage({
                     className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
                       sort === opt.value
                         ? 'bg-gold-500 text-lapis-950'
-                        : 'text-[var(--muted)] hover:text-gold-600'
+                        : 'text-[var(--muted)] hover:text-lapis-900'
                     }`}
                   >
                     {opt[locale]}
@@ -184,7 +184,7 @@ export default async function CategoryPage({
                 <Link
                   key={c.slug}
                   href={`/${locale}/category/${c.slug}`}
-                  className="shrink-0 rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] transition-all hover:border-gold-500/40 hover:text-gold-600"
+                  className="shrink-0 rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] transition-all hover:border-line-strong hover:text-lapis-900"
                 >
                   {c.translations.find((tr) => tr.locale === locale)?.name || c.translations[0]?.name}
                 </Link>
@@ -228,7 +228,7 @@ export default async function CategoryPage({
                 {page > 1 && (
                   <Link
                     href={buildUrl(page - 1)}
-                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-gold-500/40 hover:text-gold-600"
+                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-line-strong hover:text-lapis-900"
                   >
                     <ChevronRight className="h-4 w-4 ltr:rotate-180" />
                     {t.prev}
@@ -245,7 +245,7 @@ export default async function CategoryPage({
                         className={`flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold transition-all ${
                           p === page
                             ? 'bg-gold-500 text-lapis-950'
-                            : 'text-[var(--muted)] hover:bg-gold-500/10 hover:text-gold-600'
+                            : 'text-[var(--muted)] hover:bg-gold-500/10 hover:text-lapis-900'
                         }`}
                       >
                         {p.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US')}
@@ -258,7 +258,7 @@ export default async function CategoryPage({
                 {page < pages && (
                   <Link
                     href={buildUrl(page + 1)}
-                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-gold-500/40 hover:text-gold-600"
+                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-line-strong hover:text-lapis-900"
                   >
                     {t.next}
                     <ChevronLeft className="h-4 w-4 ltr:rotate-180" />
@@ -283,9 +283,9 @@ export default async function CategoryPage({
                 <Link
                   key={c.slug}
                   href={`/${locale}/category/${c.slug}`}
-                  className="group rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/40"
+                  className="group rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
                 >
-                  <p className="font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:text-gold-600">
+                  <p className="font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:text-lapis-700">
                     {c.translations.find((tr) => tr.locale === locale)?.name || c.translations[0]?.name}
                   </p>
                   <p className="mt-1 text-[11px] text-[var(--muted)]">

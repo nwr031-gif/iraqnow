@@ -132,7 +132,7 @@ export default async function InfoPageView({ params }: { params: Promise<{ local
     <div dir={dir} className="min-h-screen bg-[var(--background)]">
       <div className="container-main max-w-3xl py-12">
         <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-[var(--muted)]">
-          <Link href={`/${locale}`} className="flex items-center gap-1.5 hover:text-gold-600">
+          <Link href={`/${locale}`} className="flex items-center gap-1.5 hover:text-lapis-900">
             <Home className="h-3.5 w-3.5" /> {locale === 'en' ? 'Home' : 'الرئيسية'}
           </Link>
           <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />

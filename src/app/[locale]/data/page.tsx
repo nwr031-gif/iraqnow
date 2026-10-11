@@ -132,7 +132,7 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {KPIS.map((kpi, i) => (
             <Reveal key={i} delay={(i % 6) * 60}>
-              <div className="group h-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/40">
+              <div className="group h-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-line-strong">
                 <span className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500/12 text-gold-600">
                   <kpi.icon className="h-4.5 w-4.5" />
                 </span>

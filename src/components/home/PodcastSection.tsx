@@ -168,7 +168,7 @@ export function PodcastSection({ locale, episodes = [] }: { locale: Locale; epis
             <div className="flex flex-col gap-4 lg:col-span-2">
               {rest.map((ep, i) => (
                 <Reveal key={ep.id} delay={i * 100}>
-                  <article className="group flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-400 hover:-translate-y-1 hover:border-gold-500/40 hover:shadow-xl">
+                  <article className="group flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-400 hover:-translate-y-1 hover:border-line-strong hover:shadow-xl">
                     <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-lapis-900 sm:h-28 sm:w-28">
                       {ep.coverUrl && (
                         <img src={ep.coverUrl} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -189,7 +189,7 @@ export function PodcastSection({ locale, episodes = [] }: { locale: Locale; epis
                       <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-gold-600">
                         {t.episode} {ep.episodeNumber}
                       </p>
-                      <h3 className="mb-1.5 font-kufi text-base font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-gold-600">
+                      <h3 className="mb-1.5 font-kufi text-base font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-lapis-700">
                         {titleOf(ep, locale)}
                       </h3>
                       {ep.guest?.[locale] && (

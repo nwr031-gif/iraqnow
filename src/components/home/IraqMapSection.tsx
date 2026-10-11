@@ -9,6 +9,7 @@ type Locale = 'ar' | 'ku' | 'en'
 
 interface MapSectionProps {
   locale: Locale
+  counts?: Record<string, number> | null
 }
 
 const UI: Record<Locale, any> = {
@@ -32,33 +33,30 @@ const UI: Record<Locale, any> = {
   },
 }
 
-export function IraqMapSection({ locale }: MapSectionProps) {
+export function IraqMapSection({ locale, counts = null }: MapSectionProps) {
   const t = UI[locale]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight
 
   return (
-    <section className="relative overflow-hidden bg-lapis-950 py-14 text-white lg:py-20" dir={dir} aria-labelledby="map-heading">
-      <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-50" aria-hidden="true" />
-      <div className="pointer-events-none absolute -start-40 top-1/4 h-96 w-96 rounded-full bg-lapis-600/20 blur-[120px]" aria-hidden="true" />
-
-      <div className="container-main relative">
-        <Reveal className="mb-10 text-center">
-          <span className="badge border border-line bg-white/5 text-white/70">
+    <section className="border-t border-line bg-[var(--background)] py-16 lg:py-24" dir={dir} aria-labelledby="map-heading">
+      <div className="container-main">
+        <Reveal className="mb-12 text-center">
+          <span className="badge badge-lapis mx-auto mb-4">
             <MapPin className="h-3.5 w-3.5" />
             {t.badge}
           </span>
-          <h2 id="map-heading" className="mt-4 font-kufi text-3xl font-bold lg:text-4xl">
+          <h2 id="map-heading" className="section-title text-3xl lg:text-4xl">
             {t.title}
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-white/60">{t.subtitle}</p>
+          <p className="mx-auto mt-3 max-w-xl text-[15px] text-[var(--muted)]">{t.subtitle}</p>
         </Reveal>
 
         <Reveal delay={120}>
-          <Iraq3DMap locale={locale} height={520} showPanel={true} />
+          <Iraq3DMap locale={locale} height={520} showPanel={true} counts={counts} />
         </Reveal>
 
-        <Reveal delay={200} className="mt-8 flex justify-center">
+        <Reveal delay={200} className="mt-10 flex justify-center">
           <Link href={`/${locale}/map`} className="btn-primary group inline-flex font-kufi">
             <MapPin className="h-4 w-4" />
             {t.explore}

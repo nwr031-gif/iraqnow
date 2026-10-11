@@ -5,8 +5,8 @@ import { Home, ChevronLeft, Newspaper, MapPin } from 'lucide-react'
 import { Iraq3DMap } from '@/components/map/Iraq3DMap'
 import { GovernorateIndex } from '@/components/data/Interactive'
 import { Reveal } from '@/components/ui/Reveal'
-import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
-import { GOVERNORATES_19 } from '@/components/map/Iraq3DMapCanvas'
+import { GOVERNORATES_19 } from '@/lib/governorates'
+import { getGovernorateCounts } from '@/lib/governorate-counts'
 
 export const dynamic = 'force-static'
 export const revalidate = 3600
@@ -35,11 +35,13 @@ const UI: Record<string, any> = {
   },
 }
 
+/* أعداد المقالات الحقيقية حسب المحافظة — تُبنى وقت البناء */
 export default async function MapPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: rawLocale } = await params
   const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as 'ar' | 'ku' | 'en'
   const t = UI[locale]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
+  const counts = await getGovernorateCounts()
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -53,48 +55,56 @@ export default async function MapPage({ params }: { params: Promise<{ locale: st
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* الرأس */}
-      <section className="relative overflow-hidden bg-lapis-950 py-14 text-white lg:py-20">
-        <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
+      <section className="relative overflow-hidden border-b border-line bg-[var(--background)] py-14 lg:py-20">
         <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-white/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
+          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-[var(--muted)]">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-[var(--foreground)]">
               <Home className="h-3.5 w-3.5" />
               {locale === 'en' ? 'Home' : 'الرئيسية'}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="font-medium text-white/70">{locale === 'en' ? '3D Map' : 'الخريطة 3D'}</span>
+            <span className="font-medium text-[var(--foreground)]">{locale === 'en' ? '3D Map' : 'الخريطة 3D'}</span>
           </nav>
 
           <Reveal className="text-center">
-            <span className="badge mx-auto mb-5 border border-line bg-white/5 text-white/70">
+            <span className="badge badge-lapis mx-auto mb-5">
               <MapPin className="h-3.5 w-3.5" />
               {t.badge}
             </span>
-            <h1 className="font-kufi text-3xl font-bold lg:text-5xl">
-              <span className="text-gold-gradient">{t.title}</span>
+            <h1 className="font-kufi text-3xl font-bold tracking-tight lg:text-5xl">
+              {t.title}
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm text-white/60 lg:text-base">{t.subtitle}</p>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-[var(--muted)] lg:text-base">{t.subtitle}</p>
           </Reveal>
         </div>
       </section>
 
       {/* الخريطة 3D */}
-      <section className="container-main relative z-10 -mt-6 pb-6">
-        <Suspense fallback={<div className="h-[560px] animate-pulse rounded-3xl bg-lapis-950" />}>
-          <Iraq3DMap locale={locale} height={560} />
+      <section className="container-main relative z-10 -mt-4 pt-6 pb-8">
+        <Suspense fallback={<div className="h-[560px] animate-pulse rounded-3xl border border-line bg-cream" />}>
+          <Iraq3DMap locale={locale} height={560} counts={counts} />
         </Suspense>
       </section>
 
       {/* فهرس المحافظات */}
-      <section className="container-main py-10">
-        <CuneiformDivider variant="star" className="mb-8 opacity-50" />
-        <Reveal>
-          <h2 className="section-title mb-6 font-kufi text-2xl font-bold lg:text-3xl">{t.allGovs}</h2>
+      <section className="container-main border-t border-line py-12">
+        <Reveal className="mb-8">
+          <p className="eyebrow mb-3">
+            <MapPin className="h-3 w-3" />
+            {t.explore}
+          </p>
+          <h2 className="section-title text-2xl lg:text-3xl">{t.allGovs}</h2>
         </Reveal>
-        <GovernorateIndex governorates={GOVERNORATES_19} locale={locale} labels={{ allGovs: t.allGovs, articles: t.articles }} />
+        <GovernorateIndex
+          governorates={GOVERNORATES_19.map((g) => ({
+            ...g,
+            articles: counts ? counts[g.slug] || 0 : g.articles,
+            hot: counts ? (counts[g.slug] || 0) > 0 : g.hot,
+          }))}
+          locale={locale}
+          labels={{ allGovs: t.allGovs, articles: t.articles }}
+        />
       </section>
     </div>
   )
 }
-
-

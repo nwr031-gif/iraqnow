@@ -10,6 +10,7 @@ import { PodcastSection } from '@/components/home/PodcastSection'
 import { DataSection } from '@/components/home/DataSection'
 import { CuneiformDivider } from '@/components/brand/Brand'
 import { getArticles, getPodcasts, getCategories } from '@/lib/data'
+import { getGovernorateCounts } from '@/lib/governorate-counts'
 
 export const dynamic = 'force-static'
 export const revalidate = 3600
@@ -25,15 +26,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const locale = (['ar', 'ku', 'en'].includes(resolvedParams.locale) ? resolvedParams.locale : 'ar') as 'ar' | 'ku' | 'en'
 
   /* جلب البيانات من Supabase — فارغة عند الإطلاق */
-  const [{ articles }, categories, podcasts] = await Promise.all([
+  const [{ articles }, categories, podcasts, govCounts] = await Promise.all([
     getArticles({ limit: 9 }),
     getCategories(),
     getPodcasts(3),
+    getGovernorateCounts(),
   ])
 
   return (
     <div className="min-h-screen">
-      <Suspense fallback={<div className="h-96 animate-pulse bg-lapis-950" />}>
+      <Suspense fallback={<div className="h-96 animate-pulse bg-cream" />}>
         <HeroSection locale={locale} />
       </Suspense>
 
@@ -47,11 +49,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <CategoryShowcase locale={locale} />
       </Suspense>
 
-      <Suspense fallback={<div className="h-96 animate-pulse bg-lapis-950" />}>
-        <IraqMapSection locale={locale} />
+      <Suspense fallback={<div className="h-96 animate-pulse bg-cream" />}>
+        <IraqMapSection locale={locale} counts={govCounts} />
       </Suspense>
 
-      <Suspense fallback={<div className="h-96 animate-pulse bg-lapis-950" />}>
+      <Suspense fallback={<div className="h-96 animate-pulse bg-cream" />}>
         <DataSection locale={locale} />
       </Suspense>
 
@@ -59,7 +61,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <PodcastSection locale={locale} episodes={podcasts as any} />
       </Suspense>
 
-      <Suspense fallback={<div className="h-96 animate-pulse bg-lapis-950" />}>
+      <Suspense fallback={<div className="h-96 animate-pulse bg-cream" />}>
         <NewsletterSignup locale={locale} />
       </Suspense>
     </div>

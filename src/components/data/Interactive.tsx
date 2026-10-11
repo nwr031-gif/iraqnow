@@ -28,7 +28,7 @@ export function GovernorateIndex({
           href={`/${locale}/governorate/${gov.slug}`}
           className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-xl"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lapis-700 to-lapis-950 font-kufi text-[10px] font-bold text-white/70">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--foreground)] font-kufi text-[10px] font-bold text-[var(--background)]">
             {String(i + 1).padStart(2, '0')}
           </span>
           <div className="min-w-0 flex-1">
@@ -40,8 +40,8 @@ export function GovernorateIndex({
               {gov.articles} {labels.articles}
             </p>
           </div>
-          {gov.hot && <span className="h-2 w-2 shrink-0 rounded-full bg-terra-500" />}
-          <span className="absolute bottom-0 start-0 h-0.5 w-0 bg-gradient-to-r from-gold-400 to-gold-600 transition-all duration-400 group-hover:w-full" />
+          {gov.hot && <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--foreground)]" />}
+          <span className="absolute bottom-0 start-0 h-0.5 w-0 bg-[var(--foreground)] transition-all duration-400 group-hover:w-full" />
         </Link>
       ))}
     </div>
@@ -84,7 +84,7 @@ export function DatasetDownload({
       dir={dir}
     >
       <div className="flex items-center gap-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-lapis-700 to-lapis-950 text-white/70">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--foreground)] text-[var(--background)]">
           <Download className="h-5 w-5" />
         </span>
         <div>

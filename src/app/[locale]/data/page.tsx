@@ -1,84 +1,90 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { Home, ChevronLeft, Database, Download, TrendingUp, BarChart as ChartIcon, Users, Zap, Droplets, Coins, Landmark } from 'lucide-react'
+import { Home, ChevronLeft, Database, Newspaper, Flame, CalendarDays, LayoutGrid, MapPin, Clock, Mic, Users, TrendingUp } from 'lucide-react'
 import { Reveal, CountUp } from '@/components/ui/Reveal'
-import { IshtarStar, CuneiformDivider } from '@/components/brand/Brand'
-import { BarChart, LineChart, DonutChart } from '@/components/data/Charts'
+import { BarChart, LineChart } from '@/components/data/Charts'
 import { DatasetDownload } from '@/components/data/Interactive'
+import { getSiteStats } from '@/lib/data-stats'
+import { getGovernorateCounts } from '@/lib/governorate-counts'
+import { GOVERNORATES_19 } from '@/lib/governorates'
 
 export const dynamic = 'force-static'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'العراق بالأرقام — صحافة البيانات',
-  description: 'منصة صحافة البيانات العراقية: مؤشرات اقتصادية واجتماعية حية، رسوم تفاعلية، وقواعد بيانات مفتوحة للتحميل',
-  alternates: { languages: { ar: '/ar/data', ku: '/ku/data', en: '/en/data' } },
+  description: 'لوحة بيانات حية لمنصة العراق الآن: إحصاءات النشر، توزيع التغطية حسب الأقسام والمحافظات، وقواعد بيانات مفتوحة للتحميل',
+  alternates: { languages: { ar: '/ar/data', en: '/en/data' } },
 }
 
-const UI: Record<string, any> = {
+const UI: Record<'ar' | 'en', any> = {
   ar: {
     badge: 'صحافة البيانات', title: 'العراق بالأرقام',
-    subtitle: 'بيانات مفتوحة ورسوم تفاعلية لفهم ما يجري — للباحثين والصحفيين والمواطنين',
-    kpis: 'مؤشرات رئيسية', charts: 'الرسوم التفاعلية', datasets: 'قواعد البيانات المفتوحة',
-    download: 'تحميل CSV', updated: 'آخر تحديث', sources: 'المصادر: الجهاز المركزي للإحصاء، البنك المركزي العراقي، وزارة النفط، وزارة الكهرباء، وزارة التخطيط',
-    oilRevenue: 'الإيرادات النفطية الشهرية (مليار دولار)', dollar: 'سعر صرف الدولار (دينار عراقي)',
-    budget: 'توزيع الموازنة الاتحادية 2026',
-    exploreAll: 'مكتبة البيانات الكاملة',
-  },
-  ku: {
-    badge: 'ڕۆژنامەوانی داتا', title: 'عێراق بە ژمارەکان',
-    subtitle: 'داتای کراوە و گرافە کارلێکەرەکان بۆ تێگەیشتن — بۆ لێکۆڵەرەوان و ڕۆژنامەنووسان',
-    kpis: 'نیشاندەرەکانی سەرەکی', charts: 'گرافە کارلێکەرەکان', datasets: 'بنکەدراوەکانی کراوە',
-    download: 'CSV دابەزێنە', updated: 'دوایین نوێکردنەوە', sources: 'سەرچاوەکان: دەستەی ناوەندی ئامار، بانکی ناوەندی عێراق',
-    oilRevenue: 'داهاتی مانگانەی نەوت ( ملیار دۆلار)', dollar: 'نرخی دۆلار (دیناری عێراقی)',
-    budget: 'دابەشکردنی بودجەی فیدراڵی ٢٠٢٦',
-    exploreAll: 'کتێبخانەی داتای تەواو',
+    subtitle: 'لوحة بيانات حية من غرفة أخبار العراق الآن — إحصاءات النشر والتغطية محدثة من قاعدة البيانات',
+    kpis: 'مؤشرات المنصة',
+    totalArticles: 'إجمالي المقالات', thisWeek: 'هذا الأسبوع', breaking: 'أخبار عاجلة',
+    categories: 'أقسام مغطاة', governorates: 'محافظات مغطاة', avgReading: 'متوسط وقت القراءة',
+    charts: 'الرسوم البيانية', byCategory: 'المقالات حسب القسم', byMonth: 'النشر خلال 6 أشهر',
+    latestSection: 'أحدث ما نُشر', viewAll: 'كل الأخبار',
+    datasets: 'قواعد البيانات المفتوحة', articlesCsv: 'أرشيف المقالات (CSV)', govCsv: 'التغطية حسب المحافظة (CSV)',
+    minutes: 'دقيقة', article: 'مقال', updatedAt: 'آخر تحديث للبيانات', articlesNote: 'العنوان، القسم، التاريخ، القراءات',
+    govNote: 'المحافظة وعدد المقالات',
   },
   en: {
     badge: 'Data Journalism', title: 'Iraq in Numbers',
-    subtitle: 'Open data and interactive charts to understand what\'s happening — for researchers, journalists and citizens',
-    kpis: 'Key Indicators', charts: 'Interactive Charts', datasets: 'Open Datasets',
-    download: 'Download CSV', updated: 'Last updated', sources: 'Sources: Central Statistical Organization, Central Bank of Iraq, Oil Ministry, Planning Ministry',
-    oilRevenue: 'Monthly Oil Revenue (Billion USD)', dollar: 'USD Exchange Rate (Iraqi Dinar)',
-    budget: 'Federal Budget 2026 Distribution',
-    exploreAll: 'Full Data Library',
+    subtitle: 'A live data dashboard from the Iraq Now newsroom — publishing and coverage stats updated from the database',
+    kpis: 'Platform Indicators',
+    totalArticles: 'Total Articles', thisWeek: 'This Week', breaking: 'Breaking News',
+    categories: 'Sections Covered', governorates: 'Governorates Covered', avgReading: 'Avg. Reading Time',
+    charts: 'Charts', byCategory: 'Articles by Section', byMonth: 'Publishing — Last 6 Months',
+    latestSection: 'Latest Published', viewAll: 'All News',
+    datasets: 'Open Datasets', articlesCsv: 'Articles Archive (CSV)', govCsv: 'Coverage by Governorate (CSV)',
+    minutes: 'min', article: 'articles', updatedAt: 'Data last updated', articlesNote: 'Title, section, date, views',
+    govNote: 'Governorate and article count',
   },
 }
 
-const MONTHS_AR = ['كان2', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'ت1', 'ت2', 'ك1']
-
-const OIL_DATA = [8.2, 8.9, 9.4, 9.1, 9.8, 9.5, 10.2, 10.6, 9.9, 10.4, 11.1, 10.8]
-const DOLLAR_DATA = [1310, 1315, 1320, 1310, 1305, 1310, 1312, 1318, 1315, 1310, 1312, 1310]
-
-const BUDGET_SEGMENTS = [
-  { label: 'الرواتب والتشغيل', value: 68, color: '#262626' },
-  { label: 'الاستثمار', value: 19, color: '#737373' },
-  { label: 'الأمن والدفاع', value: 8, color: '#c44224' },
-  { label: 'أخرى', value: 5, color: '#6d6b63' },
-]
-
-const KPIS = [
-  { icon: Users, value: 46.2, suffix: 'M', label: { ar: 'السكان', ku: 'دانیشتووان', en: 'Population' }, trend: '+2.1%', up: true },
-  { icon: Coins, value: 264, prefix: '$', suffix: 'B', label: { ar: 'الناتج المحلي', ku: 'داهاتی ناوخۆ', en: 'GDP' }, trend: '+4.2%', up: true },
-  { icon: TrendingUp, value: 4.2, suffix: '%', label: { ar: 'التضخم السنوي', ku: 'هەڵاوسان', en: 'Inflation' }, trend: '+0.3%', up: false },
-  { icon: Zap, value: 3.4, suffix: 'M', label: { ar: 'صادرات النفط يومياً (برميل)', ku: 'هەناردەی نەوت', en: 'Daily Oil Exports (bbl)' }, trend: '+120K', up: true },
-  { icon: Droplets, value: 15.5, suffix: '%', label: { ar: 'معدل البطالة', ku: 'ڕێژەی بێکاری', en: 'Unemployment' }, trend: '-1.2%', up: true },
-  { icon: Landmark, value: 18.5, suffix: 'h', label: { ar: 'ساعات تجهيز الكهرباء', ku: 'کاتژمێری کارەبا', en: 'Electricity Hours' }, trend: '+2.1h', up: true },
-]
-
-const DATASETS = [
-  { name: { ar: 'الموازنة العامة 2026', ku: 'بودجەی گشتی', en: 'General Budget 2026' }, rows: 1240, size: '2.4 MB', icon: Landmark },
-  { name: { ar: 'أسعار الصرف اليومية', ku: 'نرخەکانی دۆلار', en: 'Daily Exchange Rates' }, rows: 3650, size: '890 KB', icon: Coins },
-  { name: { ar: 'إحصاءات الكهرباء الشهرية', ku: 'ئاماری کارەبا', en: 'Monthly Electricity Stats' }, rows: 216, size: '310 KB', icon: Zap },
-  { name: { ar: 'التعداد السكاني 2024', ku: 'سەرژمێری ٢٠٢٤', en: 'Census 2024' }, rows: 8900, size: '12 MB', icon: Users },
-]
+const CATEGORY_LABELS: Record<string, { ar: string; en: string }> = {
+  politics: { ar: 'السياسة', en: 'Politics' }, economy: { ar: 'الاقتصاد', en: 'Economy' },
+  security: { ar: 'الأمن', en: 'Security' }, society: { ar: 'المجتمع', en: 'Society' },
+  culture: { ar: 'الثقافة', en: 'Culture' }, sports: { ar: 'الرياضة', en: 'Sports' },
+  technology: { ar: 'التكنولوجيا', en: 'Technology' }, health: { ar: 'الصحة', en: 'Health' },
+  education: { ar: 'التعليم', en: 'Education' }, environment: { ar: 'البيئة', en: 'Environment' },
+  local: { ar: 'محليات', en: 'Local' }, world: { ar: 'العالم', en: 'World' },
+}
 
 export default async function DataPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: rawLocale } = await params
-  const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as 'ar' | 'ku' | 'en'
+  const locale = (rawLocale === 'en' ? 'en' : 'ar') as 'ar' | 'en'
   const t = UI[locale]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
+  const numLocale = locale === 'ar' ? 'ar-IQ' : 'en-US'
+
+  const [stats, govCounts] = await Promise.all([getSiteStats(locale), getGovernorateCounts()])
+
+  /* بيانات حقيقية — مع قيم هبوط آمنة قبل أول نشر */
+  const totalArticles = stats?.totalArticles ?? 0
+  const thisWeek = stats?.thisWeek ?? 0
+  const breakingCount = stats?.breakingCount ?? 0
+  const avgReading = stats?.avgReadingTime ?? 0
+  const categoriesCovered = stats?.categoriesCovered ?? 0
+  const governoratesCovered = stats?.governoratesCovered ?? 0
+
+  const catEntries = Object.entries(stats?.byCategory || {}).sort((a, b) => b[1] - a[1]).slice(0, 8)
+  const catLabels = catEntries.map(([slug]) => CATEGORY_LABELS[slug]?.[locale] || slug)
+  const catValues = catEntries.map(([, v]) => v)
+
+  const monthLabels = (stats?.byMonth || []).map((m) => m.label)
+  const monthValues = (stats?.byMonth || []).map((m) => m.count)
+
+  const govRows = GOVERNORATES_19
+    .map((g) => ({ name: g[locale], slug: g.slug, count: govCounts ? govCounts[g.slug] || 0 : 0 }))
+    .sort((a, b) => b.count - a.count)
+
+  const updatedLabel = stats?.updatedAt
+    ? new Date(stats.updatedAt).toLocaleDateString(numLocale, { year: 'numeric', month: 'long', day: 'numeric' })
+    : '—'
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -89,126 +95,195 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
     creator: { '@type': 'Organization', name: 'Iraq Now' },
   }
 
+  const kpis = [
+    { icon: Newspaper, value: totalArticles, suffix: '', label: t.totalArticles },
+    { icon: CalendarDays, value: thisWeek, suffix: '', label: t.thisWeek },
+    { icon: Flame, value: breakingCount, suffix: '', label: t.breaking },
+    { icon: LayoutGrid, value: categoriesCovered, suffix: `/${12}`, label: t.categories },
+    { icon: MapPin, value: governoratesCovered, suffix: `/${19}`, label: t.governorates },
+    { icon: Clock, value: avgReading, suffix: ` ${t.minutes}`, label: t.avgReading },
+  ]
+
   return (
     <div dir={dir} className="min-h-screen bg-[var(--background)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* الرأس */}
-      <section className="relative overflow-hidden bg-lapis-950 py-14 text-white lg:py-20">
-        <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
-        <div
-          className="pointer-events-none absolute -top-20 start-1/3 h-72 w-72 rounded-full opacity-15 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, #a3a3a3 0%, transparent 70%)' }}
-          aria-hidden="true"
-        />
-        <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-white/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
+      <section className="border-b border-line bg-[var(--background)] py-12 lg:py-16">
+        <div className="container-main">
+          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-[var(--muted)]">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-[var(--foreground)]">
               <Home className="h-3.5 w-3.5" />
               {locale === 'en' ? 'Home' : 'الرئيسية'}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="font-medium text-white/70">{t.title}</span>
+            <span className="font-medium text-[var(--foreground)]">{t.title}</span>
           </nav>
 
           <Reveal className="text-center">
-            <span className="badge mx-auto mb-5 border border-line bg-white/5 text-white/70">
+            <span className="badge badge-lapis mx-auto mb-5">
               <Database className="h-3.5 w-3.5" />
               {t.badge}
             </span>
-            <h1 className="font-kufi text-3xl font-bold lg:text-5xl">
-              <span className="text-gold-gradient">{t.title}</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm text-white/60 lg:text-base">{t.subtitle}</p>
+            <h1 className="font-kufi text-3xl font-bold tracking-tight lg:text-5xl">{t.title}</h1>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-[var(--muted)] lg:text-base">{t.subtitle}</p>
           </Reveal>
         </div>
       </section>
 
-      <div className="container-main py-10">
-        {/* المؤشرات */}
-        <Reveal>
-          <h2 className="section-title mb-6 font-kufi text-xl font-bold lg:text-2xl">{t.kpis}</h2>
+      <div className="container-main py-10 lg:py-14">
+        {/* المؤشرات الحقيقية */}
+        <Reveal className="mb-6 flex items-end justify-between">
+          <h2 className="section-title text-xl lg:text-2xl">{t.kpis}</h2>
+          <p className="text-[11px] text-[var(--muted)]">{t.updatedAt}: {updatedLabel}</p>
         </Reveal>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {KPIS.map((kpi, i) => (
-            <Reveal key={i} delay={(i % 6) * 60}>
-              <div className="group h-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-line-strong">
-                <span className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--foreground)]/12 text-[var(--muted)]">
-                  <kpi.icon className="h-4.5 w-4.5" />
+          {kpis.map((kpi, i) => (
+            <Reveal key={i} delay={(i % 6) * 50}>
+              <div className="group h-full rounded-2xl border border-line bg-[var(--card-bg)] p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[var(--shadow-card)]">
+                <span className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-cream-deep text-[var(--foreground)]">
+                  <kpi.icon className="h-4 w-4" />
                 </span>
-                <p className="font-kufi text-xl font-bold text-[var(--foreground)]">
-                  {kpi.prefix || ''}<CountUp end={kpi.value} suffix={kpi.suffix} />{kpi.suffix === '%' ? '' : ''}
+                <p className="font-kufi text-xl font-bold tabular-nums text-[var(--foreground)]">
+                  <CountUp end={kpi.value} suffix={kpi.suffix} />
                 </p>
-                <p className="mt-1 text-[10px] leading-snug text-[var(--muted)]">{kpi.label[locale]}</p>
-                <p className={`mt-1.5 text-[10px] font-bold ${kpi.up ? 'text-green-600' : 'text-[var(--muted)]'}`}>{kpi.trend}</p>
+                <p className="mt-1 text-[10px] leading-snug text-[var(--muted)]">{kpi.label}</p>
               </div>
             </Reveal>
           ))}
         </div>
 
-        {/* الرسوم */}
-        <Reveal>
-          <h2 className="section-title mb-6 mt-14 font-kufi text-xl font-bold lg:text-2xl">{t.charts}</h2>
+        {/* الرسوم الحقيقية */}
+        <Reveal className="mb-6 mt-14">
+          <h2 className="section-title text-xl lg:text-2xl">{t.charts}</h2>
         </Reveal>
         <div className="grid gap-5 lg:grid-cols-2">
-          <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-[var(--card-bg)]" />}>
+          <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl border border-line bg-cream" />}>
             <Reveal>
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6">
+              <div className="rounded-2xl border border-line bg-[var(--card-bg)] p-5 lg:p-6">
                 <h3 className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-                  <ChartIcon className="h-4 w-4 text-[var(--muted)]" />
-                  {t.oilRevenue}
+                  <TrendingUp className="h-4 w-4 text-[var(--muted)]" />
+                  {t.byCategory}
                 </h3>
-                <BarChart data={OIL_DATA} labels={MONTHS_AR} color="#737373" />
+                {catValues.length > 0 ? (
+                  <BarChart data={catValues} labels={catLabels} color="#404040" />
+                ) : (
+                  <p className="py-16 text-center text-sm text-[var(--muted)]">—</p>
+                )}
               </div>
             </Reveal>
           </Suspense>
 
-          <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl bg-[var(--card-bg)]" />}>
+          <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl border border-line bg-cream" />}>
             <Reveal delay={80}>
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6">
+              <div className="rounded-2xl border border-line bg-[var(--card-bg)] p-5 lg:p-6">
                 <h3 className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-                  <TrendingUp className="h-4 w-4 text-[var(--muted)]" />
-                  {t.dollar}
+                  <CalendarDays className="h-4 w-4 text-[var(--muted)]" />
+                  {t.byMonth}
                 </h3>
-                <LineChart data={DOLLAR_DATA} labels={MONTHS_AR} color="#a3a3a3" />
+                <LineChart data={monthValues} labels={monthLabels} color="#737373" />
               </div>
             </Reveal>
           </Suspense>
         </div>
 
-        <Reveal>
-          <div className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6">
-            <h3 className="mb-6 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-              <Landmark className="h-4 w-4 text-[var(--muted)]" />
-              {t.budget}
-            </h3>
-            <DonutChart segments={BUDGET_SEGMENTS} centerValue="2026" centerLabel={locale === 'en' ? 'Budget' : 'الموازنة'} />
+        {/* التغطية حسب المحافظة */}
+        <Reveal className="mb-6 mt-14 flex items-end justify-between">
+          <h2 className="section-title text-xl lg:text-2xl">{t.govCsv}</h2>
+          <Link href={`/${locale}/map`} className="text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
+            {locale === 'en' ? '3D Map →' : 'الخريطة 3D ←'}
+          </Link>
+        </Reveal>
+        <Reveal delay={60}>
+          <div className="overflow-hidden rounded-2xl border border-line bg-[var(--card-bg)]">
+            <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-5">
+              {govRows.slice(0, 10).map((g) => (
+                <Link
+                  key={g.slug}
+                  href={`/${locale}/governorate/${g.slug}`}
+                  className="flex items-center justify-between gap-2 bg-[var(--card-bg)] px-4 py-3 transition-colors hover:bg-cream"
+                >
+                  <span className="truncate text-xs font-medium text-[var(--foreground)]">{g.name}</span>
+                  <span className="shrink-0 text-xs font-bold tabular-nums text-[var(--muted)]">{g.count.toLocaleString(numLocale)}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </Reveal>
 
+        {/* أحدث ما نُشر */}
+        {stats && stats.latest.length > 0 && (
+          <>
+            <Reveal className="mb-6 mt-14 flex items-end justify-between">
+              <h2 className="section-title text-xl lg:text-2xl">{t.latestSection}</h2>
+              <Link href={`/${locale}/latest`} className="text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
+                {t.viewAll} →
+              </Link>
+            </Reveal>
+            <Reveal delay={60}>
+              <div className="overflow-hidden rounded-2xl border border-line bg-[var(--card-bg)]">
+                {stats.latest.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-4 border-b border-line px-4 py-3.5 last:border-0 sm:px-5"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="hidden shrink-0 text-[10px] font-bold tabular-nums text-[var(--muted)] sm:block">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <p className="truncate text-sm text-[var(--foreground)]">{item.title || '—'}</p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-cream-deep px-2.5 py-0.5 text-[10px] font-bold text-[var(--muted)]">
+                      {CATEGORY_LABELS[item.category]?.[locale] || item.category}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </>
+        )}
+
         {/* قواعد البيانات */}
-        <Reveal>
-          <h2 className="section-title mb-6 mt-14 font-kufi text-xl font-bold lg:text-2xl">{t.datasets}</h2>
+        <Reveal className="mb-6 mt-14">
+          <h2 className="section-title text-xl lg:text-2xl">{t.datasets}</h2>
         </Reveal>
         <div className="grid gap-3 sm:grid-cols-2">
-          {DATASETS.map((ds, i) => (
-            <Reveal key={i} delay={(i % 2) * 80}>
-              <DatasetDownload
-                name={ds.name[locale]}
-                rows={ds.rows}
-                size={ds.size}
-                locale={locale}
-              />
-            </Reveal>
-          ))}
+          <Reveal>
+            <DatasetDownload
+              name={t.articlesCsv}
+              rows={totalArticles}
+              size={`${Math.max(1, Math.round(totalArticles / 2))} KB`}
+              locale={locale}
+              note={t.articlesNote}
+              csv={{
+                headers: locale === 'en'
+                  ? ['Title', 'Section', 'Governorate', 'Published', 'Views', 'Reading (min)']
+                  : ['العنوان', 'القسم', 'المحافظة', 'تاريخ النشر', 'القراءات', 'وقت القراءة'],
+                rows: (stats?.latest || []).map((a) => [a.title, a.category, '', a.date, a.views, '']),
+              }}
+            />
+          </Reveal>
+          <Reveal delay={80}>
+            <DatasetDownload
+              name={t.govCsv}
+              rows={govRows.length}
+              size="4 KB"
+              locale={locale}
+              note={t.govNote}
+              csv={{
+                headers: locale === 'en' ? ['Governorate', 'Articles'] : ['المحافظة', 'عدد المقالات'],
+                rows: govRows.map((g) => [g.name, g.count]),
+              }}
+            />
+          </Reveal>
         </div>
 
-        <CuneiformDivider variant="star" className="my-12 opacity-40" />
-
-        <p className="text-center text-[11px] leading-relaxed text-[var(--muted)]">{t.sources}</p>
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] text-[var(--muted)]">
+          <span className="flex items-center gap-1.5"><Mic className="h-3.5 w-3.5" />{stats?.podcasts ?? 0} {locale === 'en' ? 'podcasts' : 'حلقة بودكاست'}</span>
+          <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />{stats?.authors ?? 0} {locale === 'en' ? 'editors' : 'محرراً'}</span>
+          <span>{locale === 'en' ? 'All data exported from the Iraq Now database' : 'كل الأرقام مستخرجة من قاعدة بيانات العراق الآن مباشرة'}</span>
+        </div>
       </div>
     </div>
   )
 }
-
-

@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'ar_IQ',
-    alternateLocale: ['ku_IQ', 'en_US'],
+    alternateLocale: ['en_US'],
     url: 'https://iraqnow.pages.dev',
     siteName: 'العراق الآن — Iraq Now',
     title: 'العراق الآن | Iraq Now — صوت العراق الحقيقي',
@@ -68,18 +68,15 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbf9f4' },
-    { media: '(prefers-color-scheme: dark)', color: '#0e0d0b' },
-  ],
+  themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  colorScheme: 'light dark',
+  colorScheme: 'light',
 }
 
 export async function generateStaticParams() {
-  return [{ locale: 'ar' }, { locale: 'ku' }, { locale: 'en' }]
+  return [{ locale: 'ar' }, { locale: 'en' }]
 }
 
 export default async function RootLayout({

@@ -4,7 +4,6 @@ import { HeroSection } from '@/components/home/HeroSection'
 import { LatestNews } from '@/components/home/LatestNews'
 import { CategoryShowcase } from '@/components/home/CategoryShowcase'
 import { TrendingTopics } from '@/components/home/TrendingTopics'
-import { NewsletterSignup } from '@/components/home/NewsletterSignup'
 import { IraqMapSection } from '@/components/home/IraqMapSection'
 import { PodcastSection } from '@/components/home/PodcastSection'
 import { DataSection } from '@/components/home/DataSection'
@@ -59,10 +58,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       <Suspense fallback={<div className="h-96 animate-pulse bg-[var(--background)]" />}>
         <PodcastSection locale={locale} episodes={podcasts as any} />
-      </Suspense>
-
-      <Suspense fallback={<div className="h-96 animate-pulse bg-cream" />}>
-        <NewsletterSignup locale={locale} />
       </Suspense>
     </div>
   )

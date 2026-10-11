@@ -53,10 +53,12 @@ if (fs.existsSync(sitemapBody)) {
   }
 }
 
-/* _redirects — تحويل الجذر والمسارات بدون لغة إلى /ar (بدون Worker) */
+/* _redirects — تحويل الجذر والمسارات بدون لغة إلى /ar + الكردية إلى العربية */
 const barePaths = ['about', 'contact', 'data', 'editorial-policy', 'latest', 'map', 'newsletter', 'podcasts', 'privacy', 'search', 'terms', 'trending']
 const redirects = [
   '/ /ar 302',
+  '/ku /ar 302',
+  '/ku/* /ar/:splat 302',
   ...barePaths.map((p) => `/${p} /ar/${p} 302`),
 ].join('\n') + '\n'
 fs.writeFileSync(path.join(DEST, '_redirects'), redirects)

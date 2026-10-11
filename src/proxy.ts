@@ -1,47 +1,61 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const LOCALES = ['ar', 'ku', 'en']
+const LOCALES = ['ar', 'en']
 const DEFAULT_LOCALE = 'ar'
-const ADMIN_ALLOWED_ROLES = ['JOURNALIST', 'EDITOR', 'ADMIN']
 
 function getLocaleFromPath(pathname: string) {
   const segments = pathname.split('/')
   const potentialLocale = segments[1]
-  if (LOCALES.includes(potentialLocale)) {
-    return potentialLocale
-  }
+  if (LOCALES.includes(potentialLocale)) return potentialLocale
   return null
 }
 
-const SESSION_COOKIE_NAMES = [
-  'authjs.session-token',
-  '__Secure-authjs.session-token',
-  'next-auth.session-token',
-  '__Secure-next-auth.session-token',
-]
-
-function hasSessionCookie(request: NextRequest): boolean {
-  return SESSION_COOKIE_NAMES.some((name) => !!request.cookies.get(name)?.value)
+/* التحقق من كوكي admin — نفس خوارزمية lib/admin-auth بدون استيراد (edge) */
+async function isAdminCookieValid(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get('iqn_admin')?.value
+  if (!token) return false
+  const salt = process.env.ADMIN_COOKIE_SECRET || 'iraqnow-admin-v1'
+  const password = process.env.ADMIN_PASSWORD || 'Noor07813415176@@'
+  const data = new TextEncoder().encode(`${salt}::${password}`)
+  const digest = await crypto.subtle.digest('SHA-256', data)
+  const expected = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('')
+  return token === expected
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  /* ───── حماية لوحة التحكم /admin ─────
-     ملاحظة: NextAuth v5 يشفّر الجلسة (JWE)، لذا نتحقق هنا من وجود الكوكي فقط.
-     التحقق الفعلي من الدور يتم في admin/layout.tsx وفي مسارات API عبر requirePermission */
-  if (pathname.startsWith('/admin')) {
-    if (!hasSessionCookie(request)) {
-      const loginUrl = new URL(`/${DEFAULT_LOCALE}/auth/signin`, request.url)
-      loginUrl.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(loginUrl)
+  /* ═══ حماية واجهات API الخاصة بالإدارة ═══ */
+  if (pathname.startsWith('/api/admin/')) {
+    const valid = await isAdminCookieValid(request)
+    if (!valid) {
+      return NextResponse.json({ error: 'غير مصرح بالوصول', code: 'UNAUTHORIZED' }, { status: 401 })
     }
-
     return NextResponse.next()
   }
 
-  /* ───── منطق اللغات ───── */
+  /* ═══ /admin — الصفحة الرئيسية تعرض نموذج الدخول، والبقية محمية ═══ */
+  if (pathname === '/admin' || pathname === '/admin/') {
+    return NextResponse.next()
+  }
+  if (pathname.startsWith('/admin')) {
+    const valid = await isAdminCookieValid(request)
+    if (!valid) {
+      const loginUrl = new URL('/admin', request.url)
+      return NextResponse.redirect(loginUrl)
+    }
+    return NextResponse.next()
+  }
+
+  /* ═══ توجيه اللغة الكردية إلى العربية ═══ */
+  if (pathname === '/ku' || pathname.startsWith('/ku/')) {
+    const url = request.nextUrl.clone()
+    url.pathname = pathname.replace(/^\/ku/, '/ar') || '/ar'
+    return NextResponse.redirect(url)
+  }
+
+  /* ═══ توجيه المسارات بدون لغة ═══ */
   const locale = getLocaleFromPath(pathname)
 
   if (locale) {
@@ -68,6 +82,6 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     '/((?!api|rss|uploads|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.[a-zA-Z0-9]+$).*)',
+    '/api/admin/:path*',
   ],
 }
-

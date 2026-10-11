@@ -46,13 +46,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export async function generateStaticParams() {
   return Object.keys(GOV_NAMES).flatMap((slug) =>
-    ['ar', 'ku', 'en'].map((locale) => ({ slug, locale }))
+    ['ar', 'en'].map((locale) => ({ slug, locale }))
   )
 }
 
 export default async function GovernoratePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale: rawLocale, slug } = await params
-  const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as 'ar' | 'ku' | 'en'
+  const locale = (rawLocale === 'en' ? 'en' : 'ar') as 'ar' | 'ku' | 'en'
   const dir = locale === 'en' ? 'ltr' : 'rtl'
 
   const gov = GOV_NAMES[slug]

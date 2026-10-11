@@ -44,7 +44,7 @@ export default async function AdminDashboard() {
     { icon: Newspaper, label: 'إجمالي المقالات', value: stats.articles, sub: `${stats.published} منشور`, color: 'from-lapis-500 to-lapis-700' },
     { icon: Eye, label: 'إجمالي القراءات', value: stats.views, sub: 'آخر 30 يوماً', color: 'from-gold-500 to-gold-700' },
     { icon: MessageSquare, label: 'التعليقات', value: stats.comments, sub: `${stats.pending} بانتظار المراجعة`, color: 'from-terra-500 to-terra-700', alert: stats.pending > 0 },
-    { icon: Mail, label: 'المشتركون', value: stats.subscribers, sub: 'نشرة بريدية نشطة', color: 'from-emerald-500 to-emerald-700' },
+    { icon: Mic, label: 'البودكاست', value: stats.podcasts, sub: 'حلقة صوتية', color: 'from-ink-500 to-ink-700' },
   ]
 
   return (

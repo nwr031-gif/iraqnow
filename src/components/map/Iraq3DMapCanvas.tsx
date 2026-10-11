@@ -88,8 +88,18 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
   const containerRef = useRef<HTMLDivElement>(null)
   const [ready, setReady] = useState(false)
   const [isDark, setIsDark] = useState(false)
+  const [vh, setVh] = useState(height)
   const [hovered, setHovered] = useState<{ name: string; articles: number; x: number; y: number } | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
+
+  /* ارتفاع متجاوب — أصغر على الهاتف */
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)')
+    const apply = () => setVh(mq.matches ? Math.min(height, 460) : height)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [height])
 
   const stateRef = useRef<{
     renderer?: THREE.WebGLRenderer
@@ -402,7 +412,7 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
   const govName = (g: GovMarker) => g[locale]
 
   return (
-    <div className="relative w-full overflow-hidden rounded-3xl border border-line bg-[var(--background)]" style={{ height }}>
+    <div className="relative w-full overflow-hidden rounded-3xl border border-line bg-[var(--background)]" style={{ height: vh }}>
       {/* الخلفية — تتكيف مع الوضع */}
       <div className="pointer-events-none absolute inset-0" style={{ background: palette(isDark).bg }} aria-hidden="true" />
 

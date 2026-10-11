@@ -54,11 +54,15 @@ export function DatasetDownload({
   rows,
   size,
   locale,
+  csv,
+  note,
 }: {
   name: string
   rows: number
   size: string
   locale: Locale
+  csv?: { headers: string[]; rows: (string | number)[][] }
+  note?: string
 }) {
   const [done, setDone] = useState(false)
   const dir = locale === 'en' ? 'ltr' : 'rtl'
@@ -66,8 +70,14 @@ export function DatasetDownload({
 
   const download = (e: React.MouseEvent) => {
     e.preventDefault()
-    const csv = `dataset,note\n${name},demo-export-iraqnow`
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' })
+    let body = ''
+    if (csv) {
+      const escape = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`
+      body = [csv.headers.map(escape).join(','), ...csv.rows.map((r) => r.map(escape).join(','))].join('\n')
+    } else {
+      body = `dataset,note\n${name},demo-export-iraqnow`
+    }
+    const blob = new Blob(['\uFEFF' + body], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -80,23 +90,24 @@ export function DatasetDownload({
 
   return (
     <div
-      className="group flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
+      className="group flex items-center justify-between gap-3 rounded-2xl border border-line bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[var(--shadow-card)] sm:p-5"
       dir={dir}
     >
-      <div className="flex items-center gap-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--foreground)] text-[var(--background)]">
-          <Download className="h-5 w-5" />
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cream-deep text-[var(--foreground)] sm:h-11 sm:w-11">
+          <Download className="h-4 w-4 sm:h-5 sm:w-5" />
         </span>
-        <div>
-          <p className="font-kufi text-sm font-bold text-[var(--foreground)]">{name}</p>
+        <div className="min-w-0">
+          <p className="truncate font-kufi text-sm font-bold text-[var(--foreground)]">{name}</p>
           <p className="text-[11px] text-[var(--muted)]">
             {rows.toLocaleString(numLocale)} {locale === 'en' ? 'rows' : 'صف'} · {size}
           </p>
+          {note && <p className="mt-0.5 hidden text-[10px] text-[var(--muted)] sm:block">{note}</p>}
         </div>
       </div>
       <button
         onClick={download}
-        className="flex items-center gap-1.5 rounded-xl border border-line px-3.5 py-2 text-[11px] font-bold text-[var(--muted)] transition-all hover:bg-[var(--foreground)] hover:text-[var(--background)]"
+        className="flex shrink-0 items-center gap-1.5 rounded-full border border-line px-3.5 py-2 text-[11px] font-bold text-[var(--foreground)] transition-all hover:bg-[var(--foreground)] hover:text-[var(--background)]"
       >
         <Download className="h-3.5 w-3.5" />
         {done ? (locale === 'en' ? 'Done ✓' : 'تم ✓') : 'CSV'}

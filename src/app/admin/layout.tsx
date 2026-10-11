@@ -3,8 +3,9 @@ import { Noto_Sans_Arabic, Noto_Kufi_Arabic } from 'next/font/google'
 import '../[locale]/globals.css'
 import { Providers } from '../[locale]/providers'
 import { AdminShell } from '@/components/admin/AdminShell'
-import { getSessionUser } from '@/lib/rbac'
-import { redirect } from 'next/navigation'
+import { AdminLogin } from '@/components/admin/AdminLogin'
+import { adminIsAuthed } from '@/lib/admin-server'
+import { ADMIN_USER } from '@/lib/admin-auth'
 
 const notoArabic = Noto_Sans_Arabic({ subsets: ['arabic'], variable: '--font-arabic', display: 'swap' })
 const notoKufi = Noto_Kufi_Arabic({ subsets: ['arabic'], variable: '--font-kufi', display: 'swap' })
@@ -19,20 +20,16 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await getSessionUser()
+export const dynamic = 'force-dynamic'
 
-  if (!user || user.role === 'READER') {
-    redirect('/ar/auth/signin?callbackUrl=/admin')
-  }
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const authed = await adminIsAuthed()
 
   return (
     <html lang="ar" dir="rtl" className={`${notoArabic.variable} ${notoKufi.variable}`} suppressHydrationWarning>
       <body className="font-arabic antialiased">
         <Providers locale="ar">
-          <AdminShell user={{ id: user.id, name: user.name || 'محرر', email: user.email || '', role: user.role, image: user.image || undefined }}>
-            {children}
-          </AdminShell>
+          {authed ? <AdminShell user={ADMIN_USER}>{children}</AdminShell> : <AdminLogin />}
         </Providers>
       </body>
     </html>

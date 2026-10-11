@@ -106,7 +106,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export async function generateStaticParams() {
   return Object.keys(INFO_PAGES).flatMap((page) =>
-    ['ar', 'ku', 'en'].map((locale) => ({ page, locale }))
+    ['ar', 'en'].map((locale) => ({ page, locale }))
   )
 }
 
@@ -114,7 +114,7 @@ export const dynamic = 'force-static'
 
 export default async function InfoPageView({ params }: { params: Promise<{ locale: string; page: string }> }) {
   const { locale: rawLocale, page } = await params
-  const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as Locale
+  const locale = (rawLocale === 'en' ? 'en' : 'ar') as Locale
   const data = INFO_PAGES[page]
   if (!data) {
     return (

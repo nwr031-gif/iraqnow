@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth'
+import { adminIsAuthed } from '@/lib/admin-server'
 import { NextResponse } from 'next/server'
 
 export type Role = 'READER' | 'JOURNALIST' | 'EDITOR' | 'ADMIN'
@@ -23,7 +23,7 @@ export function hasRole(userRole: Role | undefined, minRole: Role): boolean {
   return ROLE_LEVEL[userRole] >= ROLE_LEVEL[minRole]
 }
 
-/* مصفوفة الصلاحيات — Permissions matrix */
+/* مصفوفة الصلاحيات */
 export const PERMISSIONS = {
   'dashboard.view': 'JOURNALIST',
   'articles.view.all': 'EDITOR',
@@ -53,34 +53,24 @@ export function can(userRole: Role | undefined, permission: Permission): boolean
 }
 
 /**
- * جلب الجلسة الحالية من الخادم
+ * المستخدم الحالي — مصادقة بكلمة مرور admin (كوكي موقّع)
  */
 export async function getSessionUser(): Promise<SessionUser | null> {
-  try {
-    const session = await auth()
-    if (!session?.user) return null
-    return {
-      id: (session.user as any).id,
-      name: session.user.name,
-      email: session.user.email,
-      image: session.user.image,
-      role: ((session.user as any).role as Role) || 'READER',
-    }
-  } catch {
-    return null
-  }
+  const authed = await adminIsAuthed()
+  if (!authed) return null
+  return { id: 'admin', name: 'المدير', email: 'admin@iraqnow.com', image: null, role: 'ADMIN' }
 }
 
 /**
- * التحقق من الصلاحية في API routes — يرجع 401/403 أو null إذا كان مسموحاً
+ * الحماية في مسارات API — يُرجع 401 إن لم تكن الجلسة admin صالحة
  */
 export async function requirePermission(permission: Permission): Promise<{ user: SessionUser } | NextResponse> {
   const user = await getSessionUser()
   if (!user) {
-    return NextResponse.json({ error: 'يجب تسجيل الدخول', code: 'UNAUTHORIZED' }, { status: 401 })
+    return NextResponse.json({ error: 'غير مصرح بالوصول', code: 'UNAUTHORIZED' }, { status: 401 })
   }
   if (!can(user.role, permission)) {
-    return NextResponse.json({ error: 'ليس لديك صلاحية لهذا الإجراء', code: 'FORBIDDEN' }, { status: 403 })
+    return NextResponse.json({ error: 'لا تملك الصلاحية لهذا الإجراء', code: 'FORBIDDEN' }, { status: 403 })
   }
   return { user }
 }

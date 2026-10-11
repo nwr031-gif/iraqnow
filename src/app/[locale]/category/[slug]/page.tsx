@@ -14,7 +14,7 @@ export const revalidate = 3600
 
 export async function generateStaticParams() {
   const slugs = ['politics', 'economy', 'security', 'society', 'culture', 'sports', 'technology', 'health', 'education', 'environment', 'local', 'world']
-  const locales = ['ar', 'ku', 'en']
+  const locales = ['ar', 'en']
   return slugs.flatMap((slug) => locales.map((locale) => ({ slug, locale })))
 }
 
@@ -69,7 +69,7 @@ export default async function CategoryPage({
   params: Promise<{ locale: string; slug: string }>
 }) {
   const { locale: rawLocale, slug } = await params
-  const locale = (['ar', 'ku', 'en'].includes(rawLocale) ? rawLocale : 'ar') as Locale
+  const locale = (rawLocale === 'en' ? 'en' : 'ar') as Locale
   const t = UI[locale]
 
   const category = await getCategoryBySlug(slug)

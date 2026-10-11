@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Newspaper, FolderTree, Mic, MessageSquare, Mail,
   Users, Image as ImageIcon, Settings, UserCircle, LogOut, ExternalLink,
@@ -34,7 +33,6 @@ const NAV_ITEMS = [
   { href: '/admin/podcasts', label: 'البودكاست', icon: Mic, permission: 'podcasts.manage' },
   { href: '/admin/comments', label: 'التعليقات', icon: MessageSquare, permission: 'comments.moderate' },
   { href: '/admin/media', label: 'الوسائط', icon: ImageIcon, permission: 'media.manage' },
-  { href: '/admin/newsletter', label: 'النشرة البريدية', icon: Mail, permission: 'newsletter.view' },
   { href: '/admin/users', label: 'فريق التحرير', icon: Users, permission: 'users.manage' },
   { href: '/admin/integrations', label: 'التكاملات', icon: Zap, permission: 'settings.manage' },
   { href: '/admin/settings', label: 'الإعدادات', icon: Settings, permission: 'settings.manage' },
@@ -164,7 +162,7 @@ export function AdminShell({ user, children }: { user: AdminUser; children: Reac
                   عرض الموقع
                 </Link>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/ar' })}
+                  onClick={async () => { await fetch('/api/admin-logout', { method: 'POST' }); window.location.href = '/admin' }}
                   className="flex w-full items-center gap-2.5 border-t border-gold-500/10 px-4 py-2.5 text-sm text-red-400 transition-colors hover:bg-red-500/10"
                 >
                   <LogOut className="h-4 w-4" />

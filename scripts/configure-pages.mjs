@@ -28,6 +28,8 @@ const ENV_VARS = {
   TURNSTILE_SECRET_KEY: { value: '0x4AAAAAAFTPREoe3gtHr8jkKjFPTkwQGi8' },
   RESEND_API_KEY: { value: process.env.RESEND_KEY || '' },
   NEWS_FROM_EMAIL: { value: 'onboarding@resend.dev' },
+  ADMIN_PASSWORD: { value: process.env.ADMIN_PW || '' },
+  ADMIN_COOKIE_SECRET: { value: 'iqn-admin-cookie-9c4547f9065d' },
 }
 
 async function api(path, method = 'GET', body) {

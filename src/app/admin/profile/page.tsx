@@ -8,7 +8,6 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { XIcon, LinkedInIcon, InstagramIcon } from '@/components/brand/SocialIcons'
-import { useSession } from 'next-auth/react'
 
 interface ProfileData {
   id: string
@@ -41,7 +40,8 @@ const SPECIALTY_SUGGESTIONS = [
 ]
 
 export default function AdminProfilePage() {
-  const { data: session, update: updateSession } = useSession()
+  const session = { user: { name: 'المدير', email: 'admin@iraqnow.com' } } as any
+  const updateSession = async (_: any) => {}
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

@@ -34,7 +34,6 @@ const FOOTER_DATA: Record<Locale, any> = {
       services: {
         title: 'خدمات',
         links: [
-          { label: 'النشرة البريدية', href: '/newsletter' },
           { label: 'تطبيق الجوال', href: '/app' },
           { label: 'واجهة API', href: '/developers' },
           { label: 'أعلن معنا', href: '/advertise' },
@@ -77,7 +76,6 @@ const FOOTER_DATA: Record<Locale, any> = {
       services: {
         title: 'خزمەتگوزاری',
         links: [
-          { label: 'نامەی هەواڵ', href: '/newsletter' },
           { label: 'ئەپی مۆبایل', href: '/app' },
           { label: 'API', href: '/developers' },
           { label: 'ڕیکلام', href: '/advertise' },
@@ -120,7 +118,6 @@ const FOOTER_DATA: Record<Locale, any> = {
       services: {
         title: 'Services',
         links: [
-          { label: 'Newsletter', href: '/newsletter' },
           { label: 'Mobile App', href: '/app' },
           { label: 'Developer API', href: '/developers' },
           { label: 'Advertise', href: '/advertise' },

@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 
-const LOCALES = ['ar', 'ku', 'en'] as const
+const LOCALES = ['ar', 'en'] as const
 const BASE_URL = 'https://iraqnow.iq'
 
 const CATEGORIES = [
@@ -8,7 +8,7 @@ const CATEGORIES = [
   'technology', 'health', 'education', 'environment', 'local', 'world',
 ]
 
-const STATIC_PAGES = ['', '/latest', '/map', '/data', '/podcasts', '/trending', '/newsletter']
+const STATIC_PAGES = ['', '/latest', '/map', '/data', '/podcasts', '/trending']
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const urls: MetadataRoute.Sitemap = []
@@ -17,7 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const locale of LOCALES) {
     const languages = {
       ar: `${BASE_URL}/ar`,
-      ku: `${BASE_URL}/ku`,
       en: `${BASE_URL}/en`,
       'x-default': `${BASE_URL}/ar`,
     }
@@ -43,7 +42,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         alternates: {
           languages: {
             ar: `${BASE_URL}/ar/category/${cat}`,
-            ku: `${BASE_URL}/ku/category/${cat}`,
             en: `${BASE_URL}/en/category/${cat}`,
           },
         },

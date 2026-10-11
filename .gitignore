@@ -77,3 +77,6 @@ wrangler.workers.toml
 
 # wrangler config contains secrets - keep local only
 wrangler.toml
+
+# AI worker secrets
+ai-worker/.deploy.secrets.json

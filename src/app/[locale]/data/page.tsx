@@ -52,8 +52,8 @@ const OIL_DATA = [8.2, 8.9, 9.4, 9.1, 9.8, 9.5, 10.2, 10.6, 9.9, 10.4, 11.1, 10.
 const DOLLAR_DATA = [1310, 1315, 1320, 1310, 1305, 1310, 1312, 1318, 1315, 1310, 1312, 1310]
 
 const BUDGET_SEGMENTS = [
-  { label: 'الرواتب والتشغيل', value: 68, color: '#1e4a8c' },
-  { label: 'الاستثمار', value: 19, color: '#d4af37' },
+  { label: 'الرواتب والتشغيل', value: 68, color: '#262626' },
+  { label: 'الاستثمار', value: 19, color: '#737373' },
   { label: 'الأمن والدفاع', value: 8, color: '#c44224' },
   { label: 'أخرى', value: 5, color: '#6d6b63' },
 ]
@@ -98,28 +98,28 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
         <div
           className="pointer-events-none absolute -top-20 start-1/3 h-72 w-72 rounded-full opacity-15 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, #d4af37 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, #a3a3a3 0%, transparent 70%)' }}
           aria-hidden="true"
         />
         <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-sand-100/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-gold-400">
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-white/50">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
               <Home className="h-3.5 w-3.5" />
               {locale === 'en' ? 'Home' : 'الرئيسية'}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="font-medium text-gold-400">{t.title}</span>
+            <span className="font-medium text-white/70">{t.title}</span>
           </nav>
 
           <Reveal className="text-center">
-            <span className="badge mx-auto mb-5 border border-gold-500/30 bg-gold-500/10 text-gold-400">
+            <span className="badge mx-auto mb-5 border border-line bg-white/5 text-white/70">
               <Database className="h-3.5 w-3.5" />
               {t.badge}
             </span>
             <h1 className="font-kufi text-3xl font-bold lg:text-5xl">
               <span className="text-gold-gradient">{t.title}</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm text-sand-100/60 lg:text-base">{t.subtitle}</p>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-white/60 lg:text-base">{t.subtitle}</p>
           </Reveal>
         </div>
       </section>
@@ -133,14 +133,14 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
           {KPIS.map((kpi, i) => (
             <Reveal key={i} delay={(i % 6) * 60}>
               <div className="group h-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-line-strong">
-                <span className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500/12 text-gold-600">
+                <span className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--foreground)]/12 text-[var(--muted)]">
                   <kpi.icon className="h-4.5 w-4.5" />
                 </span>
                 <p className="font-kufi text-xl font-bold text-[var(--foreground)]">
                   {kpi.prefix || ''}<CountUp end={kpi.value} suffix={kpi.suffix} />{kpi.suffix === '%' ? '' : ''}
                 </p>
                 <p className="mt-1 text-[10px] leading-snug text-[var(--muted)]">{kpi.label[locale]}</p>
-                <p className={`mt-1.5 text-[10px] font-bold ${kpi.up ? 'text-green-600' : 'text-terra-600'}`}>{kpi.trend}</p>
+                <p className={`mt-1.5 text-[10px] font-bold ${kpi.up ? 'text-green-600' : 'text-[var(--muted)]'}`}>{kpi.trend}</p>
               </div>
             </Reveal>
           ))}
@@ -155,10 +155,10 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
             <Reveal>
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6">
                 <h3 className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-                  <ChartIcon className="h-4 w-4 text-gold-500" />
+                  <ChartIcon className="h-4 w-4 text-[var(--muted)]" />
                   {t.oilRevenue}
                 </h3>
-                <BarChart data={OIL_DATA} labels={MONTHS_AR} color="#d4af37" />
+                <BarChart data={OIL_DATA} labels={MONTHS_AR} color="#737373" />
               </div>
             </Reveal>
           </Suspense>
@@ -167,10 +167,10 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
             <Reveal delay={80}>
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6">
                 <h3 className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-                  <TrendingUp className="h-4 w-4 text-lapis-500" />
+                  <TrendingUp className="h-4 w-4 text-[var(--muted)]" />
                   {t.dollar}
                 </h3>
-                <LineChart data={DOLLAR_DATA} labels={MONTHS_AR} color="#4a80c9" />
+                <LineChart data={DOLLAR_DATA} labels={MONTHS_AR} color="#a3a3a3" />
               </div>
             </Reveal>
           </Suspense>
@@ -179,7 +179,7 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
         <Reveal>
           <div className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6">
             <h3 className="mb-6 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-              <Landmark className="h-4 w-4 text-gold-500" />
+              <Landmark className="h-4 w-4 text-[var(--muted)]" />
               {t.budget}
             </h3>
             <DonutChart segments={BUDGET_SEGMENTS} centerValue="2026" centerLabel={locale === 'en' ? 'Budget' : 'الموازنة'} />

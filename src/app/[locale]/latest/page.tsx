@@ -50,24 +50,24 @@ export default async function LatestPage({
       <section className="relative overflow-hidden bg-lapis-950 py-12 text-white">
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-30" aria-hidden="true" />
         <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-xs text-sand-100/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 hover:text-gold-400">
+          <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-xs text-white/50">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 hover:text-white/70">
               <Home className="h-3.5 w-3.5" /> {locale === 'en' ? 'Home' : 'الرئيسية'}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="text-gold-400">{locale === 'en' ? 'Latest' : 'آخر الأخبار'}</span>
+            <span className="text-white/70">{locale === 'en' ? 'Latest' : 'آخر الأخبار'}</span>
           </nav>
           <h1 className="flex items-center gap-3 font-kufi text-3xl font-bold lg:text-4xl">
-            <Newspaper className="h-8 w-8 text-gold-500" />
+            <Newspaper className="h-8 w-8 text-[var(--muted)]" />
             {locale === 'en' ? 'Latest News' : locale === 'ku' ? 'دوایین هەواڵەکان' : 'آخر الأخبار'}
           </h1>
-          <p className="mt-2 text-sm text-sand-100/50">{total} مقال منشور</p>
+          <p className="mt-2 text-sm text-white/50">{total} مقال منشور</p>
         </div>
       </section>
 
       <div className="container-main py-10">
         {articles.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-gold-500/30 py-24 text-center" dir={dir}>
+          <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-line py-24 text-center" dir={dir}>
             <IshtarStar size={48} />
             <p className="font-kufi text-xl font-bold text-[var(--foreground)]">
               {locale === 'en' ? 'Coming Soon' : locale === 'ku' ? 'بەم زووانە' : 'قريباً'}
@@ -104,13 +104,13 @@ export default async function LatestPage({
         {pages > 1 && (
           <nav aria-label="Pagination" className="mt-12 flex justify-center gap-2">
             {page > 1 && (
-              <Link href={`/${locale}/latest?page=${page - 1}`} className="rounded-xl border border-gold-500/40 px-5 py-2.5 text-sm font-semibold text-gold-600 hover:bg-gold-500 hover:text-lapis-950">
+              <Link href={`/${locale}/latest?page=${page - 1}`} className="rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-[var(--muted)] hover:bg-[var(--foreground)] hover:text-[var(--background)]">
                 السابق
               </Link>
             )}
-            <span className="rounded-xl bg-gold-500 px-5 py-2.5 text-sm font-bold text-lapis-950">{page}</span>
+            <span className="rounded-xl bg-[var(--foreground)] px-5 py-2.5 text-sm font-bold text-lapis-950">{page}</span>
             {page < pages && (
-              <Link href={`/${locale}/latest?page=${page + 1}`} className="rounded-xl border border-gold-500/40 px-5 py-2.5 text-sm font-semibold text-gold-600 hover:bg-gold-500 hover:text-lapis-950">
+              <Link href={`/${locale}/latest?page=${page + 1}`} className="rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-[var(--muted)] hover:bg-[var(--foreground)] hover:text-[var(--background)]">
                 التالي
               </Link>
             )}

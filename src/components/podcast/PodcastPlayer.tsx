@@ -96,7 +96,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
   const t = UI[locale]
 
   return (
-    <div className="mt-6 overflow-hidden rounded-2xl border border-gold-500/20 bg-gradient-to-br from-lapis-900 to-lapis-950 p-4 lg:p-5" dir={locale === 'en' ? 'ltr' : 'rtl'}>
+    <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-lapis-900 to-lapis-950 p-4 lg:p-5" dir={locale === 'en' ? 'ltr' : 'rtl'}>
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
       {/* شريط التقدم */}
@@ -120,7 +120,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
         />
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-[10px] font-medium text-sand-100/50">
+      <div className="mt-3 flex items-center justify-between text-[10px] font-medium text-white/50">
         <span dir="ltr">{formatTime(current)}</span>
         <span dir="ltr">{formatTime(duration)}</span>
       </div>
@@ -130,7 +130,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => skip(-15)}
-            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
+            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-white/60 transition-colors hover:border-line-strong hover:text-white/70"
             title={`-15${t.sec}`}
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -151,7 +151,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
 
           <button
             onClick={() => skip(30)}
-            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
+            className="flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[11px] text-white/60 transition-colors hover:border-line-strong hover:text-white/70"
             title={`+30${t.sec}`}
           >
             30
@@ -162,7 +162,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
         <div className="flex items-center gap-2">
           <button
             onClick={cycleSpeed}
-            className="flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-sand-100/60 transition-colors hover:border-line-strong hover:text-gold-400"
+            className="flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-white/60 transition-colors hover:border-line-strong hover:text-white/70"
             title={t.speed}
           >
             <Gauge className="h-3.5 w-3.5" />
@@ -172,7 +172,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
           <div className="flex items-center gap-1.5 rounded-xl border border-white/10 px-2.5 py-2">
             <button
               onClick={toggleMute}
-              className="text-sand-100/60 transition-colors hover:text-gold-400"
+              className="text-white/60 transition-colors hover:text-white/70"
               aria-label={muted ? 'إلغاء الكتم' : 'كتم الصوت'}
             >
               {muted || volume === 0 ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
@@ -201,7 +201,7 @@ export function PodcastPlayer({ audioUrl, title, locale }: { audioUrl: string; t
       </div>
 
       {!loaded && (
-        <p className="mt-3 animate-pulse text-center text-[10px] text-sand-100/30">جاري تحميل الصوت...</p>
+        <p className="mt-3 animate-pulse text-center text-[10px] text-white/30">جاري تحميل الصوت...</p>
       )}
     </div>
   )

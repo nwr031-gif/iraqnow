@@ -46,7 +46,7 @@ export function TrendingTopics({ locale }: { locale: Locale }) {
             </div>
             <Link
               href={`/${locale}/trending`}
-              className="rounded-xl border border-gold-500/40 px-5 py-2.5 text-sm font-semibold text-gold-600 transition-all duration-300 hover:bg-gold-500 hover:text-lapis-950"
+              className="rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-[var(--muted)] transition-all duration-300 hover:bg-[var(--foreground)] hover:text-[var(--background)]"
             >
               {t.all}
             </Link>
@@ -56,7 +56,7 @@ export function TrendingTopics({ locale }: { locale: Locale }) {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {TOPICS.map((topic, i) => {
             const ChangeIcon = topic.change > 0 ? ArrowUp : topic.change < 0 ? ArrowDown : Minus
-            const changeColor = topic.change > 0 ? 'text-green-500' : topic.change < 0 ? 'text-red-500' : 'text-[var(--muted)]'
+            const changeColor = topic.change > 0 ? 'text-white/70' : topic.change < 0 ? 'text-[var(--foreground)]' : 'text-[var(--muted)]'
             return (
               <Reveal key={topic.slug} delay={(i % 4) * 70}>
                 <Link
@@ -76,7 +76,7 @@ export function TrendingTopics({ locale }: { locale: Locale }) {
                   <div className="relative mb-3 flex items-center justify-between">
                     <span className={cn(
                       'flex h-8 w-8 items-center justify-center rounded-lg font-kufi text-sm font-bold',
-                      topic.hot ? 'bg-terra-500/15 text-terra-600' : 'bg-gold-500/15 text-gold-600'
+                      topic.hot ? 'bg-terra-500/15 text-[var(--muted)]' : 'bg-white/10 text-[var(--muted)]'
                     )}>
                       {topic.hot ? <Flame className="h-4 w-4" /> : <Hash className="h-3.5 w-3.5" />}
                     </span>
@@ -86,12 +86,12 @@ export function TrendingTopics({ locale }: { locale: Locale }) {
                     </span>
                   </div>
 
-                  <h3 className="relative font-kufi text-[15px] font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-lapis-700">
+                  <h3 className="relative font-kufi text-[15px] font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:opacity-70">
                     {topic.label[locale]}
                   </h3>
 
                   <div className="relative mt-auto flex items-center gap-2 pt-4 text-[11px] text-[var(--muted)]">
-                    <TrendingUp className="h-3.5 w-3.5 text-gold-500" />
+                    <TrendingUp className="h-3.5 w-3.5 text-[var(--muted)]" />
                     {topic.mentions.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US')} {locale === 'en' ? 'mentions' : locale === 'ku' ? 'گفتوگۆ' : 'حديث'}
                   </div>
 

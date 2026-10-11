@@ -79,24 +79,24 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-30" aria-hidden="true" />
 
         <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-sand-100/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-gold-400">
+          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-white/50">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
               <Home className="h-3.5 w-3.5" />
               {t.home}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <Link href={`/${locale}/podcasts`} className="transition-colors hover:text-gold-400">
+            <Link href={`/${locale}/podcasts`} className="transition-colors hover:text-white/70">
               {t.podcasts}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="truncate font-medium text-gold-400">
+            <span className="truncate font-medium text-white/70">
               {t.episode} {episode.episodeNumber}
             </span>
           </nav>
 
           <div className="grid gap-8 lg:grid-cols-3">
             <Reveal className="lg:col-span-1">
-              <div className="relative mx-auto max-w-sm overflow-hidden rounded-3xl border border-gold-500/25 shadow-2xl shadow-lapis-950/50 lg:max-w-none">
+              <div className="relative mx-auto max-w-sm overflow-hidden rounded-3xl border border-line shadow-2xl shadow-lapis-950/50 lg:max-w-none">
                 <img
                   src={episode.coverUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80&sig=${episode.slug}/800/800`}
                   alt=""
@@ -104,10 +104,10 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-lapis-950/60 via-transparent to-transparent" />
                 <div className="absolute start-4 top-4 flex gap-2">
-                  <span className="rounded-xl bg-gold-500 px-3 py-1 font-kufi text-xs font-bold text-lapis-950">
+                  <span className="rounded-xl bg-[var(--foreground)] px-3 py-1 font-kufi text-xs font-bold text-lapis-950">
                     {t.episode} {episode.episodeNumber}
                   </span>
-                  <span className="rounded-xl bg-lapis-950/80 px-3 py-1 text-xs font-medium text-sand-100/80 backdrop-blur-sm">
+                  <span className="rounded-xl bg-lapis-950/80 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm">
                     {t.season} {episode.season}
                   </span>
                 </div>
@@ -117,27 +117,27 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
             <Reveal delay={100} className="flex flex-col justify-center lg:col-span-2">
               <h1 className="font-kufi text-2xl font-bold leading-snug lg:text-4xl">{title}</h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-sand-100/65">{tr?.description}</p>
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/65">{tr?.description}</p>
 
-              <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-sand-100/50">
+              <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-white/50">
                 {episode.guest[locale] && (
                   <span className="flex items-center gap-1.5">
-                    <Headphones className="h-3.5 w-3.5 text-gold-500" />
+                    <Headphones className="h-3.5 w-3.5 text-[var(--muted)]" />
                     {t.guest}: {episode.guest[locale]}
                   </span>
                 )}
                 <span className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-gold-500" />
+                  <Clock className="h-3.5 w-3.5 text-[var(--muted)]" />
                   {episode.duration}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5 text-gold-500" />
+                  <Calendar className="h-3.5 w-3.5 text-[var(--muted)]" />
                   {new Date(episode.publishedAt).toLocaleDateString(locale === 'ar' ? 'ar-IQ' : 'en-US', {
                     year: 'numeric', month: 'long', day: 'numeric',
                   })}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Headphones className="h-3.5 w-3.5 text-gold-500" />
+                  <Headphones className="h-3.5 w-3.5 text-[var(--muted)]" />
                   {episode.views.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US')} {t.views}
                 </span>
               </div>
@@ -146,7 +146,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
               <div className="mt-4 flex items-center gap-3">
                 <button
-                  className="flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-medium text-sand-100/70 transition-colors hover:border-line-strong hover:text-gold-400"
+                  className="flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-medium text-white/70 transition-colors hover:border-line-strong hover:text-white/70"
                   title={t.share}
                 >
                   <Share2 className="h-3.5 w-3.5" />
@@ -164,7 +164,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
           <Reveal>
             <section className="mx-auto max-w-3xl rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-6 lg:p-8">
               <h2 className="mb-4 flex items-center gap-2 font-kufi text-lg font-bold text-[var(--foreground)]">
-                <ListMusic className="h-5 w-5 text-gold-500" />
+                <ListMusic className="h-5 w-5 text-[var(--muted)]" />
                 {t.showNotes}
               </h2>
               <div className="whitespace-pre-line text-sm leading-loose text-[var(--muted)]">
@@ -181,7 +181,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
           <section>
             <div className="mb-8 flex items-center justify-between">
               <h2 className="section-title font-kufi text-xl font-bold lg:text-2xl">{t.related}</h2>
-              <Link href={`/${locale}/podcasts`} className="flex items-center gap-1.5 text-xs font-medium text-gold-600 hover:text-gold-500">
+              <Link href={`/${locale}/podcasts`} className="flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--muted)]">
                 {t.podcasts}
                 <Arrow className="h-3.5 w-3.5" />
               </Link>
@@ -200,10 +200,10 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
                         <img src={ep.coverUrl} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                       </div>
                       <div className="flex min-w-0 flex-1 flex-col justify-center">
-                        <p className="text-[10px] font-bold text-gold-600">
+                        <p className="text-[10px] font-bold text-[var(--muted)]">
                           {t.episode} {ep.episodeNumber}
                         </p>
-                        <h3 className="mt-1 font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-lapis-700">
+                        <h3 className="mt-1 font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:opacity-70">
                           {epTitle}
                         </h3>
                         <p className="mt-1.5 text-[10px] text-[var(--muted)]">{ep.duration}</p>

@@ -70,14 +70,14 @@ export default async function GovernoratePage({ params }: { params: Promise<{ lo
       <section className="relative overflow-hidden bg-lapis-950 py-12 text-white">
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
         <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-sand-100/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 hover:text-gold-400">
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-white/50">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 hover:text-white/70">
               <Home className="h-3.5 w-3.5" /> {locale === 'en' ? 'Home' : 'الرئيسية'}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <Link href={`/${locale}/map`} className="hover:text-gold-400">{locale === 'en' ? 'Map' : 'الخريطة'}</Link>
+            <Link href={`/${locale}/map`} className="hover:text-white/70">{locale === 'en' ? 'Map' : 'الخريطة'}</Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="font-medium text-gold-400">{govName}</span>
+            <span className="font-medium text-white/70">{govName}</span>
           </nav>
           <Reveal>
             <div className="flex items-center gap-4">
@@ -86,8 +86,8 @@ export default async function GovernoratePage({ params }: { params: Promise<{ lo
               </span>
               <div>
                 <h1 className="font-kufi text-3xl font-bold lg:text-4xl">{govName}</h1>
-                <p className="mt-1 flex items-center gap-2 text-sm text-sand-100/50">
-                  <Newspaper className="h-4 w-4 text-gold-500" />
+                <p className="mt-1 flex items-center gap-2 text-sm text-white/50">
+                  <Newspaper className="h-4 w-4 text-[var(--muted)]" />
                   {articles.length} {locale === 'en' ? 'articles' : 'خبر'}
                 </p>
               </div>

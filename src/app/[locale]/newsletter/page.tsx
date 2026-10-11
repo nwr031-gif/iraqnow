@@ -108,29 +108,29 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-30" aria-hidden="true" />
         <div
           className="pointer-events-none absolute -bottom-24 start-1/2 h-80 w-[600px] -translate-x-1/2 rounded-full opacity-15 blur-3xl"
-          style={{ background: 'radial-gradient(circle, #d4af37 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, #a3a3a3 0%, transparent 70%)' }}
           aria-hidden="true"
         />
 
         <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-sand-100/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-gold-400">
+          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-white/50">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
               <Home className="h-3.5 w-3.5" />
               {t.home}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="font-medium text-gold-400">{t.badge}</span>
+            <span className="font-medium text-white/70">{t.badge}</span>
           </nav>
 
           <Reveal className="mx-auto max-w-3xl text-center">
-            <span className="badge mx-auto mb-5 border border-gold-500/30 bg-gold-500/10 text-gold-400">
+            <span className="badge mx-auto mb-5 border border-line bg-white/5 text-white/70">
               <Mail className="h-3.5 w-3.5" />
               {t.badge}
             </span>
             <h1 className="font-kufi text-3xl font-bold leading-snug lg:text-5xl">
               <span className="text-gold-gradient">{t.title}</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-sm text-sand-100/65 lg:text-base">{t.subtitle}</p>
+            <p className="mx-auto mt-4 max-w-xl text-sm text-white/65 lg:text-base">{t.subtitle}</p>
           </Reveal>
 
           <Reveal delay={120}>
@@ -150,7 +150,7 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
                   <p className="font-kufi text-2xl font-bold text-gold-gradient sm:text-3xl">
                     <CountUp end={stat.value} suffix={stat.suffix} />
                   </p>
-                  <p className="mt-1 text-[11px] text-sand-100/50">{stat.label}</p>
+                  <p className="mt-1 text-[11px] text-white/50">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -167,7 +167,7 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
           {t.benefitsList.map((b: any, i: number) => (
             <Reveal key={i} delay={i * 70}>
               <div className="group h-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-line-strong">
-                <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-gold-500/12 text-gold-600 transition-transform duration-300 group-hover:scale-110">
+                <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--foreground)]/12 text-[var(--muted)] transition-transform duration-300 group-hover:scale-110">
                   <b.icon className="h-5 w-5" />
                 </span>
                 <h3 className="font-kufi text-sm font-bold text-[var(--foreground)]">{b.title}</h3>
@@ -183,26 +183,26 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
         <Reveal>
           <div className="mx-auto max-w-2xl">
             <h2 className="mb-6 text-center font-kufi text-xl font-bold text-[var(--foreground)]">{t.sample}</h2>
-            <div className="overflow-hidden rounded-3xl border border-gold-500/25 bg-[var(--card-bg)] shadow-2xl shadow-lapis-900/10">
+            <div className="overflow-hidden rounded-3xl border border-line bg-[var(--card-bg)] shadow-2xl shadow-lapis-900/10">
               <div className="flex items-center justify-between bg-gradient-to-l from-lapis-900 to-lapis-950 px-6 py-4 text-white">
                 <div className="flex items-center gap-2.5">
                   <IshtarStar size={22} />
                   <div>
                     <p className="font-kufi text-sm font-bold">{t.sampleTitle}</p>
-                    <p className="text-[10px] text-sand-100/50">{locale === 'en' ? 'Iraq Now Daily · 7:00 AM' : 'العراق الآن اليومي · 7:00 صباحاً'}</p>
+                    <p className="text-[10px] text-white/50">{locale === 'en' ? 'Iraq Now Daily · 7:00 AM' : 'العراق الآن اليومي · 7:00 صباحاً'}</p>
                   </div>
                 </div>
-                <Mail className="h-5 w-5 text-gold-400" />
+                <Mail className="h-5 w-5 text-white/70" />
               </div>
               <ul className="divide-y divide-[var(--border)] p-2">
                 {t.sampleItems.map((item: string, i: number) => (
                   <li key={i} className="flex items-start gap-3 px-4 py-3.5">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--muted)]" />
                     <span className="text-sm leading-relaxed text-[var(--foreground)]">{item}</span>
                   </li>
                 ))}
               </ul>
-              <div className="border-t border-dashed border-[var(--border)] bg-gold-500/[0.04] px-6 py-3 text-center">
+              <div className="border-t border-dashed border-[var(--border)] bg-[var(--foreground)]/[0.04] px-6 py-3 text-center">
                 <p className="text-[11px] text-[var(--muted)]">
                   {locale === 'en' ? 'Read the full stories on iraqnow.pages.dev' : 'اقرأ الأخبار كاملة على iraqnow.pages.dev'}
                 </p>
@@ -218,10 +218,10 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
           <h2 className="mb-8 text-center font-kufi text-xl font-bold text-[var(--foreground)]">{t.faq}</h2>
           <div className="mx-auto max-w-2xl space-y-3">
             {t.faqItems.map((item: any, i: number) => (
-              <details key={i} className="group rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-colors open:border-gold-500/40">
+              <details key={i} className="group rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-5 transition-colors open:border-line">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-[var(--foreground)]">
                   {item.q}
-                  <Gift className="h-4 w-4 shrink-0 text-gold-500 transition-transform group-open:rotate-45" />
+                  <Gift className="h-4 w-4 shrink-0 text-[var(--muted)] transition-transform group-open:rotate-45" />
                 </summary>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">{item.a}</p>
               </details>

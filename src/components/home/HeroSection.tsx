@@ -53,21 +53,15 @@ export function HeroSection({ locale }: { locale: Locale }) {
   const stats = STATS[locale]
 
   return (
-    <section className="relative overflow-hidden bg-lapis-950 text-white" dir={dir} id="top">
-      {/* خلفية هادئة */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -top-40 start-1/3 h-[420px] w-[420px] rounded-full bg-lapis-600/20 blur-[140px]" />
-        <div className="absolute -bottom-32 end-1/4 h-[360px] w-[360px] rounded-full bg-gold-500/[0.07] blur-[120px]" />
-      </div>
-
+    <section className="relative overflow-hidden border-b border-line bg-[var(--background)] text-[var(--foreground)]" dir={dir} id="top">
       <div className="container-main relative py-20 lg:py-28">
         <Reveal className="mb-14 text-center lg:mb-20">
           {/* تسمية علوية */}
-          <div className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-sand-100/80 backdrop-blur-sm">
+          <div className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-line bg-cream px-4 py-1.5 text-xs font-medium text-[var(--muted)]">
             <IshtarStar size={14} animated />
             {t.tagline}
-            <span className="h-3 w-px bg-white/15" />
-            <span className="flex items-center gap-1.5 text-red-400">
+            <span className="h-3 w-px bg-line-strong" />
+            <span className="flex items-center gap-1.5 text-[var(--foreground)]">
               <Radio className="h-3 w-3 animate-pulse" />
               {t.live}
             </span>
@@ -76,43 +70,40 @@ export function HeroSection({ locale }: { locale: Locale }) {
           <h1 className="mx-auto max-w-4xl font-kufi text-4xl font-bold leading-[1.2] tracking-tight text-balance sm:text-5xl lg:text-6xl">
             {locale === 'ar' ? (
               <>
-                <span className="text-gold-gradient">العراق الآن</span>
-                <span className="mt-2 block text-2xl font-semibold text-sand-100/85 sm:text-3xl lg:text-4xl">
+                <span>العراق الآن</span>
+                <span className="mt-2 block text-2xl font-semibold text-[var(--muted)] sm:text-3xl lg:text-4xl">
                   حيث يُروى الخبر كاملاً
                 </span>
               </>
             ) : locale === 'ku' ? (
               <>
-                <span className="text-gold-gradient">عێراق ئێستا</span>
-                <span className="mt-2 block text-2xl font-semibold text-sand-100/85 sm:text-3xl lg:text-4xl">
+                <span>عێراق ئێستا</span>
+                <span className="mt-2 block text-2xl font-semibold text-[var(--muted)] sm:text-3xl lg:text-4xl">
                   هەواڵ بە تەواوی
                 </span>
               </>
             ) : (
               <>
-                <span className="text-gold-gradient">Iraq Now</span>
-                <span className="mt-2 block text-2xl font-semibold text-sand-100/85 sm:text-3xl lg:text-4xl">
+                <span>Iraq Now</span>
+                <span className="mt-2 block text-2xl font-semibold text-[var(--muted)] sm:text-3xl lg:text-4xl">
                   The Full Story
                 </span>
               </>
             )}
           </h1>
 
-          <p className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-sand-100/55 sm:text-lg">
+          <p className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
             {t.subtitle}
           </p>
 
           {/* أزرار */}
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link href={`/${locale}/latest`} className="btn-gold group inline-flex font-kufi">
+            <Link href={`/${locale}/latest`} className="btn-primary group inline-flex font-kufi">
               <Newspaper className="h-4 w-4" />
               {t.latest}
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
             </Link>
-            <Link
-              href={`/${locale}/map`}
-              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-sand-100/90 transition-all duration-300 hover:border-white/30 hover:bg-white/5 font-kufi"
-            >
+            <Link href={`/${locale}/map`} className="btn-outline group inline-flex font-kufi">
               <MapPin className="h-4 w-4" />
               {t.map}
             </Link>
@@ -121,11 +112,11 @@ export function HeroSection({ locale }: { locale: Locale }) {
 
         {/* شريط الإحصائيات */}
         <Reveal delay={200}>
-          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-y-8 border-t border-white/10 pt-10 sm:grid-cols-4">
+          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-y-8 border-t border-line pt-10 sm:grid-cols-4">
             {stats.map((stat, i) => (
               <div key={i} className="text-center">
-                <p className="font-kufi text-3xl font-bold text-white sm:text-4xl">{stat.value}</p>
-                <p className="mt-1.5 text-xs text-sand-100/45">{stat.label}</p>
+                <p className="font-kufi text-3xl font-bold text-[var(--foreground)] sm:text-4xl">{stat.value}</p>
+                <p className="mt-1.5 text-xs text-[var(--muted)]">{stat.label}</p>
               </div>
             ))}
           </div>

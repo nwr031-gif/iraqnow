@@ -115,20 +115,20 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
         <div
           className="pointer-events-none absolute -top-24 end-1/4 h-96 w-96 rounded-full opacity-15 blur-[120px]"
-          style={{ background: 'radial-gradient(circle, #d4af37 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, #a3a3a3 0%, transparent 70%)' }}
           aria-hidden="true"
         />
 
         <div className="container-main relative text-center">
           <Reveal>
-            <span className="badge border border-gold-500/30 bg-gold-500/10 text-gold-400 mx-auto mb-5">
+            <span className="badge border border-line bg-white/5 text-white/70 mx-auto mb-5">
               <Radio className="h-3.5 w-3.5 animate-pulse" />
               {t.badge}
             </span>
             <h1 className="font-kufi text-4xl font-bold lg:text-6xl">
               <span className="text-gold-gradient">{t.title}</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-sand-100/60 lg:text-base">
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/60 lg:text-base">
               {t.subtitle}
             </p>
 
@@ -140,7 +140,7 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2.5 text-xs font-medium text-sand-100/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:text-gold-400"
+                  className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2.5 text-xs font-medium text-white/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:text-white/70"
                 >
                   <span aria-hidden="true">{link.icon}</span>
                   {link.label}
@@ -162,24 +162,24 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
           {featured && (
             <Reveal>
               <section aria-labelledby="featured-episode">
-                <p className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold-600">
+                <p className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-gold-500" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--foreground)]" />
                   </span>
                   {t.latest}
                 </p>
 
                 <div className="grid gap-8 lg:grid-cols-5">
                   <div className="lg:col-span-2">
-                    <div className="relative overflow-hidden rounded-3xl border border-gold-500/25 shadow-2xl shadow-lapis-950/20">
+                    <div className="relative overflow-hidden rounded-3xl border border-line shadow-2xl shadow-lapis-950/20">
                       <img
                         src={featured.coverUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80&sig=${featured.slug}/800/800`}
                         alt=""
                         className="aspect-square w-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-lapis-950/70 via-transparent to-transparent" />
-                      <span className="absolute start-4 top-4 rounded-xl bg-gold-500 px-3.5 py-1.5 font-kufi text-xs font-bold text-lapis-950">
+                      <span className="absolute start-4 top-4 rounded-xl bg-[var(--foreground)] px-3.5 py-1.5 font-kufi text-xs font-bold text-lapis-950">
                         {t.episode} {featured.episodeNumber} — {t.season} {featured.season}
                       </span>
                     </div>
@@ -197,16 +197,16 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                     <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-[var(--muted)]">
                       {featured.guest[locale] && (
                         <span className="flex items-center gap-1.5">
-                          <Headphones className="h-3.5 w-3.5 text-gold-500" />
+                          <Headphones className="h-3.5 w-3.5 text-[var(--muted)]" />
                           {featured.guest[locale]}
                         </span>
                       )}
                       <span className="flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5 text-gold-500" />
+                        <Clock className="h-3.5 w-3.5 text-[var(--muted)]" />
                         {featured.duration}
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5 text-gold-500" />
+                        <Calendar className="h-3.5 w-3.5 text-[var(--muted)]" />
                         {new Date(featured.publishedAt).toLocaleDateString(locale === 'ar' ? 'ar-IQ' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </span>
                     </div>
@@ -262,10 +262,10 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                           className="h-full w-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-lapis-950/80 via-transparent to-transparent" />
-                        <span className="absolute start-3 top-3 rounded-lg bg-lapis-950/80 px-2.5 py-1 text-[10px] font-bold text-gold-400 backdrop-blur-sm">
+                        <span className="absolute start-3 top-3 rounded-lg bg-lapis-950/80 px-2.5 py-1 text-[10px] font-bold text-white/70 backdrop-blur-sm">
                           {t.episode} {ep.episodeNumber}
                         </span>
-                        <div className="absolute inset-0 m-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold-500 text-lapis-950 opacity-0 shadow-2xl transition-all duration-300 group-hover:opacity-100 group-hover:scale-110">
+                        <div className="absolute inset-0 m-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--foreground)] text-lapis-950 opacity-0 shadow-2xl transition-all duration-300 group-hover:opacity-100 group-hover:scale-110">
                           <Play className="h-6 w-6 translate-x-0.5 rtl:-translate-x-0.5" fill="currentColor" />
                         </div>
                         <span className="absolute bottom-2.5 end-3 rounded-md bg-lapis-950/80 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
@@ -274,7 +274,7 @@ export default async function PodcastsPage({ params }: { params: Promise<{ local
                       </div>
 
                       <div className="flex flex-1 flex-col p-4">
-                        <h3 className="font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:text-lapis-700">
+                        <h3 className="font-kufi text-sm font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:opacity-70">
                           {title}
                         </h3>
                         <p className="mt-2 text-[11px] text-[var(--muted)] line-clamp-1">{ep.guest[locale]}</p>

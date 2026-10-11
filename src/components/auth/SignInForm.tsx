@@ -79,15 +79,15 @@ export function SignInForm({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
       </div>
 
       {(error || success) && (
-        <div className={cn('mb-6 p-4 rounded-lg flex items-center gap-3 text-sm', error ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400' : 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400')}>
+        <div className={cn('mb-6 p-4 rounded-lg flex items-center gap-3 text-sm', error ? 'bg-[var(--foreground)] text-[var(--background)]' : 'bg-cream-deep text-[var(--foreground)]')}>
           {error ? <AlertCircle className="h-5 w-5 shrink-0" /> : <CheckCircle className="h-5 w-5 shrink-0" />}
           <span>{error || success}</span>
         </div>
       )}
 
       {/* تلميح الحسابات التجريبية */}
-      <div className="mb-6 rounded-xl border border-[var(--color-gold-500,#d4af37)]/30 bg-[var(--color-gold-500,#d4af37)]/[0.06] p-4">
-        <p className="mb-2.5 flex items-center gap-2 text-xs font-bold text-[var(--color-gold-600,#b8860b)]">
+      <div className="mb-6 rounded-xl border border-[var(--foreground)]/30 bg-[var(--foreground)]/[0.06] p-4">
+        <p className="mb-2.5 flex items-center gap-2 text-xs font-bold text-[var(--foreground)]">
           <KeyRound className="h-3.5 w-3.5" />
           {locale === 'en' ? 'Demo Accounts (click to fill)' : 'حسابات تجريبية (اضغط للتعبئة)'}
         </p>
@@ -104,7 +104,7 @@ export function SignInForm({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
                 setValue('email', acc.email)
                 setValue('password', acc.pass)
               }}
-              className="flex w-full items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-xs transition-colors hover:border-[var(--color-gold-500,#d4af37)]/50"
+              className="flex w-full items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-xs transition-colors hover:border-[var(--foreground)]/50"
             >
               <span className="font-bold text-[var(--foreground)]">{acc.label}</span>
               <span className="text-[10px] text-[var(--muted)]" dir="ltr">{acc.email}</span>
@@ -128,7 +128,7 @@ export function SignInForm({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
               autoComplete="email"
             />
           </div>
-          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
+          {errors.email && <p className="mt-1 text-sm text-[var(--foreground)]">{errors.email.message}</p>}
         </div>
 
         <div>
@@ -156,7 +156,7 @@ export function SignInForm({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
-          {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
+          {errors.password && <p className="mt-1 text-sm text-[var(--foreground)]">{errors.password.message}</p>}
         </div>
 
         <div className="flex items-center justify-between">
@@ -204,7 +204,7 @@ export function SignInForm({ locale }: { locale: 'ar' | 'ku' | 'en' }) {
             disabled={isSubmitting}
             className="btn-outline flex items-center justify-center gap-2"
           >
-            <svg className="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.046V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            <svg className="h-5 w-5 text-[var(--muted)]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.046V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             {t.facebook}
           </button>
         </div>

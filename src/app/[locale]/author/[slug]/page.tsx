@@ -107,16 +107,16 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
             <div className="h-full w-full ishtar-grid opacity-60" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-lapis-950/50 to-transparent" />
-          <div className="pointer-events-none absolute -top-20 start-1/4 h-72 w-72 rounded-full bg-gold-500 opacity-10 blur-[100px]" />
+          <div className="pointer-events-none absolute -top-20 start-1/4 h-72 w-72 rounded-full bg-[var(--foreground)] opacity-10 blur-[100px]" />
 
           <div className="container-main relative flex h-16 items-start pt-4">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-sand-100/60">
-              <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-gold-400">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-white/60">
+              <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
                 <Home className="h-3.5 w-3.5" />
                 {t.home}
               </Link>
               <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-              <span className="font-medium text-gold-400">{author.name}</span>
+              <span className="font-medium text-white/70">{author.name}</span>
             </nav>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
                   className="h-36 w-36 rounded-3xl object-cover ring-4 ring-[var(--background)] shadow-2xl lg:h-44 lg:w-44"
                 />
               ) : (
-                <span className="flex h-36 w-36 items-center justify-center rounded-3xl bg-gradient-to-br from-lapis-600 to-lapis-950 font-kufi text-6xl font-bold text-gold-400 ring-4 ring-[var(--background)] lg:h-44 lg:w-44">
+                <span className="flex h-36 w-36 items-center justify-center rounded-3xl bg-gradient-to-br from-lapis-600 to-lapis-950 font-kufi text-6xl font-bold text-white/70 ring-4 ring-[var(--background)] lg:h-44 lg:w-44">
                   {author.name.charAt(0)}
                 </span>
               )}
@@ -139,7 +139,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
               <div className="flex-1 pb-2">
                 <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
                   <h1 className="font-kufi text-3xl font-bold text-[var(--foreground)] lg:text-4xl">{author.name}</h1>
-                  <span className="flex items-center gap-1.5 rounded-xl border border-gold-500/30 bg-gold-500/10 px-3 py-1 text-xs font-bold text-gold-600">
+                  <span className="flex items-center gap-1.5 rounded-xl border border-line bg-white/5 px-3 py-1 text-xs font-bold text-[var(--muted)]">
                     <Sparkles className="h-3.5 w-3.5" />
                     {ROLE_LABELS[author.role]?.[locale] || t.verified}
                   </span>
@@ -147,11 +147,11 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
 
                 <p className="mt-2 flex flex-wrap items-center justify-center gap-4 text-sm text-[var(--muted)] lg:justify-start">
                   <span className="flex items-center gap-1.5">
-                    <Briefcase className="h-4 w-4 text-gold-500" />
+                    <Briefcase className="h-4 w-4 text-[var(--muted)]" />
                     {author.jobTitle[locale] || author.jobTitle.ar}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Calendar className="h-4 w-4 text-gold-500" />
+                    <Calendar className="h-4 w-4 text-[var(--muted)]" />
                     {t.since} {new Date(author.staffSince).toLocaleDateString(locale === 'ar' ? 'ar-IQ' : 'en-US', { year: 'numeric', month: 'long' })}
                   </span>
                 </p>
@@ -166,7 +166,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={s.label}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--muted)] transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:text-lapis-900"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card-bg)] text-[var(--muted)] transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:text-[var(--foreground)]"
                       >
                         <s.icon className="h-4.5 w-4.5" />
                       </a>
@@ -177,8 +177,8 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
 
               {/* إحصائية */}
               <div className="flex gap-4 pb-2">
-                <div className="rounded-2xl border border-gold-500/20 bg-gradient-to-b from-gold-500/10 to-transparent px-6 py-4 text-center">
-                  <p className="font-kufi text-3xl font-bold text-gold-600">{author.articleCount}</p>
+                <div className="rounded-2xl border border-line bg-gradient-to-b from-gold-500/10 to-transparent px-6 py-4 text-center">
+                  <p className="font-kufi text-3xl font-bold text-[var(--muted)]">{author.articleCount}</p>
                   <p className="mt-1 text-[11px] text-[var(--muted)]">{t.articles}</p>
                 </div>
               </div>
@@ -201,10 +201,10 @@ export default async function AuthorPage({ params }: { params: Promise<{ locale:
 
             {author.specialties.length > 0 && (
               <div className="mt-5 border-t border-[var(--border)] pt-5">
-                <p className="mb-3 text-xs font-bold text-gold-600">{t.specialties}</p>
+                <p className="mb-3 text-xs font-bold text-[var(--muted)]">{t.specialties}</p>
                 <div className="flex flex-wrap gap-2">
                   {author.specialties.map((spec) => (
-                    <span key={spec} className="rounded-lg border border-gold-500/25 bg-gold-500/[0.07] px-3 py-1.5 text-xs font-medium text-gold-600">
+                    <span key={spec} className="rounded-lg border border-line bg-[var(--foreground)]/[0.07] px-3 py-1.5 text-xs font-medium text-[var(--muted)]">
                       {spec}
                     </span>
                   ))}

@@ -28,11 +28,11 @@ export function GovernorateIndex({
           href={`/${locale}/governorate/${gov.slug}`}
           className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong hover:shadow-xl"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lapis-700 to-lapis-950 font-kufi text-[10px] font-bold text-gold-400">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lapis-700 to-lapis-950 font-kufi text-[10px] font-bold text-white/70">
             {String(i + 1).padStart(2, '0')}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:text-lapis-700">
+            <p className="truncate font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:opacity-70">
               {gov[locale]}
             </p>
             <p className="flex items-center gap-1 text-[11px] text-[var(--muted)]">
@@ -84,7 +84,7 @@ export function DatasetDownload({
       dir={dir}
     >
       <div className="flex items-center gap-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-lapis-700 to-lapis-950 text-gold-400">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-lapis-700 to-lapis-950 text-white/70">
           <Download className="h-5 w-5" />
         </span>
         <div>
@@ -96,7 +96,7 @@ export function DatasetDownload({
       </div>
       <button
         onClick={download}
-        className="flex items-center gap-1.5 rounded-xl border border-gold-500/40 px-3.5 py-2 text-[11px] font-bold text-gold-600 transition-all hover:bg-gold-500 hover:text-lapis-950"
+        className="flex items-center gap-1.5 rounded-xl border border-line px-3.5 py-2 text-[11px] font-bold text-[var(--muted)] transition-all hover:bg-[var(--foreground)] hover:text-[var(--background)]"
       >
         <Download className="h-3.5 w-3.5" />
         {done ? (locale === 'en' ? 'Done ✓' : 'تم ✓') : 'CSV'}

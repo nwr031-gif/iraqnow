@@ -56,24 +56,24 @@ export default async function MapPage({ params }: { params: Promise<{ locale: st
       <section className="relative overflow-hidden bg-lapis-950 py-14 text-white lg:py-20">
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
         <div className="container-main relative">
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-sand-100/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-gold-400">
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-white/50">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
               <Home className="h-3.5 w-3.5" />
               {locale === 'en' ? 'Home' : 'الرئيسية'}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 ltr:rotate-180" />
-            <span className="font-medium text-gold-400">{locale === 'en' ? '3D Map' : 'الخريطة 3D'}</span>
+            <span className="font-medium text-white/70">{locale === 'en' ? '3D Map' : 'الخريطة 3D'}</span>
           </nav>
 
           <Reveal className="text-center">
-            <span className="badge mx-auto mb-5 border border-gold-500/30 bg-gold-500/10 text-gold-400">
+            <span className="badge mx-auto mb-5 border border-line bg-white/5 text-white/70">
               <MapPin className="h-3.5 w-3.5" />
               {t.badge}
             </span>
             <h1 className="font-kufi text-3xl font-bold lg:text-5xl">
               <span className="text-gold-gradient">{t.title}</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm text-sand-100/60 lg:text-base">{t.subtitle}</p>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-white/60 lg:text-base">{t.subtitle}</p>
           </Reveal>
         </div>
       </section>

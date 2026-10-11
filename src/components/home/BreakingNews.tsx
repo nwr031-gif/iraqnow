@@ -47,14 +47,14 @@ export function BreakingNews({ locale }: BreakingNewsProps) {
 
   return (
     <section
-      className="relative overflow-hidden border-b border-gold-500/15 bg-gradient-to-l from-lapis-950 via-lapis-900 to-lapis-950"
+      className="relative overflow-hidden border-b border-line/15 bg-gradient-to-l from-lapis-950 via-lapis-900 to-lapis-950"
       aria-label="Breaking news"
     >
       <div className="container-main">
         <div className="flex items-center gap-4 py-3">
           {/* شارة عاجل */}
           <div className="relative flex shrink-0 items-center gap-2 rounded-lg bg-gradient-to-l from-red-600 to-red-700 px-3.5 py-1.5 text-xs font-bold text-white shadow-lg shadow-red-900/40">
-            <span className="absolute inset-0 animate-pulse rounded-lg bg-red-500/40" />
+            <span className="absolute inset-0 animate-pulse rounded-lg bg-[var(--foreground)]/40" />
             <Flame className="relative h-4 w-4" />
             <span className="relative font-kufi tracking-wide">
               {locale === 'ar' ? 'عاجل' : locale === 'ku' ? 'بەپەلە' : 'BREAKING'}
@@ -75,11 +75,11 @@ export function BreakingNews({ locale }: BreakingNewsProps) {
                   dir={locale === 'en' ? 'ltr' : 'rtl'}
                   className="group flex shrink-0 items-center gap-3 text-sm"
                 >
-                  <span className="flex h-1.5 w-1.5 shrink-0 rounded-full bg-gold-500 shadow-[0_0_8px_rgba(212,175,55,0.8)]" />
-                  <span className="shrink-0 rounded-md bg-gold-500/15 px-2 py-0.5 text-[10px] font-bold text-gold-400">
+                  <span className="flex h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--foreground)] shadow-none" />
+                  <span className="shrink-0 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/70">
                     {news.category[locale]}
                   </span>
-                  <span className="whitespace-nowrap font-medium text-sand-100/85 transition-colors group-hover:text-gold-300">
+                  <span className="whitespace-nowrap font-medium text-white/85 transition-colors group-hover:text-white/70">
                     {news.title[locale]}
                   </span>
                 </Link>
@@ -88,11 +88,11 @@ export function BreakingNews({ locale }: BreakingNewsProps) {
           </div>
 
           {/* حالة البث */}
-          <div className="hidden shrink-0 items-center gap-2 text-[11px] text-sand-100/50 md:flex">
+          <div className="hidden shrink-0 items-center gap-2 text-[11px] text-white/50 md:flex">
             <span className="flex items-center gap-1.5">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--foreground)] opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--foreground)]" />
               </span>
               {locale === 'en' ? 'Auto-refresh' : 'تحديث تلقائي'}
             </span>

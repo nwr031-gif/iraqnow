@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 export function BarChart({
   data,
   labels,
-  color = '#d4af37',
+  color = '#737373',
   height = 220,
 }: {
   data: number[]
@@ -29,7 +29,7 @@ export function BarChart({
             onMouseLeave={() => setHover(null)}
           >
             {hover === i && (
-              <span className="absolute -top-8 z-10 rounded-lg bg-lapis-950 px-2.5 py-1 text-[10px] font-bold text-gold-400 shadow-lg">
+              <span className="absolute -top-8 z-10 rounded-lg bg-lapis-950 px-2.5 py-1 text-[10px] font-bold text-white/70 shadow-lg">
                 {v.toLocaleString('ar-IQ')}
               </span>
             )}
@@ -55,7 +55,7 @@ export function BarChart({
 export function LineChart({
   data,
   labels,
-  color = '#4a80c9',
+  color = '#a3a3a3',
   height = 200,
 }: {
   data: number[]
@@ -112,7 +112,7 @@ export function LineChart({
 
         {hover !== null && (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-lapis-950 px-2.5 py-1 text-[10px] font-bold text-gold-400 shadow-lg"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-lapis-950 px-2.5 py-1 text-[10px] font-bold text-white/70 shadow-lg"
             style={{ left: `${points[hover].x}%`, top: `${points[hover].y}%`, transform: 'translate(-50%, -130%)' }}
           >
             {data[hover].toLocaleString('ar-IQ')} · {labels[hover]}
@@ -193,7 +193,7 @@ export function DonutChart({
             onMouseLeave={() => setActive(null)}
             className={cn(
               'flex items-center gap-2.5 rounded-lg px-2 py-1 text-xs transition-colors',
-              active === i ? 'bg-gold-500/10' : ''
+              active === i ? 'bg-white/5' : ''
             )}
           >
             <span className="h-3 w-3 rounded-sm" style={{ background: seg.color }} />

@@ -62,14 +62,14 @@ export function NewsletterForm({ locale }: { locale: Locale }) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row" aria-label="Newsletter signup">
         <label htmlFor="newsletter-page-email" className="sr-only">{t.placeholder}</label>
         <div className="relative flex-1">
-          <Mail className="absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-sand-100/40" aria-hidden="true" />
+          <Mail className="absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" aria-hidden="true" />
           <input
             id="newsletter-page-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t.placeholder}
-            className="w-full rounded-2xl border border-white/15 bg-white/[0.07] px-12 py-4 text-white placeholder-sand-100/40 backdrop-blur-sm transition-all focus:border-gold-500/60 focus:bg-white/10 focus:outline-none focus:ring-4 focus:ring-gold-500/15 disabled:opacity-50"
+            className="w-full rounded-2xl border border-white/15 bg-white/[0.07] px-12 py-4 text-white placeholder-sand-100/40 backdrop-blur-sm transition-all focus:border-line/60 focus:bg-white/10 focus:outline-none focus:ring-4 focus:ring-gold-500/15 disabled:opacity-50"
             disabled={status === 'loading' || status === 'success'}
             required
             autoComplete="email"
@@ -97,13 +97,13 @@ export function NewsletterForm({ locale }: { locale: Locale }) {
       {message && (
         <p className={cn(
           'mt-4 flex items-center justify-center gap-2 text-sm',
-          status === 'success' ? 'text-green-400' : 'text-red-400'
+          status === 'success' ? 'text-white/70' : 'text-white/80'
         )}>
           {status === 'success' ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
           {message}
         </p>
       )}
-      <p className="mt-4 text-center text-[11px] text-sand-100/40">{t.privacy}</p>
+      <p className="mt-4 text-center text-[11px] text-white/40">{t.privacy}</p>
     </div>
   )
 }

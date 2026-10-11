@@ -351,7 +351,7 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
   const govName = (g: GovMarker) => g[locale]
 
   return (
-    <div className="relative w-full overflow-hidden rounded-3xl border border-gold-500/20 bg-lapis-950" style={{ height }}>
+    <div className="relative w-full overflow-hidden rounded-3xl border border-line bg-lapis-950" style={{ height }}>
       {/* الخلفية */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -364,18 +364,18 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
       <div ref={containerRef} className="absolute inset-0 cursor-grab touch-none" role="application" aria-label="خريطة العراق ثلاثية الأبعاد" />
 
       {/* الشريط العلوي */}
-      <div className="pointer-events-none absolute start-4 top-4 z-10 flex items-center gap-3 rounded-2xl border border-gold-500/25 bg-lapis-950/75 px-4 py-2.5 backdrop-blur-xl">
+      <div className="pointer-events-none absolute start-4 top-4 z-10 flex items-center gap-3 rounded-2xl border border-line bg-lapis-950/75 px-4 py-2.5 backdrop-blur-xl">
         <span className="text-2xl">🇮🇶</span>
         <div>
           <p className="font-kufi text-sm font-bold text-white">{t.title}</p>
-          <p className="text-[9px] tracking-[3px] text-gold-400/70">{t.sub}</p>
+          <p className="text-[9px] tracking-[3px] text-white/70/70">{t.sub}</p>
         </div>
       </div>
 
       {/* لوحة الإحصائيات */}
       {showPanel && (
-        <div className="pointer-events-none absolute end-4 top-4 z-10 hidden w-52 rounded-2xl border border-gold-500/20 bg-lapis-950/70 p-4 backdrop-blur-xl sm:block">
-          <h3 className="mb-3 font-kufi text-xs font-bold text-gold-400">{t.title}</h3>
+        <div className="pointer-events-none absolute end-4 top-4 z-10 hidden w-52 rounded-2xl border border-line bg-lapis-950/70 p-4 backdrop-blur-xl sm:block">
+          <h3 className="mb-3 font-kufi text-xs font-bold text-white/70">{t.title}</h3>
           {[
             [t.capital, locale === 'en' ? 'Baghdad' : 'بغداد'],
             [t.govs, '19'],
@@ -383,12 +383,12 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
             [t.lang, '3'],
           ].map(([k, v], i) => (
             <div key={i} className="flex items-center justify-between border-b border-white/[0.06] py-1.5 text-[11px] last:border-0">
-              <span className="text-sand-100/50">{k}</span>
-              <span className="font-bold text-gold-300">{v}</span>
+              <span className="text-white/50">{k}</span>
+              <span className="font-bold text-white/70">{v}</span>
             </div>
           ))}
-          <div className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-green-500/15 py-1 text-[10px] font-bold text-green-400">
-            <span className="relative flex h-1.5 w-1.5"><span className="absolute h-full w-full animate-ping rounded-full bg-green-400 opacity-75" /><span className="relative h-1.5 w-1.5 rounded-full bg-green-500" /></span>
+          <div className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-[var(--foreground)]/15 py-1 text-[10px] font-bold text-white/70">
+            <span className="relative flex h-1.5 w-1.5"><span className="absolute h-full w-full animate-ping rounded-full bg-[var(--foreground)] opacity-75" /><span className="relative h-1.5 w-1.5 rounded-full bg-[var(--foreground)]" /></span>
             {t.live}
           </div>
         </div>
@@ -397,17 +397,17 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
       {/* التسمية العائمة */}
       {hovered && (
         <div
-          className="pointer-events-none absolute z-20 rounded-xl border border-gold-500/30 bg-lapis-950/90 px-3.5 py-2 backdrop-blur-md"
+          className="pointer-events-none absolute z-20 rounded-xl border border-line bg-lapis-950/90 px-3.5 py-2 backdrop-blur-md"
           style={{ left: hovered.x + 14, top: hovered.y - 10 }}
         >
           <p className="font-kufi text-xs font-bold text-white">{hovered.name}</p>
-          <p className="text-[10px] text-gold-400">{hovered.articles.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US')} {locale === 'en' ? 'articles' : 'خبر'}</p>
-          <p className="text-[9px] text-sand-100/40">{t.click} →</p>
+          <p className="text-[10px] text-white/70">{hovered.articles.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US')} {locale === 'en' ? 'articles' : 'خبر'}</p>
+          <p className="text-[9px] text-white/40">{t.click} →</p>
         </div>
       )}
 
       {/* أزرار التحكم */}
-      <div className="absolute bottom-4 start-1/2 z-10 flex -translate-x-1/2 gap-1.5 rounded-2xl border border-gold-500/20 bg-lapis-950/80 p-1.5 backdrop-blur-xl rtl:translate-x-1/2">
+      <div className="absolute bottom-4 start-1/2 z-10 flex -translate-x-1/2 gap-1.5 rounded-2xl border border-line bg-lapis-950/80 p-1.5 backdrop-blur-xl rtl:translate-x-1/2">
         {[
           { label: t.reset, action: () => setView('reset') },
           { label: t.top, action: () => setView('top') },
@@ -417,7 +417,7 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
           <button
             key={i}
             onClick={btn.action}
-            className="rounded-xl bg-white/[0.06] px-3.5 py-2 text-[11px] font-medium text-sand-100/80 transition-all duration-300 hover:bg-gold-500/20 hover:text-gold-300 sm:px-4"
+            className="rounded-xl bg-white/[0.06] px-3.5 py-2 text-[11px] font-medium text-white/80 transition-all duration-300 hover:bg-white/10 hover:text-white/70 sm:px-4"
           >
             {btn.label}
           </button>
@@ -425,7 +425,7 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
       </div>
 
       {/* تلميح سفلي */}
-      <p className="pointer-events-none absolute bottom-4 end-4 z-10 hidden text-[10px] text-sand-100/35 lg:block">
+      <p className="pointer-events-none absolute bottom-4 end-4 z-10 hidden text-[10px] text-white/35 lg:block">
         {t.drag} · {t.scroll}
       </p>
 
@@ -433,7 +433,7 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
       {!ready && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-lapis-950/95">
           <span className="animate-float text-5xl">🇮🇶</span>
-          <p className="animate-pulse text-xs tracking-[3px] text-gold-400/70">{t.loading}</p>
+          <p className="animate-pulse text-xs tracking-[3px] text-white/70/70">{t.loading}</p>
         </div>
       )}
 
@@ -444,7 +444,7 @@ export default function Iraq3DMapCanvas({ locale, height = 560, showPanel = true
             <button
               key={g.slug}
               onClick={() => router.push(`/${locale}/governorate/${g.slug}`)}
-              className="shrink-0 rounded-lg px-2.5 py-1 text-[10px] font-medium text-sand-100/60 transition-colors hover:bg-gold-500/15 hover:text-gold-300"
+              className="shrink-0 rounded-lg px-2.5 py-1 text-[10px] font-medium text-white/60 transition-colors hover:bg-white/10 hover:text-white/70"
             >
               {govName(g)}
             </button>

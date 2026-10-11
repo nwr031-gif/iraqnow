@@ -70,11 +70,11 @@ export function CategoryShowcase({ locale }: CategoryShowcaseProps) {
                   href={`/${locale}/category/${cat.slug}`}
                   className="group flex h-full items-center gap-3.5 rounded-2xl border border-line bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[var(--shadow-card)]"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cream-deep text-lapis-700 transition-colors duration-300 group-hover:bg-lapis-900 group-hover:text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cream-deep text-[var(--foreground)] transition-colors duration-300 group-hover:bg-[var(--foreground)] group-hover:text-[var(--background)]">
                     <Icon className="h-[18px] w-[18px]" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-kufi text-sm font-bold text-ink-900">
+                    <span className="block truncate font-kufi text-sm font-bold text-[var(--foreground)]">
                       {labels[cat.slug]}
                     </span>
                     <span className="mt-0.5 flex items-center gap-1 text-[11px] text-[var(--muted)] opacity-0 transition-opacity duration-300 group-hover:opacity-100">

@@ -44,14 +44,14 @@ export function IraqMapSection({ locale }: MapSectionProps) {
 
       <div className="container-main relative">
         <Reveal className="mb-10 text-center">
-          <span className="badge border border-gold-500/30 bg-gold-500/10 text-gold-400">
+          <span className="badge border border-line bg-white/5 text-white/70">
             <MapPin className="h-3.5 w-3.5" />
             {t.badge}
           </span>
           <h2 id="map-heading" className="mt-4 font-kufi text-3xl font-bold lg:text-4xl">
             {t.title}
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-sand-100/60">{t.subtitle}</p>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-white/60">{t.subtitle}</p>
         </Reveal>
 
         <Reveal delay={120}>

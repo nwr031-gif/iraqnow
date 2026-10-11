@@ -48,7 +48,7 @@ export function GiscusComments({ locale, title }: { locale: 'ar' | 'ku' | 'en'; 
   return (
     <section className="mt-12 border-t border-[var(--border)] pt-8" aria-label="التعليقات">
       <h2 className="mb-6 flex items-center gap-2 font-kufi text-lg font-bold text-[var(--foreground)]">
-        <MessageCircle className="h-5 w-5 text-gold-500" />
+        <MessageCircle className="h-5 w-5 text-[var(--muted)]" />
         {locale === 'en' ? 'Comments' : 'التعليقات'}
       </h2>
       <div ref={ref} className="min-h-40" />

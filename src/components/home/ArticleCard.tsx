@@ -55,10 +55,10 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
           <div>
             <div className="mb-1 flex items-center gap-1.5">
-              {article.breaking && <span className="text-[10px] font-bold text-red-600">{BREAKING_LABEL[locale]}</span>}
-              <span className="text-[10px] font-semibold text-gold-700">{cat.name}</span>
+              {article.breaking && <span className="text-[10px] font-bold text-[var(--foreground)]">{BREAKING_LABEL[locale]}</span>}
+              <span className="text-[10px] font-semibold text-[var(--muted)]">{cat.name}</span>
             </div>
-            <h4 className="text-[13px] font-semibold leading-snug text-ink-900 line-clamp-2 transition-colors group-hover:text-lapis-700">
+            <h4 className="text-[13px] font-semibold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:opacity-70">
               {t.title}
             </h4>
           </div>
@@ -86,14 +86,14 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
           <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <span className="text-[11px] font-semibold text-gold-700">{cat.name}</span>
+                <span className="text-[11px] font-semibold text-[var(--muted)]">{cat.name}</span>
                 {loc && (
                   <span className="flex items-center gap-0.5 text-[10px] text-[var(--muted)]">
                     <MapPin className="h-3 w-3" />{loc.name}
                   </span>
                 )}
               </div>
-              <h3 className="font-kufi text-[15px] font-bold leading-snug text-ink-900 line-clamp-2 transition-colors group-hover:text-lapis-700">
+              <h3 className="font-kufi text-[15px] font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors group-hover:opacity-70">
                 {t.title}
               </h3>
             </div>
@@ -111,7 +111,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
   if (variant === 'featured') {
     return (
       <article className="group relative" style={{ direction: dir }}>
-        <Link href={href} className="relative block aspect-[16/10] overflow-hidden rounded-3xl bg-lapis-900">
+        <Link href={href} className="relative block aspect-[16/10] overflow-hidden rounded-3xl bg-[var(--foreground)]">
           {imgUrl && (
             <img
               src={imgUrl}
@@ -181,7 +181,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
                 {BREAKING_LABEL[locale]}
               </span>
             )}
-            <span className="text-[11px] font-semibold text-gold-700">{cat.name}</span>
+            <span className="text-[11px] font-semibold text-[var(--muted)]">{cat.name}</span>
             {loc && (
               <span className="flex items-center gap-0.5 text-[11px] text-[var(--muted)]">
                 <MapPin className="h-3 w-3" />
@@ -190,7 +190,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
             )}
           </div>
 
-          <h3 className="mb-2 font-kufi text-[17px] font-bold leading-snug text-ink-900 line-clamp-2 transition-colors duration-300 group-hover:text-lapis-700">
+          <h3 className="mb-2 font-kufi text-[17px] font-bold leading-snug text-[var(--foreground)] line-clamp-2 transition-colors duration-300 group-hover:opacity-70">
             {t.title}
           </h3>
 
@@ -200,7 +200,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
 
           <div className="flex items-center justify-between border-t border-line pt-3.5">
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cream-deep font-kufi text-[10px] font-bold text-lapis-800">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cream-deep font-kufi text-[10px] font-bold text-[var(--foreground)]">
                 {authorName.charAt(0)}
               </span>
               <span className="text-[11px] font-medium text-[var(--muted)]">{authorName}</span>

@@ -57,7 +57,7 @@ export function SearchResults() {
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="mb-6 flex items-center gap-2 font-kufi text-2xl font-bold text-[var(--foreground)]">
-        <Search className="h-6 w-6 text-gold-500" />
+        <Search className="h-6 w-6 text-[var(--muted)]" />
         البحث
       </h1>
 
@@ -69,7 +69,7 @@ export function SearchResults() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ابحث عن أخبار، مواضيع، تحليلات..."
-            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] py-3.5 pe-4 ps-12 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-gold-500/50 focus:outline-none focus:ring-2 focus:ring-gold-500/15"
+            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] py-3.5 pe-4 ps-12 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-line focus:outline-none focus:ring-2 focus:ring-gold-500/15"
             autoFocus
           />
         </div>
@@ -81,7 +81,7 @@ export function SearchResults() {
 
       {loading && (
         <div className="flex items-center justify-center gap-3 py-16 text-[var(--muted)]">
-          <Loader2 className="h-5 w-5 animate-spin text-gold-400" />
+          <Loader2 className="h-5 w-5 animate-spin text-white/70" />
           جاري البحث...
         </div>
       )}
@@ -108,11 +108,11 @@ export function SearchResults() {
                 <span className="badge badge-gold mb-2 text-[10px]">{hit.category}</span>
               )}
               <h3
-                className="font-kufi text-base font-bold text-[var(--foreground)] transition-colors group-hover:text-lapis-700 [&>mark]:bg-gold-500/25 [&>mark]:text-gold-700"
+                className="font-kufi text-base font-bold text-[var(--foreground)] transition-colors group-hover:opacity-70 [&>mark]:bg-[var(--foreground)]/25 [&>mark]:text-[var(--muted)]"
                 dangerouslySetInnerHTML={{ __html: (hit._formatted?.title as any)?.snippet || hit.title || '' }}
               />
               <p
-                className="mt-2 text-sm leading-relaxed text-[var(--muted)] line-clamp-2 [&>mark]:bg-gold-500/25 [&>mark]:text-gold-700"
+                className="mt-2 text-sm leading-relaxed text-[var(--muted)] line-clamp-2 [&>mark]:bg-[var(--foreground)]/25 [&>mark]:text-[var(--muted)]"
                 dangerouslySetInnerHTML={{ __html: ((hit as any)._formatted?.excerpt as any)?.snippet || hit.excerpt || '' }}
               />
             </Link>

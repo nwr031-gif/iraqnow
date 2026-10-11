@@ -66,18 +66,18 @@ export function DataSection({ locale }: { locale: Locale }) {
         <Reveal>
           <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="badge border border-gold-500/30 bg-gold-500/10 text-gold-400 mb-3">
+              <span className="badge border border-line bg-white/5 text-white/70 mb-3">
                 <Database className="h-3.5 w-3.5" />
                 {t.badge}
               </span>
               <h2 id="data-heading" className="font-kufi text-3xl font-bold lg:text-4xl">
                 {t.title}
               </h2>
-              <p className="mt-2 max-w-lg text-sm text-sand-100/60">{t.subtitle}</p>
+              <p className="mt-2 max-w-lg text-sm text-white/60">{t.subtitle}</p>
             </div>
             <Link
               href={`/${locale}/data`}
-              className="group flex items-center gap-2 rounded-xl border border-gold-500/40 px-5 py-2.5 text-sm font-semibold text-gold-400 transition-all duration-300 hover:bg-gold-500 hover:text-lapis-950"
+              className="group flex items-center gap-2 rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-white/70 transition-all duration-300 hover:bg-white hover:text-black"
             >
               {t.explore}
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
@@ -91,19 +91,19 @@ export function DataSection({ locale }: { locale: Locale }) {
             <div className="glass-card h-full p-6">
               <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-500/15 text-gold-400">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white/70">
                     <ChartColumn className="h-5 w-5" />
                   </span>
                   <div>
                     <h3 className="font-kufi text-sm font-bold">
                       {locale === 'en' ? 'Monthly Oil Revenue (Billions USD)' : locale === 'ku' ? 'داهاتی مانگانەی نەوت' : 'الإيرادات النفطية الشهرية (مليار دولار)'}
                     </h3>
-                    <p className="text-[11px] text-sand-100/50">
+                    <p className="text-[11px] text-white/50">
                       {t.updated}: {new Date().toLocaleDateString(locale === 'ar' ? 'ar-IQ' : locale === 'ku' ? 'ckb-IQ' : 'en-US', { month: 'long', year: 'numeric' })}
                     </p>
                   </div>
                 </div>
-                <button className="flex items-center gap-1.5 rounded-lg border border-gold-500/30 px-3 py-1.5 text-[11px] font-semibold text-gold-400 transition-colors hover:bg-gold-500/10">
+                <button className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[11px] font-semibold text-white/70 transition-colors hover:bg-white/5">
                   <Download className="h-3.5 w-3.5" />
                   {t.download}
                 </button>
@@ -113,21 +113,21 @@ export function DataSection({ locale }: { locale: Locale }) {
               <div className="flex h-48 items-end justify-between gap-2">
                 {BARS.map((h, i) => (
                   <div key={i} className="group flex flex-1 flex-col items-center gap-2">
-                    <span className="rounded bg-gold-500/10 px-1.5 py-0.5 text-[9px] font-bold text-gold-400 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] font-bold text-white/70 opacity-0 transition-opacity group-hover:opacity-100">
                       {h}
                     </span>
                     <div
                       className="w-full rounded-t-md bg-gradient-to-t from-lapis-600 to-gold-500/80 transition-all duration-500 group-hover:from-gold-600 group-hover:to-gold-400"
                       style={{ height: `${h}%` }}
                     />
-                    <span className="text-[9px] text-sand-100/40">
+                    <span className="text-[9px] text-white/40">
                       {['ك2', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'ت1', 'ت2', 'ك1'][i]}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <p className="mt-5 border-t border-white/10 pt-3 text-[10px] text-sand-100/40">{t.sources}</p>
+              <p className="mt-5 border-t border-white/10 pt-3 text-[10px] text-white/40">{t.sources}</p>
             </div>
           </Reveal>
 
@@ -137,15 +137,15 @@ export function DataSection({ locale }: { locale: Locale }) {
               <Reveal key={ds.id} delay={i * 80}>
                 <div className="glass-card group flex items-center justify-between p-4 transition-all duration-300 hover:border-line-strong">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-lapis-700/60 text-gold-400">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-lapis-700/60 text-white/70">
                       <TrendingUp className="h-4.5 w-4.5" />
                     </span>
                     <div>
-                      <p className="text-xs font-medium text-sand-100/70">{ds.name[locale]}</p>
+                      <p className="text-xs font-medium text-white/70">{ds.name[locale]}</p>
                       <p className="font-kufi text-lg font-bold text-white">{ds.value}</p>
                     </div>
                   </div>
-                  <span className={`rounded-lg px-2 py-1 text-[10px] font-bold ${ds.trend.startsWith('+') ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                  <span className={`rounded-lg px-2 py-1 text-[10px] font-bold ${ds.trend.startsWith('+') ? 'bg-[var(--foreground)]/15 text-white/70' : 'bg-[var(--foreground)]/15 text-white/80'}`}>
                     {ds.trend}
                   </span>
                 </div>
@@ -155,15 +155,15 @@ export function DataSection({ locale }: { locale: Locale }) {
             <Reveal delay={320}>
               <Link
                 href={`/${locale}/data/library`}
-                className="group flex items-center justify-between rounded-2xl border border-gold-500/25 bg-gold-500/10 p-4 transition-all duration-300 hover:bg-gold-500/20"
+                className="group flex items-center justify-between rounded-2xl border border-line bg-white/5 p-4 transition-all duration-300 hover:bg-white/10"
               >
                 <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-gold-400" />
-                  <span className="text-sm font-semibold text-gold-300">
+                  <FileText className="h-5 w-5 text-white/70" />
+                  <span className="text-sm font-semibold text-white/70">
                     {locale === 'en' ? '142 open datasets' : locale === 'ku' ? '١٤٢ بنکەدراوەی کراوە' : '142 قاعدة بيانات مفتوحة'}
                   </span>
                 </div>
-                <ExternalLink className="h-4 w-4 text-gold-400 transition-transform group-hover:translate-x-0.5" />
+                <ExternalLink className="h-4 w-4 text-white/70 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Reveal>
           </div>

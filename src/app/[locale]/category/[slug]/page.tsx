@@ -121,19 +121,19 @@ export default async function CategoryPage({
         <div className="pointer-events-none absolute inset-0 ishtar-grid opacity-40" aria-hidden="true" />
         <div
           className="pointer-events-none absolute -top-20 start-1/3 h-72 w-72 rounded-full opacity-15 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, #d4af37 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, #a3a3a3 0%, transparent 70%)' }}
           aria-hidden="true"
         />
 
         <div className="container-main relative">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-sand-100/50">
-            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-gold-400">
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-white/50">
+            <Link href={`/${locale}`} className="flex items-center gap-1.5 transition-colors hover:text-white/70">
               <Home className="h-3.5 w-3.5" />
               {t.home}
             </Link>
             <ChevronLeft className="h-3.5 w-3.5 rtl:rotate-0 ltr:rotate-180" />
-            <span className="font-medium text-gold-400">{catName}</span>
+            <span className="font-medium text-white/70">{catName}</span>
           </nav>
 
           <Reveal>
@@ -143,14 +143,14 @@ export default async function CategoryPage({
               </span>
               <div>
                 <h1 className="font-kufi text-3xl font-bold lg:text-5xl">{catName}</h1>
-                <p className="mt-2 flex items-center gap-2 text-sm text-sand-100/60">
-                  <Newspaper className="h-4 w-4 text-gold-500" />
+                <p className="mt-2 flex items-center gap-2 text-sm text-white/60">
+                  <Newspaper className="h-4 w-4 text-[var(--muted)]" />
                   {total.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US')} {t.articles}
                 </p>
               </div>
             </div>
             {catDesc && (
-              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-sand-100/60">{catDesc}</p>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/60">{catDesc}</p>
             )}
           </Reveal>
         </div>
@@ -169,8 +169,8 @@ export default async function CategoryPage({
                     href={buildUrl(1, opt.value)}
                     className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
                       sort === opt.value
-                        ? 'bg-gold-500 text-lapis-950'
-                        : 'text-[var(--muted)] hover:text-lapis-900'
+                        ? 'bg-[var(--foreground)] text-lapis-950'
+                        : 'text-[var(--muted)] hover:text-[var(--foreground)]'
                     }`}
                   >
                     {opt[locale]}
@@ -184,7 +184,7 @@ export default async function CategoryPage({
                 <Link
                   key={c.slug}
                   href={`/${locale}/category/${c.slug}`}
-                  className="shrink-0 rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] transition-all hover:border-line-strong hover:text-lapis-900"
+                  className="shrink-0 rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] transition-all hover:border-line-strong hover:text-[var(--foreground)]"
                 >
                   {c.translations.find((tr) => tr.locale === locale)?.name || c.translations[0]?.name}
                 </Link>
@@ -228,7 +228,7 @@ export default async function CategoryPage({
                 {page > 1 && (
                   <Link
                     href={buildUrl(page - 1)}
-                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-line-strong hover:text-lapis-900"
+                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-line-strong hover:text-[var(--foreground)]"
                   >
                     <ChevronRight className="h-4 w-4 ltr:rotate-180" />
                     {t.prev}
@@ -244,8 +244,8 @@ export default async function CategoryPage({
                         href={buildUrl(p)}
                         className={`flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold transition-all ${
                           p === page
-                            ? 'bg-gold-500 text-lapis-950'
-                            : 'text-[var(--muted)] hover:bg-gold-500/10 hover:text-lapis-900'
+                            ? 'bg-[var(--foreground)] text-lapis-950'
+                            : 'text-[var(--muted)] hover:bg-white/5 hover:text-[var(--foreground)]'
                         }`}
                       >
                         {p.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US')}
@@ -258,7 +258,7 @@ export default async function CategoryPage({
                 {page < pages && (
                   <Link
                     href={buildUrl(page + 1)}
-                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-line-strong hover:text-lapis-900"
+                    className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-4 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-line-strong hover:text-[var(--foreground)]"
                   >
                     {t.next}
                     <ChevronLeft className="h-4 w-4 ltr:rotate-180" />
@@ -275,7 +275,7 @@ export default async function CategoryPage({
         <Reveal>
           <div className="mt-6">
             <h2 className="mb-6 flex items-center gap-2 font-kufi text-lg font-bold text-[var(--foreground)]">
-              <TrendingUp className="h-5 w-5 text-gold-500" />
+              <TrendingUp className="h-5 w-5 text-[var(--muted)]" />
               {t.relatedCategories}
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -285,7 +285,7 @@ export default async function CategoryPage({
                   href={`/${locale}/category/${c.slug}`}
                   className="group rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
                 >
-                  <p className="font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:text-lapis-700">
+                  <p className="font-kufi text-sm font-bold text-[var(--foreground)] transition-colors group-hover:opacity-70">
                     {c.translations.find((tr) => tr.locale === locale)?.name || c.translations[0]?.name}
                   </p>
                   <p className="mt-1 text-[11px] text-[var(--muted)]">

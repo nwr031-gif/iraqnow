@@ -143,11 +143,11 @@ export function Header({ locale }: { locale: Locale }) {
         href={path}
         className={cn(
           'relative px-3.5 py-2 text-sm font-medium transition-colors',
-          active ? 'text-lapis-900' : 'text-[var(--muted)] hover:text-lapis-900'
+          active ? 'text-[var(--foreground)]' : 'text-[var(--muted)] hover:text-[var(--foreground)]'
         )}
       >
         {label}
-        {active && <span className="absolute inset-x-3.5 -bottom-[19px] h-0.5 rounded-full bg-lapis-900" />}
+        {active && <span className="absolute inset-x-3.5 -bottom-[19px] h-0.5 rounded-full bg-[var(--foreground)]" />}
       </Link>
     )
   }
@@ -158,10 +158,10 @@ export function Header({ locale }: { locale: Locale }) {
       <div className="hidden lg:block border-b border-line bg-cream-deep">
         <div className="container-main flex h-9 items-center justify-between text-xs text-[var(--muted)]">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 font-medium text-red-600">
+            <span className="flex items-center gap-1.5 font-medium text-[var(--foreground)]">
               <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-600" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--foreground)] opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--foreground)]" />
               </span>
               {t.live}
             </span>
@@ -176,7 +176,7 @@ export function Header({ locale }: { locale: Locale }) {
           <div className="flex items-center gap-1">
             <button
               onClick={toggleTheme}
-              className="rounded-md p-1.5 transition-colors hover:bg-white hover:text-lapis-900"
+              className="rounded-md p-1.5 transition-colors hover:bg-white hover:text-[var(--foreground)]"
               aria-label="Toggle theme"
             >
               {theme === 'light' ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
@@ -185,7 +185,7 @@ export function Header({ locale }: { locale: Locale }) {
             <div className="relative">
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors hover:bg-white hover:text-lapis-900"
+                className="flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors hover:bg-white hover:text-[var(--foreground)]"
                 aria-expanded={langOpen}
               >
                 <Globe className="h-3.5 w-3.5" />
@@ -203,8 +203,8 @@ export function Header({ locale }: { locale: Locale }) {
                         className={cn(
                           'flex w-full items-center justify-between px-3.5 py-2 text-xs transition-colors',
                           locale === loc.code
-                            ? 'font-semibold text-lapis-900'
-                            : 'text-[var(--muted)] hover:bg-cream-deep hover:text-lapis-900'
+                            ? 'font-semibold text-[var(--foreground)]'
+                            : 'text-[var(--muted)] hover:bg-cream-deep hover:text-[var(--foreground)]'
                         )}
                       >
                         <span>{loc.name}</span>
@@ -217,7 +217,7 @@ export function Header({ locale }: { locale: Locale }) {
             </div>
 
             <span className="h-3 w-px bg-line-strong" />
-            <Link href={`/${locale}/newsletter`} className="rounded-md px-2 py-1.5 transition-colors hover:bg-white hover:text-lapis-900">
+            <Link href={`/${locale}/newsletter`} className="rounded-md px-2 py-1.5 transition-colors hover:bg-white hover:text-[var(--foreground)]">
               {t.newsletter}
             </Link>
           </div>
@@ -256,7 +256,7 @@ export function Header({ locale }: { locale: Locale }) {
               <button
                 className={cn(
                   'flex items-center gap-1 px-3.5 py-2 text-sm font-medium transition-colors',
-                  megaOpen ? 'text-lapis-900' : 'text-[var(--muted)] hover:text-lapis-900'
+                  megaOpen ? 'text-[var(--foreground)]' : 'text-[var(--muted)] hover:text-[var(--foreground)]'
                 )}
                 aria-expanded={megaOpen}
               >
@@ -281,10 +281,10 @@ export function Header({ locale }: { locale: Locale }) {
                         className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors hover:bg-cream-deep"
                         onClick={() => setMegaOpen(false)}
                       >
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cream-deep text-lapis-700 transition-colors group-hover:bg-white">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cream-deep text-[var(--foreground)] transition-colors group-hover:bg-white">
                           <Icon className="h-4 w-4" />
                         </span>
-                        <span className="text-sm font-medium text-ink-800 transition-colors group-hover:text-lapis-900">
+                        <span className="text-sm font-medium text-[var(--foreground)] transition-colors group-hover:text-[var(--foreground)]">
                           {labels[cat.slug]}
                         </span>
                       </Link>
@@ -298,7 +298,7 @@ export function Header({ locale }: { locale: Locale }) {
                   </div>
                   <Link
                     href={`/${locale}/latest`}
-                    className="text-xs font-semibold text-lapis-800 transition-colors hover:text-lapis-600"
+                    className="text-xs font-semibold text-[var(--foreground)] transition-colors hover:text-[var(--foreground)]"
                     onClick={() => setMegaOpen(false)}
                   >
                     {t.all} →
@@ -317,7 +317,7 @@ export function Header({ locale }: { locale: Locale }) {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-lapis-900 sm:w-auto sm:gap-2 sm:px-3.5 sm:rounded-full sm:border sm:border-line"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-[var(--foreground)] sm:w-auto sm:gap-2 sm:px-3.5 sm:rounded-full sm:border sm:border-line"
               aria-label={t.search}
             >
               <Search className="h-4 w-4" />
@@ -328,20 +328,20 @@ export function Header({ locale }: { locale: Locale }) {
             <div className="relative hidden sm:block">
               <button
                 onClick={() => { setNotifOpen(!notifOpen); setUserOpen(false) }}
-                className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-lapis-900"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-[var(--foreground)]"
                 aria-label={t.notifications}
                 aria-expanded={notifOpen}
               >
                 <Bell className="h-4 w-4" />
-                <span className="absolute end-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-gold-500" />
+                <span className="absolute end-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[var(--foreground)]" />
               </button>
               {notifOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setNotifOpen(false)} />
                   <div className="absolute end-0 top-full z-20 mt-2 w-80 overflow-hidden rounded-2xl border border-line bg-white shadow-xl shadow-ink-900/5">
                     <div className="flex items-center justify-between border-b border-line px-4 py-3">
-                      <span className="flex items-center gap-2 text-sm font-bold text-ink-900">
-                        <Bell className="h-4 w-4 text-gold-600" />
+                      <span className="flex items-center gap-2 text-sm font-bold text-[var(--foreground)]">
+                        <Bell className="h-4 w-4 text-[var(--muted)]" />
                         {t.notifications}
                       </span>
                       <span className="badge badge-gold text-[10px]">3</span>
@@ -358,10 +358,10 @@ export function Header({ locale }: { locale: Locale }) {
                         >
                           <span className={cn(
                             'mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full',
-                            n.hot ? 'bg-red-600' : 'bg-line-strong'
+                            n.hot ? 'bg-[var(--foreground)]' : 'bg-line-strong'
                           )} />
                           <span className="flex-1">
-                            <span className="block text-xs font-medium leading-relaxed text-ink-800">{n.title}</span>
+                            <span className="block text-xs font-medium leading-relaxed text-[var(--foreground)]">{n.title}</span>
                             <span className="mt-1 block text-[10px] text-[var(--muted)]">{n.time}</span>
                           </span>
                         </button>
@@ -382,7 +382,7 @@ export function Header({ locale }: { locale: Locale }) {
                   {session.user?.image ? (
                     <img src={session.user.image} alt="" className="h-8 w-8 rounded-full object-cover" />
                   ) : (
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-lapis-900 font-kufi text-xs font-bold text-white">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--foreground)] font-kufi text-xs font-bold text-[var(--background)]">
                       {session.user?.name?.charAt(0) || 'U'}
                     </span>
                   )}
@@ -392,7 +392,7 @@ export function Header({ locale }: { locale: Locale }) {
                     <div className="fixed inset-0 z-10" onClick={() => setUserOpen(false)} />
                     <div className="absolute end-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-line bg-white py-1 shadow-xl shadow-ink-900/5">
                       <div className="border-b border-line px-4 py-3">
-                        <p className="font-kufi text-sm font-bold text-ink-900">{session.user?.name}</p>
+                        <p className="font-kufi text-sm font-bold text-[var(--foreground)]">{session.user?.name}</p>
                         <p className="truncate text-[11px] text-[var(--muted)]">{session.user?.email}</p>
                       </div>
                       <div className="p-1.5">
@@ -404,7 +404,7 @@ export function Header({ locale }: { locale: Locale }) {
                           <Link
                             key={item.href}
                             href={item.href}
-                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-700 transition-colors hover:bg-cream-deep hover:text-lapis-900"
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-cream-deep hover:text-[var(--foreground)]"
                             onClick={() => setUserOpen(false)}
                           >
                             <item.icon className="h-4 w-4" />
@@ -413,7 +413,7 @@ export function Header({ locale }: { locale: Locale }) {
                         ))}
                         <button
                           onClick={() => signOut({ callbackUrl: `/${locale}` })}
-                          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-cream-deep"
                         >
                           <LogOut className="h-4 w-4" />
                           {t.signOut}
@@ -467,7 +467,7 @@ export function Header({ locale }: { locale: Locale }) {
                     ? ['نرخی دۆلار', 'بودجەی ٢٠٢٧', 'مێترۆی بەغداد']
                     : ['Dollar rate', '2027 Budget', 'Baghdad Metro', 'Elections']
                 ).map((sug) => (
-                  <button key={sug} className="rounded-full border border-line bg-cream px-3 py-1.5 text-xs text-ink-700 transition-colors hover:border-line-strong hover:bg-white">
+                  <button key={sug} className="rounded-full border border-line bg-cream px-3 py-1.5 text-xs text-[var(--foreground)] transition-colors hover:border-line-strong hover:bg-white">
                     {sug}
                   </button>
                 ))}
@@ -486,7 +486,7 @@ export function Header({ locale }: { locale: Locale }) {
               <Logo locale={locale} />
               <button
                 onClick={() => setMobileOpen(false)}
-                className="rounded-full p-2 text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-ink-900"
+                className="rounded-full p-2 text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-[var(--foreground)]"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
@@ -514,7 +514,7 @@ export function Header({ locale }: { locale: Locale }) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center rounded-xl px-4 py-3 text-sm font-medium text-ink-800 transition-colors hover:bg-cream-deep hover:text-lapis-900"
+                    className="flex items-center rounded-xl px-4 py-3 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-cream-deep hover:text-[var(--foreground)]"
                   >
                     {item.label}
                   </Link>
@@ -522,7 +522,7 @@ export function Header({ locale }: { locale: Locale }) {
               </nav>
 
               <div className="mt-6">
-                <p className="mb-3 px-2 text-xs font-bold text-gold-700">
+                <p className="mb-3 px-2 text-xs font-bold text-[var(--muted)]">
                   {t.sections}
                 </p>
                 <div className="grid grid-cols-2 gap-1.5">
@@ -531,7 +531,7 @@ export function Header({ locale }: { locale: Locale }) {
                       key={cat.slug}
                       href={`/${locale}/category/${cat.slug}`}
                       onClick={() => setMobileOpen(false)}
-                      className="rounded-xl border border-line bg-cream px-3 py-2.5 text-center text-xs font-medium text-ink-700 transition-colors hover:border-line-strong hover:bg-white hover:text-lapis-900"
+                      className="rounded-xl border border-line bg-cream px-3 py-2.5 text-center text-xs font-medium text-[var(--foreground)] transition-colors hover:border-line-strong hover:bg-white hover:text-[var(--foreground)]"
                     >
                       {labels[cat.slug]}
                     </Link>
@@ -540,7 +540,7 @@ export function Header({ locale }: { locale: Locale }) {
               </div>
 
               <div className="mt-6 border-t border-line pt-4">
-                <p className="mb-3 px-2 text-xs font-bold text-gold-700">
+                <p className="mb-3 px-2 text-xs font-bold text-[var(--muted)]">
                   {locale === 'en' ? 'Language' : 'اللغة'}
                 </p>
                 <div className="flex gap-2">
@@ -551,7 +551,7 @@ export function Header({ locale }: { locale: Locale }) {
                       className={cn(
                         'flex-1 rounded-full border px-3 py-2.5 text-xs font-semibold transition-all',
                         locale === loc.code
-                          ? 'border-lapis-900 bg-lapis-900 text-white'
+                          ? 'border-lapis-900 bg-[var(--foreground)] text-[var(--background)]'
                           : 'border-line text-[var(--muted)] hover:border-line-strong'
                       )}
                     >
@@ -567,7 +567,7 @@ export function Header({ locale }: { locale: Locale }) {
                 </span>
                 <button
                   onClick={toggleTheme}
-                  className="rounded-full p-2 text-ink-700 transition-colors hover:bg-white"
+                  className="rounded-full p-2 text-[var(--foreground)] transition-colors hover:bg-white"
                   aria-label="Toggle theme"
                 >
                   {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}

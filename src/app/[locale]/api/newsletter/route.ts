@@ -7,19 +7,19 @@ type LocaleParam = 'ar' | 'ku' | 'en'
 const WELCOME: Record<LocaleParam, { subject: string; html: string }> = {
   ar: {
     subject: 'أهلاً بك في نشرة صوت الرافدين 🇮🇶',
-    html: `<div style="font-family:Tahoma,Arial;background:#0f2140;color:#f5f0e6;padding:32px;border-radius:12px;direction:rtl;text-align:center">
-      <h1 style="color:#d4af37">أهلاً بك في العراق الآن</h1>
+    html: `<div style="font-family:Tahoma,Arial;background:#0a0a0a;color:#fafafa;padding:32px;border-radius:12px;direction:rtl;text-align:center">
+      <h1 style="color:#171717">أهلاً بك في العراق الآن</h1>
       <p>ستصلك أهم أخبار العراق كل صباح في الساعة 7:00 — موجز مدته 5 دقائق بالعربية والكردية والإنكليزية.</p>
-      <a href="https://iraqnow.pages.dev/ar" style="background:#d4af37;color:#0f2140;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:bold">تصفح الموقع الآن</a>
+      <a href="https://iraqnow.pages.dev/ar" style="background:#171717;color:#0a0a0a;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:bold">تصفح الموقع الآن</a>
     </div>`,
   },
   ku: {
     subject: 'بەخێربێی بۆ نامەی هەواڵ 🇮🇶',
-    html: '<div style="font-family:Tahoma;color:#f5f0e6;direction:rtl;text-align:center"><h1 style="color:#d4af37">بەخێربێی بۆ عێراق ئێستا</h1><p>هەواڵە گرنگەکان هەموو بەیانییەک لە ٧:٠٠</p></div>',
+    html: '<div style="font-family:Tahoma;color:#fafafa;direction:rtl;text-align:center"><h1 style="color:#171717">بەخێربێی بۆ عێراق ئێستا</h1><p>هەواڵە گرنگەکان هەموو بەیانییەک لە ٧:٠٠</p></div>',
   },
   en: {
     subject: 'Welcome to Iraq Now Newsletter 🇮🇶',
-    html: '<div style="font-family:Arial;color:#f5f0e6;text-align:center"><h1 style="color:#d4af37">Welcome to Iraq Now</h1><p>Iraq\'s most important news every morning at 7:00 AM</p><a href="https://iraqnow.pages.dev/en" style="background:#d4af37;color:#0f2140;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:bold">Visit Iraq Now</a></div>',
+    html: '<div style="font-family:Arial;color:#fafafa;text-align:center"><h1 style="color:#171717">Welcome to Iraq Now</h1><p>Iraq\'s most important news every morning at 7:00 AM</p><a href="https://iraqnow.pages.dev/en" style="background:#171717;color:#0a0a0a;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:bold">Visit Iraq Now</a></div>',
   },
 }
 

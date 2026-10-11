@@ -91,14 +91,14 @@ export function NewsletterSignup({ locale }: { locale: Locale }) {
       <div className="absolute inset-0 ishtar-grid opacity-30" aria-hidden="true" />
       <div
         className="pointer-events-none absolute -bottom-32 start-1/2 h-80 w-[700px] -translate-x-1/2 rounded-full opacity-15 blur-3xl"
-        style={{ background: 'radial-gradient(circle, #d4af37 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, #a3a3a3 0%, transparent 70%)' }}
         aria-hidden="true"
       />
 
       <div className="container-main relative py-16 lg:py-24">
         <Reveal>
           <div className="mx-auto max-w-3xl text-center text-white">
-            <span className="badge border border-gold-500/30 bg-gold-500/10 text-gold-400 mb-5">
+            <span className="badge border border-line bg-white/5 text-white/70 mb-5">
               <Mail className="h-3.5 w-3.5" />
               {t.badge}
             </span>
@@ -107,19 +107,19 @@ export function NewsletterSignup({ locale }: { locale: Locale }) {
               {t.title}
             </h2>
 
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-sand-100/60 lg:text-base">
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/60 lg:text-base">
               {t.desc}
             </p>
 
             {/* شريط معلومات */}
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs text-sand-100/50">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs text-white/50">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-gold-500" />
+                <Sparkles className="h-3.5 w-3.5 text-[var(--muted)]" />
                 {t.subscribers}
               </span>
               <span className="h-3 w-px bg-white/15" />
               <span className="flex items-center gap-1.5">
-                <Send className="h-3.5 w-3.5 text-gold-500" />
+                <Send className="h-3.5 w-3.5 text-[var(--muted)]" />
                 {t.daily}
               </span>
             </div>
@@ -129,14 +129,14 @@ export function NewsletterSignup({ locale }: { locale: Locale }) {
             <form onSubmit={handleSubmit} className="mx-auto mt-2 flex max-w-xl flex-col gap-3 sm:flex-row" aria-label="Newsletter signup">
               <label htmlFor="newsletter-email" className="sr-only">{t.placeholder}</label>
               <div className="relative flex-1">
-                <Mail className="absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-sand-100/40" aria-hidden="true" />
+                <Mail className="absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" aria-hidden="true" />
                 <input
                   id="newsletter-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t.placeholder}
-                  className="w-full rounded-2xl border border-white/15 bg-white/[0.07] px-12 py-4 text-white placeholder-sand-100/40 backdrop-blur-sm transition-all duration-300 focus:border-gold-500/60 focus:bg-white/10 focus:outline-none focus:ring-4 focus:ring-gold-500/15 disabled:opacity-50"
+                  className="w-full rounded-2xl border border-white/15 bg-white/[0.07] px-12 py-4 text-white placeholder-sand-100/40 backdrop-blur-sm transition-all duration-300 focus:border-line/60 focus:bg-white/10 focus:outline-none focus:ring-4 focus:ring-gold-500/15 disabled:opacity-50"
                   disabled={status === 'loading' || status === 'success'}
                   required
                   autoComplete="email"
@@ -167,14 +167,14 @@ export function NewsletterSignup({ locale }: { locale: Locale }) {
             {message && (
               <p className={cn(
                 'mt-4 flex items-center justify-center gap-2 text-sm',
-                status === 'success' ? 'text-green-400' : 'text-red-400'
+                status === 'success' ? 'text-white/70' : 'text-white/80'
               )}>
                 {status === 'success' ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                 {message}
               </p>
             )}
 
-            <p className="mt-4 text-[11px] text-sand-100/40">{t.privacy}</p>
+            <p className="mt-4 text-[11px] text-white/40">{t.privacy}</p>
           </div>
         </Reveal>
       </div>

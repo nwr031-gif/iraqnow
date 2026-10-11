@@ -56,7 +56,7 @@ export function LatestNews({ locale, articles: propArticles }: LatestNewsProps) 
 
             <Link
               href={`/${locale}/latest`}
-              className="group flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-ink-700 transition-all duration-300 hover:border-lapis-900 hover:text-lapis-900"
+              className="group flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-[var(--foreground)] transition-all duration-300 hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
             >
               {t.viewAll}
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />

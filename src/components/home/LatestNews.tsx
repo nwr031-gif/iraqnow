@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
@@ -10,6 +10,7 @@ type Locale = 'ar' | 'ku' | 'en'
 
 interface LatestNewsProps {
   locale: Locale
+  articles?: ArticleData[]
 }
 
 const UI: Record<Locale, { title: string; viewAll: string; subtitle: string }> = {
@@ -30,31 +31,12 @@ const govs: Record<Locale, string[]> = {
   en: ['Baghdad', 'Basra', 'Erbil', 'Mosul', 'Sulaymaniyah', 'Najaf', 'Karbala', 'Kirkuk', 'Dhi Qar', 'Anbar'],
 }
 
-const MOCK: ArticleData[] = Array.from({ length: 9 }, (_, i) => ({
-  id: String(i + 10),
-  slug: `article-${i + 10}`,
-  breaking: i === 2,
-  featured: false,
-  publishedAt: new Date(Date.now() - (i + 1) * 1.5 * 3600000).toISOString(),
-  viewCount: Math.floor(Math.random() * 18000) + 2400,
-  readingTime: Math.floor(Math.random() * 8) + 3,
-  translations: [
-    { locale: 'ar' as const, title: ['مجلس النواب يقر قانون الموازنة العامة بعد مناقشات مطولة', 'العراق يسجل نمواً اقتصادياً بنسبة 4.2% في الربع الأول', 'وزارة النفط تعلن عن اكتشاف حقول جديدة في البصرة', 'افتتاح أول مركز تكنولوجي متخصص في بغداد', 'الجامعات العراقية تدخل ضمن أفضل 500 جامعة عالمية', 'افتتاح مهرجان بابل الدولي للثقافة والفنون', 'منتخب العراق يفوز على نظيره الإيراني ودياً', 'حملة وطنية للتشجير في جميع المحافظات', 'مشروع جديد لتطوير البنية التحتية في كركوك'][i],
-      excerpt: 'تفاصيل شاملة عن هذا الخبر الهام مع تحليل معمق وتغطية خاصة من مراسلي العراق الآن في الميدان، تشمل آراء الخبراء والمختصين والبيانات الرسمية الحديثة.',
-    },
-    { locale: 'ku' as const, title: `هەواڵی گرنگی ژمارە ${i + 1} لە عێراق ئێستا`, excerpt: 'وردەکاری گشتگیر دەربارەی ئەم هەواڵە گرنگە لەگەڵ شیکاری قووڵ.' },
-    { locale: 'en' as const, title: `Breaking: Major Development in Iraq's ${['Political', 'Economic', 'Security', 'Social', 'Cultural', 'Sports', 'Tech', 'Health', 'Education'][i] ?? 'National'} Sector`, excerpt: 'Comprehensive details on this important story with in-depth analysis and exclusive coverage from Iraq Now correspondents in the field.' },
-  ],
-  media: [{ media: { url: `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop&q=80&sig=iraqnow${i + 10}/800/500`, alt: '' } }],
-  category: { slug: categories[i % categories.length], translations: [{ locale: 'ar' as const, name: catNames.ar[i % catNames.ar.length] }, { locale: 'ku' as const, name: catNames.ku[i % catNames.ku.length] }, { locale: 'en' as const, name: catNames.en[i % catNames.en.length] }] },
-  author: { name: ['أحمد الزبيدي', 'ليلى حسن', 'سوران محمد', 'عمر عبد الله', 'زينب الكعبي', 'حسين العلي', 'فاطمة الجابري', 'علي الشمري', 'نور الدين'][i] },
-  location: { governorate: { translations: [{ locale: 'ar' as const, name: govs.ar[i % govs.ar.length] }, { locale: 'ku' as const, name: govs.ku[i % govs.ku.length] }, { locale: 'en' as const, name: govs.en[i % govs.en.length] }] } },
-}))
 
-export function LatestNews({ locale }: LatestNewsProps) {
+export function LatestNews({ locale, articles: propArticles }: LatestNewsProps) {
   const t = UI[locale]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight
+  const articles = propArticles || []
 
   return (
     <section className="py-14 lg:py-20 bg-[var(--background)]" aria-labelledby="latest-heading">
@@ -83,7 +65,17 @@ export function LatestNews({ locale }: LatestNewsProps) {
         </Reveal>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {MOCK.map((article, i) => (
+          {articles.length === 0 ? (
+            <div className="col-span-full flex flex-col items-center gap-4 rounded-3xl border border-dashed border-gold-500/30 py-20 text-center">
+              <IshtarStar size={48} />
+              <p className="font-kufi text-lg font-bold text-[var(--foreground)]">
+                {locale === 'en' ? 'Coming Soon' : locale === 'ku' ? 'بەم زووانە' : 'قريباً'}
+              </p>
+              <p className="max-w-sm text-sm text-[var(--muted)]">
+                {locale === 'en' ? 'We\'re working on bringing you the latest news from Iraq. Check back soon!' : 'نعمل على تقديم أحدث الأخبار من العراق. عد قريباً!'}
+              </p>
+            </div>
+          ) : articles.map((article, i) => (
             <Reveal key={article.id} delay={(i % 3) * 100}>
               <ArticleCard article={article} locale={locale} />
             </Reveal>

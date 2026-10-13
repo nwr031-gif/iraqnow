@@ -11,12 +11,12 @@ interface InfoPageData { title: string; subtitle: string; sections: InfoSection[
 const INFO_PAGES: Record<string, Partial<Record<Locale, InfoPageData>>> = {
   team: {
     ar: { title: 'فريق التحرير', subtitle: 'من يقف خلف العراق الآن', sections: [
-      { heading: 'غرفة الأخبار الذكية', body: 'تُدار غرفة أخبار العراق الآن آلياً على مدار الساعة: محرك تحريري يراقب المصادر الإخبارية العراقية والعربية والعالمية، ويبحث ويتحقق ثم يصوغ التقارير بمساعدة الذكاء الاصطناعي.' },
+      { heading: 'غرفة الأخبار', body: 'تُدار غرفة أخبار العراق الآن على مدار الساعة: منظومة تحريرية رقمية تراقب المصادر الإخبارية العراقية والعربية والعالمية، تبحث وتبحث ويتحقق ثم تصوغ التقارير بمعايير صحفية صارمة.' },
       { heading: 'المراجعة والجودة', body: 'يخضع كل تقرير لسلسلة تحقق صارمة: مقارنة المعلومات بالمصادر الأصلية، ونسب المصادر صراحة في نهاية كل مقال، ومنع أي معلومة غير موثقة. كما يراجع فريق التحرير المحتوى دورياً.' },
       { heading: 'التغطية', body: 'تغطي المنصة أحداث العراق والشرق الأوسط والعالم — من بغداد إلى البصرة وأربيل والموصل — بالعربية والإنجليزية، على مستوى محافظات العراق الـ 19.' },
     ]},
     en: { title: 'Editorial Team', subtitle: 'Who stands behind Iraq Now', sections: [
-      { heading: 'The Smart Newsroom', body: 'Iraq Now is operated around the clock by an automated editorial engine: it monitors Iraqi, Arab and international news sources, researches and verifies, then drafts reports with AI assistance.' },
+      { heading: 'The Newsroom', body: 'The Iraq Now newsroom operates around the clock: a digital editorial system monitors Iraqi, Arab and international news sources, researches and verifies, then drafts reports to strict journalistic standards.' },
       { heading: 'Review & Quality', body: 'Every report goes through strict verification: facts are checked against original sources, sources are explicitly credited at the end of each article, and unverified information is never published. Editors also review content regularly.' },
       { heading: 'Coverage', body: 'We cover Iraq, the Middle East and the world — from Baghdad to Basra, Erbil and Mosul — in Arabic and English, across all 19 Iraqi governorates.' },
     ]},
@@ -24,12 +24,12 @@ const INFO_PAGES: Record<string, Partial<Record<Locale, InfoPageData>>> = {
   'fact-check': {
     ar: { title: 'التحقق من المعلومات', subtitle: 'منهجيتنا في الدقة والمصداقية', sections: [
       { heading: 'منهجيتنا', body: 'كل خبر ننشره مبني على مصدر إخباري معروف يُذكر اسمه صراحة في نهاية التقرير. نعتمد على بيانات RSS الرسمية من وسائل الإعلام الموثوقة، ونمنع منعاً باتاً إضافة أي معلومة أو رقم أو تصريح غير موجود في المصادر الأصلية.' },
-      { heading: 'دور الذكاء الاصطناعي', body: 'نستخدم نماذج ذكاء اصطناعي متقدمة لتحليل الأخبار وصياغة التقارير. يُزوَّد المحرك بالنص الكامل للتقرير الأصلي ويُطالب بالالتزام الحرفي به، مع فقرة تحليلية مبنية على المعطيات المتوفرة فقط — دون تخمين أو استنتاج دوافع غير معلنة.' },
+      { heading: 'معايير النشر', body: 'كل تقرير يُراجع قبل النشر: التحقق من تطابق الوقائع مع المصدر، سلامة اللغة، ووضوح التوقيت والمكان. نرفض نشر أي محتوى لا يمكن ربطه بمصدر موثوق.' },
       { heading: 'الإبلاغ عن خطأ', body: 'إن لاحظت أي خطأ في أي تقرير، راسلنا فوراً على info@iraqnow.iq مع رابط المقال، وسنقوم بالمراجعة والتصحيح خلال 24 ساعة.' },
     ]},
     en: { title: 'Fact Checking', subtitle: 'Our methodology for accuracy', sections: [
       { heading: 'Our Methodology', body: 'Every story we publish is based on a known news source explicitly credited at the end of the report. We rely on official RSS feeds from trusted outlets, and never add any fact, number or statement not present in the original sources.' },
-      { heading: 'The Role of AI', body: 'We use advanced AI models to analyze news and draft reports. The engine receives the full text of the original report and is required to adhere strictly to it, adding only an analysis paragraph based on available facts — no guessing, no invented motives.' },
+      { heading: 'Publishing Standards', body: 'Every report is reviewed before publishing: facts are matched against the source, language quality is checked, and timing and location are made clear. We refuse to publish any content that cannot be tied to a trusted source.' },
       { heading: 'Report an Error', body: 'If you spot an error in any report, contact info@iraqnow.iq with the article link, and we will review and correct within 24 hours.' },
     ]},
   },

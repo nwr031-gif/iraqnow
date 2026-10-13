@@ -219,7 +219,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
             {paragraphs.map((para, i) => (
               <p
                 key={i}
-                className={`mb-6 text-base leading-[2.1] text-[var(--foreground)] sm:text-[17px] ${i === 0 ? 'first-letter:float-start first-letter:me-3 first-letter:mt-1 first-letter:font-kufi first-letter:text-6xl first-letter:font-bold first-letter:text-[var(--muted)]' : ''}`}
+                className="mb-6 text-base leading-[2.1] text-[var(--foreground)] sm:text-[17px]"
               >
                 {para}
               </p>

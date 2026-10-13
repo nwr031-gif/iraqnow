@@ -36,25 +36,25 @@ const CATEGORIES = ['politics', 'economy', 'security', 'society', 'culture', 'sp
 const GOVERNORATES = ['baghdad', 'basra', 'erbil', 'mosul', 'najaf', 'karbala', 'kirkuk', 'sulaymaniyah', 'anbar', 'duhok']
 
 const CATEGORY_IMAGES = {
-  politics: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&q=75',
-  economy: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&q=75',
-  security: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1200&q=75',
-  society: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=75',
-  culture: 'https://images.unsplash.com/photo-1590247813693-5541d1c609fd?w=1200&q=75',
-  sports: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&q=75',
-  technology: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=75',
-  health: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=75',
-  education: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=75',
-  environment: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&q=75',
-  local: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=75',
-  world: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=75',
+  politics: 'photo-1529107386315-e1a2ed48a620',
+  economy: 'photo-1611974789855-9c2a0a7236a3',
+  security: 'photo-1541872703-74c5e44368f9',
+  society: 'photo-1529156069898-49953e39b3ac',
+  culture: 'photo-1590247813693-5541d1c609fd',
+  sports: 'photo-1461896836934-ffe607ba8211',
+  technology: 'photo-1518770660439-4636190af475',
+  health: 'photo-1576091160399-112ba8d25d1d',
+  education: 'photo-1503676260728-1c00da094a0b',
+  environment: 'photo-1470071459604-3b5ec3a7fe05',
+  local: 'photo-1519681393784-d120267933ba',
+  world: 'photo-1451187580459-43490279c0fa',
 }
 
 const AI_AUTHOR = {
-  id: 'ai-newsroom', slug: 'ai-newsroom', email: 'ai@iraqnow.com',
-  name: 'غرفة الأخبار الذكية', role: 'EDITOR',
-  job_title: 'مدعومة بالذكاء الاصطناعي',
-  bio: 'غرفة أخبار آلية تعمل 24/7 على مدار الساعة، تبحث وتتحقق من التقارير الإخبارية عبر مصادر متعددة وتنشرها مع الإشارة الكاملة إلى المصادر، بمساعدة الذكاء الاصطناعي.',
+  id: 'iraqnow', slug: 'iraqnow', email: 'news@iraqnow.com',
+  name: 'العراق الآن', role: 'EDITOR',
+  job_title: 'فريق التحرير',
+  bio: 'فريق تحرير منصة العراق الآن — تغطية إخبارية على مدار الساعة من العراق والشرق الأوسط والعالم.',
 }
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36'
@@ -62,7 +62,7 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const MAX_SEEN = 900
 const MAX_FEED_BYTES = 150000
 const MAX_ARTICLE_BYTES = 300000
-const MAX_FULLTEXT_CHARS = 6000
+const MAX_FULLTEXT_CHARS = 4200
 const MAX_ARTICLE_AGE_MS = 8 * 3600_000
 const MIN_HOOK_INTERVAL_MS = 3 * 3600_000
 const SAFETY_HOOK_INTERVAL_MS = 12 * 3600_000
@@ -106,7 +106,7 @@ async function saveState(env, state) {
 
 async function ensureAuthor(env) {
   try {
-    const res = await fetch(`${env.SUPABASE_URL}/rest/v1/authors?id=eq.ai-newsroom&select=id`, { headers: sbHeaders(env) })
+    const res = await fetch(`${env.SUPABASE_URL}/rest/v1/authors?id=eq.iraqnow&select=id`, { headers: sbHeaders(env) })
     const rows = res.status === 200 ? await res.json() : []
     if (!rows.length) {
       await fetch(`${env.SUPABASE_URL}/rest/v1/authors`, {
@@ -118,13 +118,64 @@ async function ensureAuthor(env) {
   } catch { /* تجاهل */ }
 }
 
-async function insertArticle(env, row) {
+async function insertArticle(env, row, diag) {
   const res = await fetch(`${env.SUPABASE_URL}/rest/v1/articles`, {
     method: 'POST',
     headers: sbHeaders(env, { Prefer: 'return=minimal' }),
     body: JSON.stringify(row),
   })
-  return res.status >= 200 && res.status < 300
+  if (res.status >= 200 && res.status < 300) return true
+  try {
+    const errBody = await res.json()
+    diag.insertError = `${res.status} ${JSON.stringify(errBody).slice(0, 250)}`
+  } catch {
+    diag.insertError = `${res.status}`
+  }
+  return false
+}
+
+/* ترقية جودة الصور — المصغرات الصغيرة تُستبدل بنسخ عالية الدقة */
+function upgradeImageUrl(url) {
+  if (!url) return ''
+  /* سكاي نيوز عربية: استبدال الأبعاد الصغيرة بـ 944/531 */
+  if (/images\.skynewsarabia\.com/.test(url)) {
+    return url.replace(/\/(\d{1,3})\/(\d{1,3})\//, (m, w, h) => {
+      const W = parseInt(w, 10), H = parseInt(h, 10)
+      return W < 400 && H < 400 ? '/944/531/' : m
+    })
+  }
+  return url
+}
+
+/* مطابقة كلمات مفتاحية للموضوع مع صورة مناسبة من المسبح الموثق */
+const KEYWORD_IMAGES = [
+  { re: /نفط|بترول|OPEC|أوبك|صادرات|مصفاة/i, id: 'photo-1518709268805-4e9042af9f23' },
+  { re: /دولار|دينار|صرف|مصرف|مركزي|ميزانية|اقتصاد/i, id: 'photo-1611974789855-9c2a0a7236a3' },
+  { re: /كرة|مباراة|منتخب|دوري|لاعب|بطولة/i, id: 'photo-1461896836934-ffe607ba8211' },
+  { re: /انتخاب|برلمان|حكومة|وزير|قمة|مفاوض/i, id: 'photo-1529107386315-e1a2ed48a620' },
+  { re: /انفجار|هجوم|اشتباك|قصف|جيش|شرطة|أمن/i, id: 'photo-1541872703-74c5e44368f9' },
+  { re: /مدرسة|جامعة|طلاب|تعليم|امتحان/i, id: 'photo-1503676260728-1c00da094a0b' },
+  { re: /مستشفى|صحة|مرض|وباء|دواء/i, id: 'photo-1576091160399-112ba8d25d1d' },
+  { re: /معرض|مسرح|تراث|ثقاف|فن/i, id: 'photo-1590247813693-5541d1c609fd' },
+  { re: /ماء|مياه|جفاف|سيول|بيئة|تلوث|مناخ/i, id: 'photo-1470071459604-3b5ec3a7fe05' },
+  { re: /تكنولوج|ذكاء اصطناعي|تطبيق|هاتف|رقمي|إنترنت|انترنت/i, id: 'photo-1518770660439-4636190af475' },
+]
+
+function pickImage(item, category, searchText) {
+  /* 1) صورة الخبر من المصدر — الأكثر صلة */
+  const upgraded = upgradeImageUrl(item.image)
+  if (upgraded) return upgraded
+
+  /* 2) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
+  const text = `${searchText || ''}`
+  for (const k of KEYWORD_IMAGES) {
+    if (k.re.test(text)) {
+      return `${k.id}?auto=format&fit=crop&w=1200&q=75`
+    }
+  }
+
+  /* 3) صورة القسم */
+  return `${(CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world)}?auto=format&fit=crop&w=1200&q=75`
 }
 
 /* ═══════════ أدوات RSS ═══════════ */
@@ -351,42 +402,51 @@ ${story.fullText || item.desc || 'غير متوفر'}
 """
 ${corroborating ? `\nتغطيات مصادر أخرى لنفس الحدث:\n${corroborating}\n` : '\nلا توجد تغطيات متقاطعة إضافية — اعتمد على المصدر الأساسي وحده، ولا تستنتج أي تفاصيل إضافية.\n'}
 
-## خطوة 3 — كتابة التقرير
-- عربي: 5-7 فقرات — فقرة افتتاحية (ماذا/متى/أين/من) ثم فقرات تفاصيل من النص الكامل ثم فقرة "لماذا يهم؟" تحليلية ثم فقرة "ما التالي؟" (نقاط المراقبة المستقبلية) وآخر سطر: "المصادر: <أسماء المصادر>"
-- إنجليزي: 3 فقرات موجزة، آخر سطر: "Sources: <names>"
+/* الخطوة 3 — كتابة التقرير
+- عربي: 4-6 فقرات موجزة — فقرة افتتاحية قوية (ماذا/متى/أين/من) بصياغة جديدة لا تكرر عنوان الخبر حرفياً، ثم فقرات تفاصيل من النص الكامل ثم فقرة "لماذا يهم؟" تحليلية ثم فقرة "ما التالي؟" (نقاط المراقبة المستقبلية) وآخر سطر: "المصادر: <أسماء المصادر>"
+- الإنجليزية: 2-3 فقرات موجزة جداً، آخر سطر: "Sources: <names>"
 - النص عادي فقط، الفقرات مفصولة بـ \\n. ممنوع HTML وMarkdown والتعداد النقطي.
 - دقة مطلقة: كل جملة تستند إلى المواد أعلاه حصراً.
 - أسلوب صحفي طبيعي: لا تعلق أبداً على جودة المصادر أو نقص المعلومات، ولا تكتب جملاً مثل "لم يذكر المصدر" أو "لم يتوفر تاريخ". إن كانت معلومة غير متوفرة ببساطة تجاوزها. إن كانت المواد قليلة اجعل التقرير أقصر دون أي تعليق على ذلك.
+- ممنوع بدأ أي فقرة بحرف العطف "و" — نوّع بادئات الفقرات والجمل (قال، أعلن، أشار، في سياق متصل، على صعيد...).
+- "slug_hint": كلمات إنجليزية فعلية مستمدة من العنوان الإنجليزي مفصولة بشرطات (مثال: "iraq-central-bank-gold" أو "gaza-ceasefire-talks") — لا تكتب نصاً توضيحياً.
 
 أعد JSON فقط دون أي نص خارجي بهذا الشكل:
-{"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":true|false,"tags":["كلمة","كلمة","كلمة"],"slug_hint":"english-slug-4-words","ar":{"title":"...","excerpt":"سطر أو سطران","content":"..."},"en":{"title":"...","excerpt":"...","content":"..."}}`
+{"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":true|false,"tags":["كلمة","كلمة","كلمة"],"slug_hint":"real-english-slug","ar":{"title":"...","excerpt":"سطر أو سطران","content":"..."},"en":{"title":"...","excerpt":"...","content":"..."}}`
 }
 
-async function generateArticle(env, story) {
+async function generateArticle(env, story, diag) {
   const messages = [
-    { role: 'system', content: 'أنت محلل أخبار استراتيجي محترف في وكالة "العراق الآن". تلتزم بالدقة المطلقة وعدم التخمين، وتُخرج دائماً JSON صالحاً فقط دون أي نص خارج JSON.' },
+    { role: 'system', content: 'detailed thinking off. أنت محلل أخبار استراتيجي محترف في وكالة "العراق الآن". تلتزم بالدقة المطلقة وعدم التخمين، وتُخرج دائماً JSON صالحاً فقط دون أي نص خارج JSON.' },
     { role: 'user', content: buildResearchPrompt(story) },
   ]
 
   /* NVIDIA NIM — نموذج تحليلي قوي (محاولتان) */
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const content = await callNIM(env, messages, 2600)
+      const content = await callNIM(env, messages, 6000)
       const parsed = extractJson(content)
       if (parsed && parsed.ar && parsed.ar.title && parsed.ar.content) {
         return { data: parsed, engine: 'nim' }
       }
-    } catch { /* المحاولة التالية */ }
+      diag.parseFail = (diag.parseFail || 0) + 1
+      diag.lastRaw = String(content || '').slice(0, 200)
+    } catch (e) {
+      diag.nimError = String(e && e.message || e).slice(0, 120)
+    }
   }
 
   /* Workers AI احتياطاً */
   try {
-    const content = await callCF(env, messages, 2000)
+    const content = await callCF(env, messages, 3000)
     const parsed = extractJson(content)
     if (parsed && parsed.ar && parsed.ar.title && parsed.ar.content) {
       return { data: parsed, engine: 'cf' }
     }
-  } catch { /* فشل نهائي */ }
+    diag.cfParseFail = (diag.cfParseFail || 0) + 1
+  } catch (e) {
+    diag.cfError = String(e && e.message || e).slice(0, 120)
+  }
 
   return null
 }
@@ -455,19 +515,30 @@ function countWords(...texts) {
 }
 
 function cleanContent(s) {
-  return (s || '')
+  let out = (s || '')
     .replace(/<[^>]*>/g, '')
     .replace(/\\n/g, '\n')
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n')
+
+  /* مسافة إلزامية بعد علامات الترقيم قبل حرف عربي */
+  out = out.replace(/([.،؛؟!])([ء-ي])/g, '$1 $2')
+  /* طي المسافات المتعددة */
+  out = out.replace(/[ \t]{2,}/g, ' ')
+  return out
 }
 
-async function publishFromGenerated(env, gen, story, hash) {
+async function publishFromGenerated(env, gen, story, hash, diag) {
   const g = gen.data
   const item = story.primary
   if (!g || !g.ar || !g.ar.title || !g.ar.content) return null
 
   const shortHash = hash.slice(0, 6)
-  const slugBase = slugify(g.slug_hint) || slugify(g.en && g.en.title) || 'news'
+  const GENERIC_SLUGS = ['english-slug-4-words', 'english-slug', 'slug', 'news', 'real-english-slug']
+  let slugBase = slugify(g.slug_hint) || slugify(g.en && g.en.title) || ''
+  if (!slugBase || slugBase.length < 8 || GENERIC_SLUGS.includes(slugBase)) {
+    slugBase = slugify(g.en && g.en.title) || slugify(arTitle) || 'iraq-news'
+  }
+  if (slugBase.length > 60) slugBase = slugBase.slice(0, 60).replace(/-[^-]*$/, '')
   const slug = `${slugBase}-${shortHash}`
 
   const arTitle = String(g.ar.title).slice(0, 180)
@@ -491,7 +562,7 @@ async function publishFromGenerated(env, gen, story, hash) {
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
   const category = validCategory(g.category) || classifyByKeywords(arTitle, String(g.ar.excerpt || ''))
-  const image = item.image || CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world
+  const image = pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`)
 
   const nowIso = new Date().toISOString()
   const row = {
@@ -519,7 +590,7 @@ async function publishFromGenerated(env, gen, story, hash) {
     content_ar: arContent, content_ku: kuContent, content_en: enContent,
   }
 
-  const ok = await insertArticle(env, row)
+  const ok = await insertArticle(env, row, diag)
   if (!ok) return null
   return { id: row.id, slug: row.slug, title: arTitle, category, breaking: row.breaking, engine: gen.engine, sources: sourcesLine }
 }
@@ -595,8 +666,8 @@ async function runEngine(env, trigger) {
     /* التحليل والكتابة والنشر */
     await ensureAuthor(env)
     for (const story of batch) {
-      const gen = await generateArticle(env, story)
-      const published = gen ? await publishFromGenerated(env, gen, story, story.primary.hash) : null
+      const gen = await generateArticle(env, story, result)
+      const published = gen ? await publishFromGenerated(env, gen, story, story.primary.hash, result) : null
       if (published) { result.published.push(published); daily.used++ }
       else result.skipped++
     }

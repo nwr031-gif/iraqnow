@@ -53,6 +53,38 @@ if (fs.existsSync(sitemapBody)) {
   }
 }
 
+/* 404.html — صفحة عدم الوجود (اصطلاح Cloudflare Pages) */
+const notFoundSrc = path.join(SRC, '_not-found.html')
+if (fs.existsSync(notFoundSrc)) {
+  const nf = fs.readFileSync(notFoundSrc)
+  if (nf.length > 300) {
+    fs.writeFileSync(path.join(DEST, '404.html'), nf)
+    console.log('✓ 404.html written')
+  }
+}
+
+/* _headers — ترويسات الأمان للأصول الثابتة (تُطبَّق من Cloudflare Pages مباشرة) */
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://cloud.umami.is https://cdn.onesignal.com https://challenges.cloudflare.com https://giscus.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://giscus.app; font-src 'self' https://fonts.gstatic.com https://giscus.app; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://ms-7fba9866c156-55153.par.meilisearch.io https://cloud.umami.is https://api.onesignal.com https://onesignal.com https://giscus.app https://api.resend.com wss://*.onesignal.com; frame-src https://challenges.cloudflare.com https://giscus.app https://onesignal.com; worker-src 'self' blob:; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+const HEADERS = `/*
+  X-DNS-Prefetch-Control: on
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self), browsing-topics=()
+  Content-Security-Policy: ${CSP}
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/api/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+  Access-Control-Allow-Headers: X-CSRF-Token, X-Requested-With, Content-Type, Authorization
+`
+fs.writeFileSync(path.join(DEST, '_headers'), HEADERS)
+console.log('✓ _headers written')
+
 /* _redirects — تحويل الجذر والمسارات بدون لغة إلى /ar + الكردية إلى العربية */
 const barePaths = ['about', 'contact', 'data', 'editorial-policy', 'latest', 'map', 'newsletter', 'podcasts', 'privacy', 'search', 'terms', 'trending']
 const redirects = [

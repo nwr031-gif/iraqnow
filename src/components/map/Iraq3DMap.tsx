@@ -9,7 +9,9 @@ const MapCanvas = dynamic(() => import('./Iraq3DMapCanvas'), {
     <div className="flex w-full items-center justify-center rounded-3xl border border-line bg-[var(--background)]" style={{ height: 560 }}>
       <div className="flex flex-col items-center gap-4">
         <span className="animate-float text-5xl">🇮🇶</span>
-        <p className="animate-pulse text-xs tracking-[3px] text-[var(--muted)]">LOADING IRAQ 3D...</p>
+        <p className="animate-pulse text-sm text-[var(--muted)]" aria-live="polite">
+          جارٍ تحميل خريطة العراق ثلاثية الأبعاد...
+        </p>
       </div>
     </div>
   ),

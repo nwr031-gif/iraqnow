@@ -9,6 +9,20 @@ interface InfoSection { heading: string; body: string }
 interface InfoPageData { title: string; subtitle: string; sections: InfoSection[] }
 
 const INFO_PAGES: Record<string, Partial<Record<Locale, InfoPageData>>> = {
+  corrections: {
+    ar: { title: 'سياسة التصحيحات', subtitle: 'الشفافية عند الخطأ التزام لا خيار', sections: [
+      { heading: 'التزامنا', body: 'الدقة أساس المصداقية. عند اكتشاف خطأ في أي تقرير منشور، نصححه سريعاً ونوضح طبيعة التصحيح في أسفل المقال نفسه، مع الإشارة إلى تاريخ التصحيح.' },
+      { heading: 'أنواع التصحيحات', body: 'خطأ مادي (اسم، رقم، تاريخ، مكان) يُصحح فوراً مع ملاحظة تصحيح. خطأ جوهري يغيّر دلالة الخبر يُصحح مع توضيح وافٍ. تقارير تبين أنها غير دقيقة بشكل كامل تُسحب مع بيان سبب السحب في مكانها.' },
+      { heading: 'سجل التصحيحات', body: 'لا توجد تصحيحات منشورة حتى تاريخه. سيُدرج هنا سجل كل تصحيح مستقبلي مع رابط المقال وتاريخ التعديل.' },
+      { heading: 'الإبلاغ عن خطأ', body: 'راسلنا على info@iraqnow.iq مع رابط المقال ووصف الخطأ، وسنراجع خلال 24 ساعة.' },
+    ]},
+    en: { title: 'Corrections Policy', subtitle: 'Transparency on errors is a duty, not an option', sections: [
+      { heading: 'Our Commitment', body: 'Accuracy is the foundation of credibility. When an error is found in any published report, we correct it promptly, note the correction at the bottom of the article itself, and indicate the date of the change.' },
+      { heading: 'Types of Corrections', body: 'Material errors (name, number, date, location) are fixed immediately with a correction note. Substantive errors that change the meaning of the story are corrected with a full explanation. Reports found to be wholly inaccurate are retracted with the reason stated in place.' },
+      { heading: 'Corrections Log', body: 'No corrections have been published to date. Every future correction will be listed here with the article link and the date of the change.' },
+      { heading: 'Report an Error', body: 'Email info@iraqnow.iq with the article link and a description of the error — we review within 24 hours.' },
+    ]},
+  },
   team: {
     ar: { title: 'فريق التحرير', subtitle: 'من يقف خلف العراق الآن', sections: [
       { heading: 'غرفة الأخبار', body: 'تُدار غرفة أخبار العراق الآن على مدار الساعة: منظومة تحريرية رقمية تراقب المصادر الإخبارية العراقية والعربية والعالمية، تبحث وتبحث ويتحقق ثم تصوغ التقارير بمعايير صحفية صارمة.' },

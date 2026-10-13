@@ -6,83 +6,83 @@
   --font-inter: "Inter", system-ui, sans-serif;
   
   /* ═══════════════════════════════════════════
-     هوية أحادية اللون — أبيض نهاراً / أسود ليلاً
-     Monochrome Identity — White / Black only
+     هوية العراق الآن — كحلي + ذهبي + أحمر محدود
+     Navy / Gold / Limited Red — على أساس أبيض نظيف
      ═══════════════════════════════════════════ */
 
-  /* لازورد → رمادي محايد */
-  --color-lapis-50: #fafafa;
-  --color-lapis-100: #f5f5f5;
-  --color-lapis-200: #e5e5e5;
-  --color-lapis-300: #d4d4d4;
-  --color-lapis-400: #a3a3a3;
-  --color-lapis-500: #737373;
-  --color-lapis-600: #525252;
-  --color-lapis-700: #404040;
-  --color-lapis-800: #262626;
-  --color-lapis-900: #171717;
-  --color-lapis-950: #0a0a0a;
+  /* اللازورد — أزرق داكن احترافي */
+  --color-lapis-50: #eef4fb;
+  --color-lapis-100: #d9e6f6;
+  --color-lapis-200: #b3cdec;
+  --color-lapis-300: #7fa9dd;
+  --color-lapis-400: #4a80c9;
+  --color-lapis-500: #2b5fab;
+  --color-lapis-600: #1e4a8c;
+  --color-lapis-700: #183a6f;
+  --color-lapis-800: #142d55;
+  --color-lapis-900: #0f2140;
+  --color-lapis-950: #081428;
 
-  /* ذهب → رمادي محايد */
-  --color-gold-50: #fafafa;
-  --color-gold-100: #f5f5f5;
-  --color-gold-200: #e5e5e5;
-  --color-gold-300: #d4d4d4;
-  --color-gold-400: #a3a3a3;
-  --color-gold-500: #737373;
-  --color-gold-600: #525252;
-  --color-gold-700: #404040;
-  --color-gold-800: #262626;
-  --color-gold-900: #171717;
+  /* الذهب — ذهبي خفيف للهوية */
+  --color-gold-50: #fdf9ec;
+  --color-gold-100: #faf0cd;
+  --color-gold-200: #f4dd97;
+  --color-gold-300: #ecc55b;
+  --color-gold-400: #e2ad31;
+  --color-gold-500: #d4af37;
+  --color-gold-600: #b8860b;
+  --color-gold-700: #92620d;
+  --color-gold-800: #7a4e12;
+  --color-gold-900: #684114;
 
-  /* طين → رمادي محايد */
-  --color-terra-50: #fafafa;
-  --color-terra-100: #f5f5f5;
-  --color-terra-200: #e5e5e5;
-  --color-terra-300: #d4d4d4;
-  --color-terra-400: #a3a3a3;
-  --color-terra-500: #737373;
-  --color-terra-600: #525252;
-  --color-terra-700: #404040;
-  --color-terra-800: #262626;
-  --color-terra-900: #171717;
+  /* الطين المحروق — للتنبيهات الثانوية */
+  --color-terra-50: #fdf5f1;
+  --color-terra-100: #fbe8df;
+  --color-terra-200: #f6cfbe;
+  --color-terra-300: #efab92;
+  --color-terra-400: #e57d5f;
+  --color-terra-500: #d95b3a;
+  --color-terra-600: #c44224;
+  --color-terra-700: #a4341e;
+  --color-terra-800: #862d1e;
+  --color-terra-900: #6e281c;
 
-  /* رمل → رمادي محايد */
-  --color-sand-50: #fafafa;
-  --color-sand-100: #f5f5f5;
-  --color-sand-200: #e5e5e5;
-  --color-sand-300: #d4d4d4;
-  --color-sand-400: #a3a3a3;
-  --color-sand-500: #737373;
-  --color-sand-600: #525252;
-  --color-sand-700: #404040;
-  --color-sand-800: #262626;
-  --color-sand-900: #171717;
+  /* الرمل — محايد دافئ */
+  --color-sand-50: #fbf9f4;
+  --color-sand-100: #f5f0e6;
+  --color-sand-200: #e9dfca;
+  --color-sand-300: #dbc8a5;
+  --color-sand-400: #c9ab7c;
+  --color-sand-500: #b9925f;
+  --color-sand-600: #a67b4e;
+  --color-sand-700: #8a6342;
+  --color-sand-800: #71513a;
+  --color-sand-900: #5d4432;
 
-  /* زفت → رمادي محايد */
-  --color-ink-50: #fafafa;
-  --color-ink-100: #f5f5f5;
-  --color-ink-200: #e5e5e5;
-  --color-ink-300: #d4d4d4;
-  --color-ink-400: #a3a3a3;
-  --color-ink-500: #737373;
-  --color-ink-600: #525252;
-  --color-ink-700: #404040;
-  --color-ink-800: #262626;
-  --color-ink-900: #171717;
-  --color-ink-950: #0a0a0a;
+  /* الزفت — رمادي داكن محايد */
+  --color-ink-50: #f6f6f5;
+  --color-ink-100: #e7e7e5;
+  --color-ink-200: #d0d0cc;
+  --color-ink-300: #b0afa9;
+  --color-ink-400: #88867e;
+  --color-ink-500: #6d6b63;
+  --color-ink-600: #57554e;
+  --color-ink-700: #46453f;
+  --color-ink-800: #33322e;
+  --color-ink-900: #1c1b18;
+  --color-ink-950: #0e0d0b;
 
-  /* ألوان دلالية — أحادية */
-  --color-primary: #0a0a0a;
-  --color-primary-light: #262626;
-  --color-primary-dark: #000000;
-  --color-accent: #171717;
-  --color-accent-hover: #0a0a0a;
-  --color-accent-soft: #e5e5e5;
-  --color-secondary: #525252;
-  --color-success: #171717;
-  --color-warning: #404040;
-  --color-error: #171717;
+  /* ألوان دلالية */
+  --color-primary: #0f2140;
+  --color-primary-light: #183a6f;
+  --color-primary-dark: #081428;
+  --color-accent: #d4af37;
+  --color-accent-hover: #b8860b;
+  --color-accent-soft: #f4dd97;
+  --color-secondary: #2b5fab;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 
   /* الظلال — ناعمة وبسيطة */
   --shadow-lapis: 0 20px 60px -20px rgba(10, 10, 10, 0.25);
@@ -202,8 +202,8 @@
   }
 
   ::selection {
-    background-color: var(--foreground);
-    color: var(--background);
+    background-color: var(--color-gold-500);
+    color: var(--color-ink-950);
   }
 
   ::-webkit-scrollbar {
@@ -216,7 +216,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--c-line-strong);
+    background: var(--color-lapis-800);
     border-radius: 8px;
     border: 2px solid var(--background);
   }
@@ -226,7 +226,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--foreground);
+    outline: 2px solid var(--color-lapis-600);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -249,7 +249,7 @@
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--color-gold-700);
   }
 
   .text-balance { text-wrap: balance; }
@@ -273,9 +273,10 @@
 
   /* نص بارز — أحادي اللون */
   .text-gold-gradient {
-    color: inherit;
-    background: none;
-    -webkit-text-fill-color: currentColor;
+    background: linear-gradient(135deg, #e2ad31 0%, #d4af37 50%, #cf9d2e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   /* نص باهت — أحادي اللون */
@@ -380,18 +381,19 @@
     justify-content: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    background: var(--foreground);
+    background: var(--color-lapis-900);
     padding: 0.7rem 1.6rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--background);
+    color: #fff;
     transition: all 0.25s ease;
     cursor: pointer;
   }
 
   .btn-primary:hover {
-    opacity: 0.82;
+    background: var(--color-lapis-700);
     transform: translateY(-1px);
+    box-shadow: 0 6px 20px -8px rgba(15, 33, 64, 0.45);
   }
 
   .btn-primary:disabled {
@@ -406,18 +408,19 @@
     justify-content: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    background: var(--foreground);
+    background: var(--color-gold-500);
     padding: 0.7rem 1.6rem;
     font-size: 0.875rem;
     font-weight: 700;
-    color: var(--background);
+    color: var(--color-ink-950);
     transition: all 0.25s ease;
     cursor: pointer;
   }
 
   .btn-gold:hover {
-    opacity: 0.85;
+    background: var(--color-gold-400);
     transform: translateY(-1px);
+    box-shadow: 0 6px 20px -8px rgba(212, 175, 55, 0.5);
   }
 
   .btn-secondary {
@@ -498,9 +501,9 @@
   }
 
   .input:focus {
-    border-color: var(--foreground);
+    border-color: var(--color-gold-500);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(128, 128, 128, 0.15);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
   }
 
   .label {
@@ -554,26 +557,26 @@
   }
 
   .badge-gold {
-    background: var(--c-cream-deep);
-    color: var(--muted);
-    border: 1px solid var(--c-line);
+    background: #fdf9ec;
+    color: var(--color-gold-700);
+    border: 1px solid #eddfb4;
   }
 
   .badge-lapis {
-    background: var(--c-cream-deep);
-    color: var(--muted);
-    border: 1px solid var(--c-line);
+    background: var(--color-lapis-50);
+    color: var(--color-lapis-700);
+    border: 1px solid var(--color-lapis-100);
   }
 
   .badge-terra {
-    background: var(--c-cream-deep);
-    color: var(--muted);
-    border: 1px solid var(--c-line);
+    background: #fdf1ec;
+    color: var(--color-terra-700);
+    border: 1px solid #f6d8cc;
   }
 
   .badge-live {
-    background: var(--foreground);
-    color: var(--background);
+    background: #dc2626;
+    color: #fff;
   }
 
   /* الروابط */

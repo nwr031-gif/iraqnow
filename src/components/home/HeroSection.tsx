@@ -70,21 +70,21 @@ export function HeroSection({ locale }: { locale: Locale }) {
           <h1 className="mx-auto max-w-4xl font-kufi text-4xl font-bold leading-[1.2] tracking-tight text-balance sm:text-5xl lg:text-6xl">
             {locale === 'ar' ? (
               <>
-                <span>العراق الآن</span>
+                <span className="text-gold-gradient">العراق الآن</span>
                 <span className="mt-2 block text-2xl font-semibold text-[var(--muted)] sm:text-3xl lg:text-4xl">
                   حيث يُروى الخبر كاملاً
                 </span>
               </>
             ) : locale === 'ku' ? (
               <>
-                <span>عێراق ئێستا</span>
+                <span className="text-gold-gradient">عێراق ئێستا</span>
                 <span className="mt-2 block text-2xl font-semibold text-[var(--muted)] sm:text-3xl lg:text-4xl">
                   هەواڵ بە تەواوی
                 </span>
               </>
             ) : (
               <>
-                <span>Iraq Now</span>
+                <span className="text-gold-gradient">Iraq Now</span>
                 <span className="mt-2 block text-2xl font-semibold text-[var(--muted)] sm:text-3xl lg:text-4xl">
                   The Full Story
                 </span>
@@ -98,7 +98,7 @@ export function HeroSection({ locale }: { locale: Locale }) {
 
           {/* أزرار */}
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link href={`/${locale}/latest`} className="btn-primary group inline-flex font-kufi">
+            <Link href={`/${locale}/latest`} className="btn-gold group inline-flex font-kufi">
               <Newspaper className="h-4 w-4" />
               {t.latest}
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />

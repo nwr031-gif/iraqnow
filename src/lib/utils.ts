@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { timeAgoAr } from './format'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -30,10 +31,14 @@ export function formatRelativeTime(date: Date | string, locale: 'ar' | 'ku' | 'e
 
   const l = labels[locale]
 
+  if (locale === 'ar') {
+    return timeAgoAr(date)
+  }
+
   if (diffMins < 1) return l.now
-  if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? l.min : l.mins}`
-  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? l.hour : l.hours}`
-  if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? l.day : l.days}`
+  if (diffMins < 60) return `${diffMins} ${l.mins}`
+  if (diffHours < 24) return `${diffHours} ${l.hours}`
+  if (diffDays <= 2) return l.day
   return formatDate(date, locale)
 }
 

@@ -49,6 +49,12 @@ export interface MockArticle {
   tagSlugs: string[]
   governorateSlug: string
   image: string
+  imageAlt?: string
+  source?: string
+  sourceUrl?: string
+  correctionNote?: string
+  isOpinion?: boolean
+  country?: string
   gallery?: string[]
   translations: {
     locale: Locale

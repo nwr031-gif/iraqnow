@@ -11,6 +11,7 @@ type Locale = 'ar' | 'ku' | 'en'
 interface LatestNewsProps {
   locale: Locale
   articles?: ArticleData[]
+  total?: number
 }
 
 const UI: Record<Locale, { title: string; viewAll: string; subtitle: string }> = {
@@ -32,11 +33,12 @@ const govs: Record<Locale, string[]> = {
 }
 
 
-export function LatestNews({ locale, articles: propArticles }: LatestNewsProps) {
+export function LatestNews({ locale, articles: propArticles, total }: LatestNewsProps) {
   const t = UI[locale]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight
   const articles = propArticles || []
+  const [featured, ...rest] = articles
 
   return (
     <section className="py-16 lg:py-24 bg-[var(--background)]" aria-labelledby="latest-heading">
@@ -51,7 +53,7 @@ export function LatestNews({ locale, articles: propArticles }: LatestNewsProps) 
               <h2 id="latest-heading" className="section-title text-3xl lg:text-4xl">
                 {t.title}
               </h2>
-              <p className="mt-3 text-[15px] text-[var(--muted)]">{t.subtitle}</p>
+              <p className="mt-3 text-[15px] text-[var(--muted)]">{t.subtitle}{typeof total === 'number' && total > 0 ? '· ' + total.toLocaleString(locale === 'ar' ? 'ar-IQ' : 'en-US') : ''}</p>
             </div>
 
             <Link
@@ -64,23 +66,30 @@ export function LatestNews({ locale, articles: propArticles }: LatestNewsProps) 
           </div>
         </Reveal>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {articles.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center gap-4 rounded-3xl border border-dashed border-line-strong py-20 text-center">
-              <IshtarStar size={40} />
-              <p className="font-kufi text-lg font-bold text-[var(--foreground)]">
-                {locale === 'en' ? 'Coming Soon' : locale === 'ku' ? 'بەم زووانە' : 'قريباً'}
-              </p>
-              <p className="max-w-sm text-sm text-[var(--muted)]">
-                {locale === 'en' ? 'We\'re working on bringing you the latest news from Iraq. Check back soon!' : 'نعمل على تقديم أحدث الأخبار من العراق. عد قريباً!'}
-              </p>
-            </div>
-          ) : articles.map((article, i) => (
-            <Reveal key={article.id} delay={(i % 3) * 100}>
-              <ArticleCard article={article} locale={locale} />
+        {articles.length === 0 ? (
+          <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-line-strong py-20 text-center">
+            <IshtarStar size={40} />
+            <p className="font-kufi text-lg font-bold text-[var(--foreground)]">
+              {locale === 'en' ? 'Coming Soon' : locale === 'ku' ? 'بەم زووانە' : 'قريباً'}
+            </p>
+            <p className="max-w-sm text-sm text-[var(--muted)]">
+              {locale === 'en' ? 'We\'re working on bringing you the latest news from Iraq. Check back soon!' : 'نعمل على تقديم أحدث الأخبار من العراق. عد قريباً!'}
+            </p>
+          </div>
+        ) : (
+          <>
+            <Reveal className="mb-6">
+              <ArticleCard article={featured} locale={locale} variant="featured" />
             </Reveal>
-          ))}
-        </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {rest.map((article, i) => (
+                <Reveal key={article.id} delay={(i % 3) * 100}>
+                  <ArticleCard article={article} locale={locale} />
+                </Reveal>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* فاصل + زر المزيد */}
         <Reveal>

@@ -127,21 +127,25 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* الشريط العلوي */}
-      <div className="hidden lg:block border-b border-line bg-cream-deep">
-        <div className="container-main flex h-9 items-center justify-between text-xs text-[var(--muted)]">
+      <div className="hidden lg:block border-b border-lapis-800 bg-lapis-950 text-sand-100">
+        <div className="container-main flex h-9 items-center justify-between text-xs">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 font-medium text-[var(--foreground)]">
+            <span className="flex items-center gap-1.5 font-medium text-red-400">
               <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--foreground)] opacity-50" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--foreground)]" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
               </span>
               {t.live}
             </span>
-            <span className="h-3 w-px bg-line-strong" />
-            <span>
+            <span className="h-3 w-px bg-white/20" />
+            <span className="text-sand-100/70">
               {new Date().toLocaleDateString(locale === 'ar' ? 'ar-IQ' : 'en-US', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
               })}
+            </span>
+            <span className="h-3 w-px bg-white/20" />
+            <span className="text-gold-400/90">
+              {new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())} هـ
             </span>
           </div>
 
@@ -149,7 +153,7 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
             <div className="relative">
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors hover:bg-white hover:text-[var(--foreground)]"
+                className="flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors hover:bg-white/10 hover:text-gold-400"
                 aria-expanded={langOpen}
               >
                 <Globe className="h-3.5 w-3.5" />
@@ -159,7 +163,7 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
               {langOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setLangOpen(false)} />
-                  <div className="absolute end-0 top-full z-20 mt-1.5 w-36 overflow-hidden rounded-xl border border-line bg-[var(--card-bg)] py-1 shadow-lg shadow-ink-900/5">
+                  <div className="absolute end-0 top-full z-20 mt-1.5 w-36 overflow-hidden rounded-xl border border-lapis-700 bg-lapis-900 py-1 shadow-xl">
                     {LOCALES.map((loc) => (
                       <button
                         key={loc.code}
@@ -167,8 +171,8 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
                         className={cn(
                           'flex w-full items-center justify-between px-3.5 py-2 text-xs transition-colors',
                           locale === loc.code
-                            ? 'font-semibold text-[var(--foreground)]'
-                            : 'text-[var(--muted)] hover:bg-cream-deep hover:text-[var(--foreground)]'
+                            ? 'font-semibold text-gold-400'
+                            : 'text-sand-100/70 hover:bg-white/5 hover:text-white'
                         )}
                       >
                         <span>{loc.name}</span>
@@ -179,8 +183,8 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
                 </>
               )}
             </div>
-            <span className="h-3 w-px bg-line-strong" />
-            <Link href={`/${locale}/about`} className="rounded-md px-2 py-1.5 transition-colors hover:bg-white hover:text-[var(--foreground)]">
+            <span className="h-3 w-px bg-white/20" />
+            <Link href={`/${locale}/about`} className="rounded-md px-2 py-1.5 transition-colors hover:bg-white/10 hover:text-gold-400">
               {locale === 'en' ? 'About' : 'عن المنصة'}
             </Link>
           </div>

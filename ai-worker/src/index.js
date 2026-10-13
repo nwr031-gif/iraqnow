@@ -613,6 +613,20 @@ async function runEngine(env, trigger) {
     const maxPerRun = parseInt(env.MAX_PER_RUN || '1', 10)
     const maxPerDay = parseInt(env.MAX_AI_PER_DAY || '30', 10)
 
+    /* نشر المقالات المجدولة التي حان موعدها */
+    try {
+      const nowIso = new Date().toISOString()
+      const schedRes = await fetch(`${env.SUPABASE_URL}/rest/v1/articles?status=eq.SCHEDULED&publish_at=lte.${nowIso}`, {
+        method: 'PATCH',
+        headers: sbHeaders(env, { Prefer: 'return=representation' }),
+        body: JSON.stringify({ status: 'PUBLISHED', published_at: nowIso, updated_at: nowIso }),
+      })
+      if (schedRes.status === 200) {
+        const rows = await schedRes.json()
+        if (Array.isArray(rows) && rows.length > 0) result.scheduledPublished = rows.length
+      }
+    } catch { /* الجدول اختياري */ }
+
     /* تدوير قنوات RSS حسب الوقت */
     const slot = Math.floor(Date.now() / (30 * 60_000)) % Math.ceil(FEEDS.length / FEEDS_PER_RUN)
     const group = FEEDS.slice(slot * FEEDS_PER_RUN, slot * FEEDS_PER_RUN + FEEDS_PER_RUN)

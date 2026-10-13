@@ -19,5 +19,6 @@ run('npm', ['run', 'build'])
 run('npx', ['opennextjs-cloudflare', 'build'])
 run('node', ['scripts/prepare-pages-deploy.mjs'])
 run('node', ['scripts/extract-static-html.js'])
+run('node', ['scripts/sync-meilisearch.cjs'])
 
 console.log('\n✅ البناء اكتمل — pages-deploy جاهز')

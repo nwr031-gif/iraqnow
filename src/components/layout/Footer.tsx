@@ -29,6 +29,8 @@ const FOOTER_DATA: Record<Locale, any> = {
           { label: 'التحقق من المعلومات', href: '/fact-check' },
           { label: 'فرص العمل', href: '/careers' },
           { label: 'اتصل بنا', href: '/contact' },
+          { label: 'أرسل خبراً', href: '/send-news' },
+          { label: 'سياسة التصحيحات', href: '/corrections' },
         ],
       },
       services: {
@@ -113,6 +115,8 @@ const FOOTER_DATA: Record<Locale, any> = {
           { label: 'Fact Checking', href: '/fact-check' },
           { label: 'Careers', href: '/careers' },
           { label: 'Contact Us', href: '/contact' },
+          { label: 'Send a Story', href: '/send-news' },
+          { label: 'Corrections Policy', href: '/corrections' },
         ],
       },
       services: {
@@ -146,17 +150,17 @@ export function Footer({ locale }: { locale: Locale }) {
   ]
 
   return (
-    <footer className="relative overflow-hidden border-t border-line bg-[var(--background)] text-[var(--foreground)]" dir={dir}>
+    <footer className="relative overflow-hidden bg-lapis-950 text-sand-100" dir={dir}>
       <div className="container-main relative py-14 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-12">
           {/* العمود الأول - الهوية */}
           <div className="lg:col-span-4">
-            <Logo locale={locale} showTagline />
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-[var(--muted)]">
+            <Logo locale={locale} variant="light" showTagline />
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-sand-100/55">
               {data.description}
             </p>
 
-            <p className="mt-4 flex items-center gap-2 text-xs font-medium text-[var(--muted)]">
+            <p className="mt-4 flex items-center gap-2 text-xs font-medium text-sand-100/55">
               <IshtarStar size={14} />
               {data.tagline}
             </p>
@@ -169,14 +173,14 @@ export function Footer({ locale }: { locale: Locale }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-[var(--muted)] transition-all duration-300 hover:border-foreground/40 hover:text-[var(--foreground)]"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-sand-100/55 transition-all duration-300 hover:border-foreground/40 hover:text-white"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
 
-            <div className="mt-6 space-y-2 text-xs text-[var(--muted)]">
+            <div className="mt-6 space-y-2 text-xs text-sand-100/55">
               <p className="flex items-center gap-2">
                 <MapPin className="h-3.5 w-3.5" />
                 {data.address}
@@ -192,7 +196,7 @@ export function Footer({ locale }: { locale: Locale }) {
           <div className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
             {Object.entries(data.sections).map(([key, section]: [string, any]) => (
               <nav key={key} aria-labelledby={`footer-${key}`}>
-                <h3 id={`footer-${key}`} className="mb-4 font-kufi text-sm font-bold text-[var(--foreground)]">
+                <h3 id={`footer-${key}`} className="mb-4 font-kufi text-sm font-bold text-white">
                   {section.title}
                 </h3>
                 <ul className="space-y-3">
@@ -200,7 +204,7 @@ export function Footer({ locale }: { locale: Locale }) {
                     <li key={link.label}>
                       <Link
                         href={`/${locale}${link.href}`}
-                        className="text-sm text-[var(--muted)] transition-colors duration-200 hover:text-[var(--foreground)]"
+                        className="text-sm text-sand-100/55 transition-colors duration-200 hover:text-white"
                       >
                         {link.label}
                       </Link>
@@ -215,25 +219,25 @@ export function Footer({ locale }: { locale: Locale }) {
         <div className="my-10 h-px bg-line" />
 
         {/* الشريط السفلي */}
-        <div className="flex flex-col items-center justify-between gap-4 text-xs text-[var(--muted)] md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 text-xs text-sand-100/55 md:flex-row">
           <p>{data.copyright}</p>
 
           <div className="flex flex-wrap items-center justify-center gap-5">
             {data.trustBadges.map((badge: string, i: number) => (
               <span key={i} className="flex items-center gap-1.5">
-                {i === 0 && <Shield className="h-3.5 w-3.5 text-[var(--muted)]" />}
-                {i === 1 && <Scale className="h-3.5 w-3.5 text-[var(--muted)]" />}
-                {i === 2 && <Globe className="h-3.5 w-3.5 text-[var(--muted)]" />}
+                {i === 0 && <Shield className="h-3.5 w-3.5 text-sand-100/55" />}
+                {i === 1 && <Scale className="h-3.5 w-3.5 text-sand-100/55" />}
+                {i === 2 && <Globe className="h-3.5 w-3.5 text-sand-100/55" />}
                 {badge}
               </span>
             ))}
-            <span className="hidden text-[var(--muted)] md:inline">•</span>
+            <span className="hidden text-sand-100/55 md:inline">•</span>
             <span>{data.madeIn} 🇮🇶</span>
           </div>
 
           <a
             href="#top"
-            className="flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 transition-colors duration-300 hover:border-foreground/40 hover:text-[var(--foreground)]"
+            className="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 transition-colors duration-300 hover:border-foreground/40 hover:text-white"
             aria-label="Back to top"
           >
             <ArrowUp className="h-3.5 w-3.5" />

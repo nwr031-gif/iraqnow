@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requirePermission, isErrorResponse } from '@/lib/rbac'
 import { createArticle, updateArticleFull, updateArticleStatus, deleteArticle } from '@/lib/content-service'
+import { logAudit } from '@/lib/audit'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://iraqnow.pages.dev'
 
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
     })
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
     return NextResponse.json({ success: true, id: result.id, demo: result.mock })
+    await logAudit('create', 'article', result.id)
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
@@ -52,6 +54,7 @@ export async function PATCH(request: NextRequest) {
     const result = await updateArticleFull(body.id, body.data || body)
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
     return NextResponse.json({ success: true, demo: result.mock })
+    await logAudit('update', 'article')
   }
 
   try {
@@ -65,6 +68,7 @@ export async function PATCH(request: NextRequest) {
         pingIndexNow(body.slug).catch(() => {})
       }
       return NextResponse.json({ success: true, demo: result.mock })
+    await logAudit('update', 'article')
     }
 
     if (body.id) {
@@ -75,6 +79,7 @@ export async function PATCH(request: NextRequest) {
         pingIndexNow(body.data?.slug || body.slug).catch(() => {})
       }
       return NextResponse.json({ success: true, demo: result.mock })
+    await logAudit('update', 'article')
     }
 
     return NextResponse.json({ error: 'معرف المقال مطلوب' }, { status: 400 })
@@ -94,4 +99,5 @@ export async function DELETE(request: NextRequest) {
   const result = await deleteArticle(id)
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
   return NextResponse.json({ success: true, demo: result.mock })
+    await logAudit('update', 'article')
 }

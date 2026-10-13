@@ -158,6 +158,12 @@ function rowToArticle(r: any): MockArticle {
     tagSlugs: r.tags || [],
     governorateSlug: r.governorate_slug || '',
     image: r.image || '',
+    imageAlt: r.image_alt || '',
+    source: r.source || '',
+    sourceUrl: r.source_url || '',
+    correctionNote: r.correction_note || '',
+    isOpinion: !!r.is_opinion,
+    country: r.country || '',
     gallery: r.gallery || [],
     translations: translations.length ? translations : [{ locale: 'ar', title: '', excerpt: '', content: '' }],
   }

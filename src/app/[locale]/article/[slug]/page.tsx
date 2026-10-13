@@ -49,16 +49,19 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!article) return { title: 'المقال غير موجود' }
 
   const tr = article.translations.find((t) => t.locale === locale) || article.translations[0]
+  const cleanLocale = locale === 'en' ? 'en' : 'ar'
   return {
     title: tr?.title || '',
     description: tr?.excerpt || '',
     alternates: {
+      canonical: `/article/${slug}`,
       languages: {
-        ar: `/ar/article/${slug}`, ku: `/ku/article/${slug}`, en: `/en/article/${slug}`,
+        ar: `/ar/article/${slug}`, en: `/en/article/${slug}`,
       },
     },
     openGraph: {
       type: 'article',
+      url: `https://iraqnow.pages.dev/${cleanLocale}/article/${slug}`,
       title: tr?.title,
       description: tr?.excerpt,
       images: article.image ? [{ url: article.image, width: 1200, height: 630 }] : [],
@@ -199,6 +202,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
           </div>
         </Reveal>
 
+        {/* شارة رأي/تحليل + تنبيه التصحيح */}
+        {article.isOpinion && (
+          <Reveal delay={60}>
+            <div className="mt-6 flex items-center gap-2 rounded-xl border border-gold-500/40 bg-gold-500/10 px-4 py-3 text-xs font-bold text-gold-700" role="note">
+              <Sparkles className="h-4 w-4" />
+              {locale === 'en'
+                ? 'This article is opinion / analysis — it does not represent straight news reporting.'
+                : 'هذا المحتوى رأي أو تحليل — لا يمثل تغطية إخبارية مباشرة.'}
+            </div>
+          </Reveal>
+        )}
+
         {/* الصورة الرئيسية */}
         {article.image && (
           <Reveal delay={150}>
@@ -269,6 +284,46 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
             </Link>
           </Reveal>
         )}
+
+        {/* المصدر الأصلي */}
+        {article.sourceUrl && (
+          <div className="mt-6 rounded-2xl border border-line bg-cream p-4">
+            <p className="text-xs text-[var(--muted)]">
+              {locale === 'en' ? 'Original source: ' : 'المصدر الأصلي: '}
+              <a
+                href={article.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-lapis-700 underline decoration-gold-500/50 underline-offset-4 hover:text-lapis-900"
+              >
+                {article.source || article.sourceUrl.replace(/^https?:\/\//, '').slice(0, 60)}
+              </a>
+            </p>
+          </div>
+        )}
+
+        {/* ملاحظة التصحيح */}
+        {article.correctionNote && (
+          <div className="mt-4 rounded-2xl border-2 border-dashed border-gold-500/40 bg-gold-500/5 p-4" role="note">
+            <p className="mb-1 text-xs font-bold text-gold-700">
+              {locale === 'en' ? 'Correction' : 'تصحيح'}
+            </p>
+            <p className="text-xs leading-relaxed text-[var(--muted)]">{article.correctionNote}</p>
+          </div>
+        )}
+
+        {/* الإبلاغ عن خطأ */}
+        <div className="mt-6 flex items-center justify-between rounded-2xl border border-line bg-cream px-5 py-3.5">
+          <p className="text-xs text-[var(--muted)]">
+            {locale === 'en' ? 'Spot an error in this article?' : 'وجدت خطأ في هذا المقال؟'}
+          </p>
+          <a
+            href={`mailto:info@iraqnow.iq?subject=${encodeURIComponent('تصحيح: ' + (tr?.title || '').slice(0, 60))}`}
+            className="text-xs font-bold text-lapis-700 underline decoration-gold-500/50 underline-offset-4 hover:text-lapis-900"
+          >
+            {locale === 'en' ? 'Report it' : 'أبلغ عن الخطأ'}
+          </a>
+        </div>
       </article>
 
       {/* أخبار ذات صلة */}

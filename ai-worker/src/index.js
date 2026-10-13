@@ -162,20 +162,24 @@ const KEYWORD_IMAGES = [
 ]
 
 function pickImage(item, category, searchText) {
-  /* 1) صورة الخبر من المصدر — الأكثر صلة */
+  /* مضيفات قد تكون محجوبة جغرافياً — نتجنبها كلياً */
+  const UNRELIABLE = /russiatoday|rt\.com|sputnik/i
+
+  /* 1) صورة الخبر من مصدر موثوق — الأكثر صلة */
   const upgraded = upgradeImageUrl(item.image)
-  if (upgraded) return upgraded
+  if (upgraded && !UNRELIABLE.test(upgraded)) return upgraded
 
   /* 2) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
   const text = `${searchText || ''}`
   for (const k of KEYWORD_IMAGES) {
     if (k.re.test(text)) {
-      return `${k.id}?auto=format&fit=crop&w=1200&q=75`
+      return `https://images.unsplash.com/${k.id}?auto=format&fit=crop&w=1200&q=75`
     }
   }
 
   /* 3) صورة القسم */
-  return `${(CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world)}?auto=format&fit=crop&w=1200&q=75`
+  const cid = (CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world).split('?')[0]
+  return `https://images.unsplash.com/${cid}?auto=format&fit=crop&w=1200&q=75`
 }
 
 /* ═══════════ أدوات RSS ═══════════ */

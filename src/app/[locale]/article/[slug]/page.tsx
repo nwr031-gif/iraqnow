@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation'
 import { Home, ChevronLeft, Clock, Eye, MapPin, Calendar, Sparkles, Tag } from 'lucide-react'
 import { ArticleCard } from '@/components/home/ArticleCard'
 import { ArticleGallery, ReadingProgress, ShareButtons } from '@/components/article/ArticleExtras'
+import { SmartImage } from '@/components/ui/SmartImage'
+import { imageFallback } from '@/lib/image-fallbacks'
 import { GiscusComments } from '@/components/integrations/GiscusComments'
 import { Reveal } from '@/components/ui/Reveal'
 import { CuneiformDivider } from '@/components/brand/Brand'
@@ -201,9 +203,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
         {article.image && (
           <Reveal delay={150}>
             <figure className="mt-8">
-              <img
+              <SmartImage
                 src={article.image}
+                fallback={imageFallback(article.categorySlug)}
                 alt={title}
+                eager
                 className="aspect-[16/9] w-full rounded-3xl border border-[var(--border)] object-cover shadow-2xl shadow-lapis-900/15"
               />
               <figcaption className="mt-3 text-center text-xs text-[var(--muted)]">

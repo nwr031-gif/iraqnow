@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { MapPin, Clock, Eye, Flame } from 'lucide-react'
 import { cn, formatRelativeTime, truncate } from '@/lib/utils'
+import { imageFallback } from '@/lib/image-fallbacks'
 
 type Locale = 'ar' | 'ku' | 'en'
 
@@ -49,7 +50,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
       >
         {imgUrl && (
           <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-cream-deep">
-            <img src={imgUrl} alt="" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <img src={imgUrl} alt="" loading="lazy" onError={(e) => { const el = e.currentTarget as HTMLImageElement; if (!el.dataset.fb) { el.dataset.fb = '1'; el.src = imageFallback(article.category?.slug) } else { el.style.display = 'none' } }} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
           </div>
         )}
         <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
@@ -80,7 +81,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
         >
           {imgUrl && (
             <div className="relative h-28 w-36 shrink-0 overflow-hidden rounded-xl bg-cream-deep">
-              <img src={imgUrl} alt="" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+              <img src={imgUrl} alt="" loading="lazy" onError={(e) => { const el = e.currentTarget as HTMLImageElement; if (!el.dataset.fb) { el.dataset.fb = '1'; el.src = imageFallback(article.category?.slug) } else { el.style.display = 'none' } }} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
             </div>
           )}
           <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
@@ -116,7 +117,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
             <img
               src={imgUrl}
               alt=""
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+              onError={(e) => { const el = e.currentTarget as HTMLImageElement; if (!el.dataset.fb) { el.dataset.fb = '1'; el.src = imageFallback(article.category?.slug) } else { el.style.display = 'none' } }}
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
             />
           )}
@@ -161,7 +162,7 @@ export function ArticleCard({ article, locale, variant = 'default' }: ArticleCar
               src={imgUrl}
               alt=""
               loading="lazy"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+              onError={(e) => { const el = e.currentTarget as HTMLImageElement; if (!el.dataset.fb) { el.dataset.fb = '1'; el.src = imageFallback(article.category?.slug) } else { el.style.display = 'none' } }}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
             {article.breaking && (

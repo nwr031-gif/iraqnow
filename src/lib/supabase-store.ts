@@ -33,7 +33,7 @@ export async function isSupabaseReady(): Promise<boolean> {
   if (sbReady !== null && now - sbCheckedAt < 60_000) return sbReady
   sbCheckedAt = now
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/articles?select=id&limit=1`, { headers: headers() })
+    const res = await fetch(`${SB_URL}/rest/v1/articles?select=id&limit=1`, { headers: headers(), cache: 'no-store' })
     sbReady = res.status === 200
   } catch {
     sbReady = false
@@ -47,7 +47,7 @@ async function ensureSeeded() {
   if (now - seedAttemptedAt < SEED_RETRY_MS) return
   seedAttemptedAt = now
   try {
-    const countRes = await fetch(`${SB_URL}/rest/v1/categories?select=id&limit=1`, { headers: headers() })
+    const countRes = await fetch(`${SB_URL}/rest/v1/categories?select=id&limit=1`, { headers: headers(), cache: 'no-store' })
     if (countRes.status !== 200) return
     const existing = await countRes.json()
     if (Array.isArray(existing) && existing.length > 0) return
@@ -243,7 +243,7 @@ export interface StoreArticleQuery {
 
 async function sbGet(path: string): Promise<any[] | null> {
   try {
-    const res = await fetch(path, { headers: headers() })
+    const res = await fetch(path, { headers: headers(), cache: 'no-store' })
     if (res.status !== 200) return null
     return await res.json()
   } catch {

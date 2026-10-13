@@ -1,58 +1,70 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { Home, ChevronLeft, Database, Newspaper, Flame, CalendarDays, LayoutGrid, MapPin, Clock, Mic, Users, TrendingUp } from 'lucide-react'
+import { Home, ChevronLeft, Database, Landmark, Users, MapPin, Coins, TrendingUp, Globe, Clock, CalendarDays, ExternalLink } from 'lucide-react'
 import { Reveal, CountUp } from '@/components/ui/Reveal'
-import { BarChart, LineChart } from '@/components/data/Charts'
+import { BarChart, DonutChart } from '@/components/data/Charts'
 import { DatasetDownload } from '@/components/data/Interactive'
-import { getSiteStats } from '@/lib/data-stats'
-import { getGovernorateCounts } from '@/lib/governorate-counts'
-import { GOVERNORATES_19 } from '@/lib/governorates'
+import { IRAQ_FACTS, GOV_POPULATION, GOV_POPULATION_SOURCE, BUDGET_MIX, BUDGET_MIX_SOURCE } from '@/lib/iraq-data'
+import { arabicMonth } from '@/lib/format'
 
 export const dynamic = 'force-static'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'العراق بالأرقام — صحافة البيانات',
-  description: 'لوحة بيانات حية لمنصة العراق الآن: إحصاءات النشر، توزيع التغطية حسب الأقسام والمحافظات، وقواعد بيانات مفتوحة للتحميل',
+  title: 'العراق بالأرقام — مؤشرات الدولة',
+  description: 'مركز بيانات العراق: السكان، المساحة، الاقتصاد، النفط، والمحافظات — بأرقام من مصادر رسمية ودولية موثقة مع ذكر المصدر وتاريخ كل بيانة',
   alternates: { languages: { ar: '/ar/data', en: '/en/data' } },
 }
 
 const UI: Record<'ar' | 'en', any> = {
   ar: {
     badge: 'صحافة البيانات', title: 'العراق بالأرقام',
-    subtitle: 'لوحة بيانات حية من غرفة أخبار العراق الآن — إحصاءات النشر والتغطية محدثة من قاعدة البيانات',
-    kpis: 'مؤشرات المنصة',
-    totalArticles: 'إجمالي المقالات', thisWeek: 'هذا الأسبوع', breaking: 'أخبار عاجلة',
-    categories: 'أقسام مغطاة', governorates: 'محافظات مغطاة', avgReading: 'متوسط وقت القراءة',
-    charts: 'الرسوم البيانية', byCategory: 'المقالات حسب القسم', byMonth: 'النشر خلال 6 أشهر',
-    latestSection: 'أحدث ما نُشر', viewAll: 'كل الأخبار',
-    datasets: 'قواعد البيانات المفتوحة', articlesCsv: 'أرشيف المقالات (CSV)', govCsv: 'التغطية حسب المحافظة (CSV)',
-    minutes: 'دقيقة', article: 'مقال', updatedAt: 'آخر تحديث للبيانات', articlesNote: 'العنوان، القسم، التاريخ، القراءات',
-    govNote: 'المحافظة وعدد المقالات',
+    subtitle: 'مؤشرات الدولة وأساسياتها من مصادر رسمية ودولية موثقة — كل رقم محمّل بمصدره وتاريخه',
+    kpis: 'مؤشرات الدولة',
+    population: 'السكان', area: 'المساحة الكلية', governorates: 'المحافظات',
+    gdp: 'الناتج المحلي الإجمالي', oilReserves: 'الاحتياطي النفطي المؤكد', exchange: 'سعر الصرف الرسمي',
+    million: 'مليون نسمة', km2: 'كم²', billionDollar: 'مليار دولار', barrels: 'مليار برميل', dinar: 'د.ع / دولار',
+    charts: 'الرسوم البيانية', govPopulation: 'سكان أكبر المحافظات', budgetMix: 'تركيبة إيرادات الموازنة الاتحادية',
+    countryInfo: 'بطاقة الدولة',
+    capital: 'العاصمة', currency: 'العملة', timezone: 'التوقيت الرسمي', language: 'اللغة الرسمية',
+    languageVal: 'العربية (والكردية رسمية في المناطق المختصة)',
+    datasets: 'قواعد البيانات المفتوحة', govCsv: 'بيانات المحافظات (CSV)', govNote: 'المحافظة وعدد سكانها التقديري بالمليون',
+    sourcesNote: 'منهجية جمع البيانات: تُجمع الأرقام من جهات رسمية (الجهاز المركزي للإحصاء، البنك المركزي العراقي) وجهات دولية موثوقة (البنك الدولي، أوبك)، وتُعرض مدورة مع ذكر المصدر وسنة كل بيانة. الأرقام التقديرية قد تختلف بين المصادر.',
+    dataDate: 'آخر مراجعة للبيانات', dataDateVal: 'تشرين الأول 2026',
+    sourcesTitle: 'المصادر المعتمدة',
+    sourcesList: [
+      'الجهاز المركزي للإحصاء — التعداد العام للسكان 2024',
+      'البنك الدولي — مؤشرات التنمية العالمية',
+      'البنك المركزي العراقي — أسعار الصرف الرسمية',
+      'منظمة أوبك — التقرير السنوي للاحتياطيات المؤكدة',
+    ],
   },
   en: {
     badge: 'Data Journalism', title: 'Iraq in Numbers',
-    subtitle: 'A live data dashboard from the Iraq Now newsroom — publishing and coverage stats updated from the database',
-    kpis: 'Platform Indicators',
-    totalArticles: 'Total Articles', thisWeek: 'This Week', breaking: 'Breaking News',
-    categories: 'Sections Covered', governorates: 'Governorates Covered', avgReading: 'Avg. Reading Time',
-    charts: 'Charts', byCategory: 'Articles by Section', byMonth: 'Publishing — Last 6 Months',
-    latestSection: 'Latest Published', viewAll: 'All News',
-    datasets: 'Open Datasets', articlesCsv: 'Articles Archive (CSV)', govCsv: 'Coverage by Governorate (CSV)',
-    minutes: 'min', article: 'articles', updatedAt: 'Data last updated', articlesNote: 'Title, section, date, views',
-    govNote: 'Governorate and article count',
+    subtitle: 'Country indicators from official and international sources — every figure carries its source and date',
+    kpis: 'Country Indicators',
+    population: 'Population', area: 'Total Area', governorates: 'Governorates',
+    gdp: 'GDP', oilReserves: 'Proven Oil Reserves', exchange: 'Official Exchange Rate',
+    million: 'million people', km2: 'km²', billionDollar: 'billion USD', barrels: 'billion barrels', dinar: 'IQD / USD',
+    charts: 'Charts', govPopulation: 'Largest Governorates by Population', budgetMix: 'Federal Revenue Composition',
+    countryInfo: 'Country Card',
+    capital: 'Capital', currency: 'Currency', timezone: 'Official Timezone', language: 'Official Language',
+    languageVal: 'Arabic (Kurdish official in designated regions)',
+    datasets: 'Open Datasets', govCsv: 'Governorates Data (CSV)', govNote: 'Governorate and estimated population in millions',
+    sourcesNote: 'Methodology: figures are collected from official bodies (Central Statistical Organization, Central Bank of Iraq) and reliable international sources (World Bank, OPEC), presented rounded with source and year of each figure.',
+    dataDate: 'Data last reviewed', dataDateVal: 'October 2026',
+    sourcesTitle: 'Sources',
+    sourcesList: [
+      'Central Statistical Organization — 2024 National Census',
+      'World Bank — World Development Indicators',
+      'Central Bank of Iraq — Official Exchange Rates',
+      'OPEC — Annual Report on Proven Reserves',
+    ],
   },
 }
 
-const CATEGORY_LABELS: Record<string, { ar: string; en: string }> = {
-  politics: { ar: 'السياسة', en: 'Politics' }, economy: { ar: 'الاقتصاد', en: 'Economy' },
-  security: { ar: 'الأمن', en: 'Security' }, society: { ar: 'المجتمع', en: 'Society' },
-  culture: { ar: 'الثقافة', en: 'Culture' }, sports: { ar: 'الرياضة', en: 'Sports' },
-  technology: { ar: 'التكنولوجيا', en: 'Technology' }, health: { ar: 'الصحة', en: 'Health' },
-  education: { ar: 'التعليم', en: 'Education' }, environment: { ar: 'البيئة', en: 'Environment' },
-  local: { ar: 'محليات', en: 'Local' }, world: { ar: 'العالم', en: 'World' },
-}
+const LAST_UPDATED = 'تشرين الأول 2026'
 
 export default async function DataPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: rawLocale } = await params
@@ -61,30 +73,8 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
   const dir = locale === 'en' ? 'ltr' : 'rtl'
   const numLocale = locale === 'ar' ? 'ar-IQ' : 'en-US'
 
-  const [stats, govCounts] = await Promise.all([getSiteStats(locale), getGovernorateCounts()])
-
-  /* بيانات حقيقية — مع قيم هبوط آمنة قبل أول نشر */
-  const totalArticles = stats?.totalArticles ?? 0
-  const thisWeek = stats?.thisWeek ?? 0
-  const breakingCount = stats?.breakingCount ?? 0
-  const avgReading = stats?.avgReadingTime ?? 0
-  const categoriesCovered = stats?.categoriesCovered ?? 0
-  const governoratesCovered = stats?.governoratesCovered ?? 0
-
-  const catEntries = Object.entries(stats?.byCategory || {}).sort((a, b) => b[1] - a[1]).slice(0, 8)
-  const catLabels = catEntries.map(([slug]) => CATEGORY_LABELS[slug]?.[locale] || slug)
-  const catValues = catEntries.map(([, v]) => v)
-
-  const monthLabels = (stats?.byMonth || []).map((m) => m.label)
-  const monthValues = (stats?.byMonth || []).map((m) => m.count)
-
-  const govRows = GOVERNORATES_19
-    .map((g) => ({ name: g[locale], slug: g.slug, count: govCounts ? govCounts[g.slug] || 0 : 0 }))
-    .sort((a, b) => b.count - a.count)
-
-  const updatedLabel = stats?.updatedAt
-    ? new Date(stats.updatedAt).toLocaleDateString(numLocale, { year: 'numeric', month: 'long', day: 'numeric' })
-    : '—'
+  const govLabels = GOV_POPULATION.map((g) => (locale === 'en' ? g.en : g.ar))
+  const govValues = GOV_POPULATION.map((g) => g.population)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -96,12 +86,12 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
   }
 
   const kpis = [
-    { icon: Newspaper, value: totalArticles, suffix: '', label: t.totalArticles },
-    { icon: CalendarDays, value: thisWeek, suffix: '', label: t.thisWeek },
-    { icon: Flame, value: breakingCount, suffix: '', label: t.breaking },
-    { icon: LayoutGrid, value: categoriesCovered, suffix: `/${12}`, label: t.categories },
-    { icon: MapPin, value: governoratesCovered, suffix: `/${19}`, label: t.governorates },
-    { icon: Clock, value: avgReading, suffix: ` ${t.minutes}`, label: t.avgReading },
+    { icon: Users, value: IRAQ_FACTS.population, suffix: '', unit: t.million, label: t.population, source: IRAQ_FACTS.populationSource },
+    { icon: MapPin, value: IRAQ_FACTS.area, suffix: '', unit: t.km2, label: t.area, source: 'الجهاز المركزي للإحصاء' },
+    { icon: Globe, value: IRAQ_FACTS.governorates, suffix: '', unit: '', label: t.governorates, source: 'أُقرت حلبجة محافظة عام 2014' },
+    { icon: TrendingUp, value: IRAQ_FACTS.gdp, suffix: '', unit: t.billionDollar, label: t.gdp, source: IRAQ_FACTS.gdpSource },
+    { icon: Database, value: IRAQ_FACTS.oilReserves, suffix: '', unit: t.barrels, label: t.oilReserves, source: IRAQ_FACTS.oilReservesSource },
+    { icon: Coins, value: IRAQ_FACTS.exchangeRate, suffix: '', unit: t.dinar, label: t.exchange, source: IRAQ_FACTS.exchangeSource },
   ]
 
   return (
@@ -132,22 +122,24 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
       </section>
 
       <div className="container-main py-10 lg:py-14">
-        {/* المؤشرات الحقيقية */}
-        <Reveal className="mb-6 flex items-end justify-between">
+        {/* مؤشرات الدولة */}
+        <Reveal className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <h2 className="section-title text-xl lg:text-2xl">{t.kpis}</h2>
-          <p className="text-[11px] text-[var(--muted)]">{t.updatedAt}: {updatedLabel}</p>
+          <p className="text-[11px] text-[var(--muted)]">{t.dataDate}: {t.dataDateVal}</p>
         </Reveal>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {kpis.map((kpi, i) => (
             <Reveal key={i} delay={(i % 6) * 50}>
               <div className="group h-full rounded-2xl border border-line bg-[var(--card-bg)] p-4 text-center transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[var(--shadow-card)]">
-                <span className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-cream-deep text-[var(--foreground)]">
+                <span className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-cream-deep text-lapis-700">
                   <kpi.icon className="h-4 w-4" />
                 </span>
                 <p className="font-kufi text-xl font-bold tabular-nums text-[var(--foreground)]">
                   <CountUp end={kpi.value} suffix={kpi.suffix} />
                 </p>
+                <p className="mt-1 text-[10px] font-semibold text-lapis-700">{kpi.unit}</p>
                 <p className="mt-1 text-[10px] leading-snug text-[var(--muted)]">{kpi.label}</p>
+                <p className="mt-2 border-t border-line pt-2 text-[9px] leading-snug text-[var(--muted)] opacity-70">{kpi.source}</p>
               </div>
             </Reveal>
           ))}
@@ -161,15 +153,12 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
           <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl border border-line bg-cream" />}>
             <Reveal>
               <div className="rounded-2xl border border-line bg-[var(--card-bg)] p-5 lg:p-6">
-                <h3 className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-                  <TrendingUp className="h-4 w-4 text-[var(--muted)]" />
-                  {t.byCategory}
+                <h3 className="mb-1 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
+                  <Users className="h-4 w-4 text-[var(--muted)]" />
+                  {t.govPopulation}
                 </h3>
-                {catValues.length > 0 ? (
-                  <BarChart data={catValues} labels={catLabels} color="#404040" />
-                ) : (
-                  <p className="py-16 text-center text-sm text-[var(--muted)]">—</p>
-                )}
+                <p className="mb-4 text-[10px] text-[var(--muted)]">{GOV_POPULATION_SOURCE} — الوحدة: مليون نسمة</p>
+                <BarChart data={govValues} labels={govLabels} color="#183a6f" />
               </div>
             </Reveal>
           </Suspense>
@@ -177,71 +166,37 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
           <Suspense fallback={<div className="h-72 animate-pulse rounded-2xl border border-line bg-cream" />}>
             <Reveal delay={80}>
               <div className="rounded-2xl border border-line bg-[var(--card-bg)] p-5 lg:p-6">
-                <h3 className="mb-5 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
-                  <CalendarDays className="h-4 w-4 text-[var(--muted)]" />
-                  {t.byMonth}
+                <h3 className="mb-1 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
+                  <Landmark className="h-4 w-4 text-[var(--muted)]" />
+                  {t.budgetMix}
                 </h3>
-                <LineChart data={monthValues} labels={monthLabels} color="#737373" />
+                <p className="mb-4 text-[10px] text-[var(--muted)]">{BUDGET_MIX_SOURCE} — الوحدة: نسبة مئوية</p>
+                <DonutChart segments={BUDGET_MIX} centerValue={`${IRAQ_FACTS.oilRevenueShare}%`} centerLabel={locale === 'en' ? 'Oil revenue' : 'نفطية'} />
               </div>
             </Reveal>
           </Suspense>
         </div>
 
-        {/* التغطية حسب المحافظة */}
-        <Reveal className="mb-6 mt-14 flex items-end justify-between">
-          <h2 className="section-title text-xl lg:text-2xl">{t.govCsv}</h2>
-          <Link href={`/${locale}/map`} className="text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
-            {locale === 'en' ? '3D Map →' : 'الخريطة 3D ←'}
-          </Link>
+        {/* بطاقة الدولة */}
+        <Reveal className="mb-6 mt-14">
+          <h2 className="section-title text-xl lg:text-2xl">{t.countryInfo}</h2>
         </Reveal>
         <Reveal delay={60}>
-          <div className="overflow-hidden rounded-2xl border border-line bg-[var(--card-bg)]">
-            <div className="grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-5">
-              {govRows.slice(0, 10).map((g) => (
-                <Link
-                  key={g.slug}
-                  href={`/${locale}/governorate/${g.slug}`}
-                  className="flex items-center justify-between gap-2 bg-[var(--card-bg)] px-4 py-3 transition-colors hover:bg-cream"
-                >
-                  <span className="truncate text-xs font-medium text-[var(--foreground)]">{g.name}</span>
-                  <span className="shrink-0 text-xs font-bold tabular-nums text-[var(--muted)]">{g.count.toLocaleString(numLocale)}</span>
-                </Link>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-4">
+            {[
+              { icon: MapPin, k: t.capital, v: locale === 'en' ? IRAQ_FACTS.capitalEn : IRAQ_FACTS.capital },
+              { icon: Coins, k: t.currency, v: IRAQ_FACTS.currency },
+              { icon: Clock, k: t.timezone, v: IRAQ_FACTS.timezone },
+              { icon: Globe, k: t.language, v: t.languageVal },
+            ].map((row, i) => (
+              <div key={i} className="bg-[var(--card-bg)] p-5">
+                <row.icon className="mb-3 h-5 w-5 text-lapis-600" />
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">{row.k}</p>
+                <p className="mt-1 text-sm font-bold text-[var(--foreground)]">{row.v}</p>
+              </div>
+            ))}
           </div>
         </Reveal>
-
-        {/* أحدث ما نُشر */}
-        {stats && stats.latest.length > 0 && (
-          <>
-            <Reveal className="mb-6 mt-14 flex items-end justify-between">
-              <h2 className="section-title text-xl lg:text-2xl">{t.latestSection}</h2>
-              <Link href={`/${locale}/latest`} className="text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
-                {t.viewAll} →
-              </Link>
-            </Reveal>
-            <Reveal delay={60}>
-              <div className="overflow-hidden rounded-2xl border border-line bg-[var(--card-bg)]">
-                {stats.latest.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between gap-4 border-b border-line px-4 py-3.5 last:border-0 sm:px-5"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="hidden shrink-0 text-[10px] font-bold tabular-nums text-[var(--muted)] sm:block">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <p className="truncate text-sm text-[var(--foreground)]">{item.title || '—'}</p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-cream-deep px-2.5 py-0.5 text-[10px] font-bold text-[var(--muted)]">
-                      {CATEGORY_LABELS[item.category]?.[locale] || item.category}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          </>
-        )}
 
         {/* قواعد البيانات */}
         <Reveal className="mb-6 mt-14">
@@ -250,39 +205,53 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
         <div className="grid gap-3 sm:grid-cols-2">
           <Reveal>
             <DatasetDownload
-              name={t.articlesCsv}
-              rows={totalArticles}
-              size={`${Math.max(1, Math.round(totalArticles / 2))} KB`}
+              name={t.govCsv}
+              rows={GOV_POPULATION.length}
+              size="2 KB"
               locale={locale}
-              note={t.articlesNote}
+              note={t.govNote}
               csv={{
-                headers: locale === 'en'
-                  ? ['Title', 'Section', 'Governorate', 'Published', 'Views', 'Reading (min)']
-                  : ['العنوان', 'القسم', 'المحافظة', 'تاريخ النشر', 'القراءات', 'وقت القراءة'],
-                rows: (stats?.latest || []).map((a) => [a.title, a.category, '', a.date, a.views, '']),
+                headers: locale === 'en' ? ['Governorate', 'Population (millions, est. 2024 census)'] : ['المحافظة', 'عدد السكان بالمليون (تقدير التعداد 2024)'],
+                rows: GOV_POPULATION.map((g) => [locale === 'en' ? g.en : g.ar, g.population]),
               }}
             />
           </Reveal>
           <Reveal delay={80}>
             <DatasetDownload
-              name={t.govCsv}
-              rows={govRows.length}
-              size="4 KB"
+              name={locale === 'en' ? 'Revenue Composition (CSV)' : 'تركيبة الإيرادات (CSV)'}
+              rows={BUDGET_MIX.length}
+              size="1 KB"
               locale={locale}
-              note={t.govNote}
+              note={BUDGET_MIX_SOURCE}
               csv={{
-                headers: locale === 'en' ? ['Governorate', 'Articles'] : ['المحافظة', 'عدد المقالات'],
-                rows: govRows.map((g) => [g.name, g.count]),
+                headers: locale === 'en' ? ['Revenue Type', 'Share %'] : ['نوع الإيراد', 'النسبة %'],
+                rows: BUDGET_MIX.map((b) => [b.label, b.value]),
               }}
             />
           </Reveal>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] text-[var(--muted)]">
-          <span className="flex items-center gap-1.5"><Mic className="h-3.5 w-3.5" />{stats?.podcasts ?? 0} {locale === 'en' ? 'podcasts' : 'حلقة بودكاست'}</span>
-          <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" />{stats?.authors ?? 0} {locale === 'en' ? 'editors' : 'محرراً'}</span>
-          <span>{locale === 'en' ? 'All data exported from the Iraq Now database' : 'كل الأرقام مستخرجة من قاعدة بيانات العراق الآن مباشرة'}</span>
-        </div>
+        {/* المصادر والمنهجية */}
+        <Reveal className="mt-14 rounded-2xl border border-line bg-cream p-6">
+          <h3 className="mb-4 flex items-center gap-2 font-kufi text-sm font-bold text-[var(--foreground)]">
+            <ExternalLink className="h-4 w-4 text-lapis-600" />
+            {t.sourcesTitle}
+          </h3>
+          <ul className="space-y-2">
+            {t.sourcesList.map((s, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs leading-relaxed text-[var(--muted)]">
+                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold-500" />
+                {s}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 border-t border-line pt-4 text-[11px] leading-relaxed text-[var(--muted)]">
+            {t.sourcesNote}
+          </p>
+          <p className="mt-3 text-[11px] font-semibold text-[var(--muted)]">
+            {t.dataDate}: {LAST_UPDATED} ({arabicMonth(new Date().getMonth())} {new Date().getFullYear()})
+          </p>
+        </Reveal>
       </div>
     </div>
   )

@@ -83,7 +83,7 @@ const MAX_FEED_BYTES = 150000
 const MAX_ARTICLE_BYTES = 300000
 const MAX_FULLTEXT_CHARS = 4200
 const MAX_ARTICLE_AGE_MS = 8 * 3600_000
-const MIN_HOOK_INTERVAL_MS = 1 * 3600_000
+const MIN_HOOK_INTERVAL_MS = 15 * 60_000
 const SAFETY_HOOK_INTERVAL_MS = 12 * 3600_000
 
 /* كلمات وقف للعربية والإنجليزية (لتجميع القصص المتشابهة) */

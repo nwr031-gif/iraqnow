@@ -36,8 +36,8 @@ const metadata = {
     { type: 'plain_text', name: 'AI_MODEL', text: '@cf/meta/llama-3.1-8b-instruct-fp8' },
     { type: 'plain_text', name: 'NIM_MODEL', text: 'nvidia/nemotron-3-super-120b-a12b' },
     { type: 'plain_text', name: 'SELF_TRIGGER_URL', text: 'https://iraqnow-ai.nwr04nwr04.workers.dev/trigger' },
-    { type: 'plain_text', name: 'MAX_PER_RUN', text: '1' },
-    { type: 'plain_text', name: 'MAX_AI_PER_DAY', text: '30' },
+    { type: 'plain_text', name: 'MAX_PER_RUN', text: '2' },
+    { type: 'plain_text', name: 'MAX_AI_PER_DAY', text: '220' },
     { type: 'plain_text', name: 'GITHUB_REPO', text: 'nwr031-gif/iraqnow' },
     { type: 'secret_text', name: 'TRIGGER_KEY', text: secrets.TRIGGER_KEY },
     ...(secrets.NIM_KEY ? [{ type: 'secret_text', name: 'NIM_KEY', text: secrets.NIM_KEY }] : []),
@@ -68,10 +68,10 @@ console.log('✓ تم رفع العامل، id:', body.result?.id)
 const sched = await fetch(`https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/scripts/${WORKER}/schedules`, {
   method: 'PUT',
   headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
-  body: JSON.stringify([{ cron: '*/30 * * * *' }]),
+   body: JSON.stringify([{ cron: '*/10 * * * *' }]),
 })
 const schedBody = await sched.json()
-console.log(sched.ok && schedBody.success ? '✓ الجدولة مفعّلة: كل 30 دقيقة' : `⚠ الجدولة: ${sched.status}`)
+console.log(sched.ok && schedBody.success ? '✓ الجدولة مفعّلة: كل 10 دقائق' : `⚠ الجدولة: ${sched.status}`)
 
 /* تفعيل العامل على workers.dev */
 const sub = await fetch(`https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/subdomain`, {

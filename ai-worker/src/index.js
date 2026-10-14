@@ -27,9 +27,28 @@ const FEEDS = [
   { url: 'https://www.france24.com/ar/rss', name: 'فرانس 24', lang: 'ar', region: 'world' },
   { url: 'https://www.aljazeera.com/xml/rss/all.xml', name: 'الجزيرة', lang: 'en', region: 'world' },
   { url: 'https://www.alhurra.com/rss', name: 'الحرة', lang: 'ar', region: 'world' },
+  /* أمريكا */
+  { url: 'https://news.google.com/rss/search?q=%D8%A7%D9%84%D9%88%D9%84%D8%A7%D9%8A%D8%A7%D8%AA+%D8%A7%D9%84%D9%85%D8%AA%D8%AD%D8%AF%D8%A9+%D8%A7%D9%85%D8%B1%D9%8A%D9%83%D8%A7&hl=ar&gl=US&ceid=US:ar', name: 'أخبار أمريكا', lang: 'ar', region: 'world' },
+  { url: 'https://rss.cnn.com/rss/edition_us.rss', name: 'CNN أمريكا', lang: 'en', region: 'world' },
+  { url: 'https://rss.cnn.com/rss/edition_world.rss', name: 'CNN العالم', lang: 'en', region: 'world' },
+  /* أوروبا */
+  { url: 'https://news.google.com/rss/search?q=%D8%A3%D9%88%D8%B1%D9%88%D8%A8%D8%A7&hl=ar&gl=FR&ceid=FR:ar', name: 'أخبار أوروبا', lang: 'ar', region: 'world' },
+  { url: 'https://rss.dw.com/rdf/rss-en-world', name: 'DW World', lang: 'en', region: 'world' },
+  { url: 'https://www.france24.com/en/rss', name: 'France24 EN', lang: 'en', region: 'world' },
+  /* روسيا وأوكرانيا */
+  { url: 'https://news.google.com/rss/search?q=%D8%B1%D9%88%D8%B3%D9%8A%D8%A7&hl=ar&gl=IQ&ceid=IQ:ar', name: 'أخبار روسيا', lang: 'ar', region: 'world' },
+  { url: 'https://tass.com/rss/v2.xml', name: 'TASS', lang: 'en', region: 'world' },
+  { url: 'https://news.google.com/rss/search?q=%D8%A3%D9%88%D9%83%D8%B1%D8%A7%D9%86%D9%8A%D8%A7&hl=ar&gl=IQ&ceid=IQ:ar', name: 'أخبار أوكرانيا', lang: 'ar', region: 'world' },
+  { url: 'https://kyivindependent.com/feed/', name: 'Kyiv Independent', lang: 'en', region: 'world' },
+  /* الصين وآسيا */
+  { url: 'https://news.google.com/rss/search?q=%D8%A7%D9%84%D8%B5%D9%8A%D9%86&hl=ar&gl=IQ&ceid=IQ:ar', name: 'أخبار الصين', lang: 'ar', region: 'world' },
+  { url: 'https://www.chinadaily.com.cn/rss/world_rss.xml', name: 'China Daily', lang: 'en', region: 'world' },
+  /* متابعة العالم */
+  { url: 'https://news.un.org/feed/subscribe/ar/news/all/rss.xml', name: 'الأمم المتحدة', lang: 'ar', region: 'world' },
+  { url: 'https://news.google.com/rss/headlines/section/topic/WORLD?hl=ar&gl=US&ceid=US:ar', name: 'أخبار العالم', lang: 'ar', region: 'world' },
 ]
 
-const FEEDS_PER_RUN = 6
+const FEEDS_PER_RUN = 8
 
 const CATEGORIES = ['politics', 'economy', 'security', 'society', 'culture', 'sports', 'technology', 'health', 'education', 'environment', 'local', 'world']
 
@@ -64,7 +83,7 @@ const MAX_FEED_BYTES = 150000
 const MAX_ARTICLE_BYTES = 300000
 const MAX_FULLTEXT_CHARS = 4200
 const MAX_ARTICLE_AGE_MS = 8 * 3600_000
-const MIN_HOOK_INTERVAL_MS = 3 * 3600_000
+const MIN_HOOK_INTERVAL_MS = 1 * 3600_000
 const SAFETY_HOOK_INTERVAL_MS = 12 * 3600_000
 
 /* كلمات وقف للعربية والإنجليزية (لتجميع القصص المتشابهة) */

@@ -8,8 +8,8 @@ const ACCOUNT = process.env.CF_ACCOUNT_ID
 const PROJECT = 'iraqnow'
 
 const ENV_VARS = {
-  NEXT_PUBLIC_SUPABASE_URL: { value: 'https://afwbjyfnhchoqgqbqrfg.supabase.co' },
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: { value: 'sb_publishable_kLEM0R1eYNwEe9zZJrRL7A_E_Sh8CJh' },
+  NEXT_PUBLIC_SUPABASE_URL: { value: 'https://xtdrkziyndkvaxkxvfqx.supabase.co' },
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: { value: 'sb_publishable_-MsvXS3OevPwi4bbRSyNJw_O29W7-1i' },
   MEILISEARCH_HOST: { value: 'https://ms-7fba9866c156-55153.par.meilisearch.io' },
   MEILISEARCH_SEARCH_KEY: { value: '43adf2d3612dd385beb287cbb8bf065255f1ab0da6cb413cfd0c5bd8fb4c87e5' },
   MEILISEARCH_MASTER_KEY: { value: '227eed949d2020fb92f2d347d1338a1caf9fd680' },

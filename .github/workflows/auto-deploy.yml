@@ -41,8 +41,9 @@ jobs:
       - name: Build site (Next.js + OpenNext + static HTML)
         run: npm run build:pages
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # مفتاح النشر مُتعمَّد نشره (يُشحن للمتصفح أصلاً) — قيم ثابتة بدل أسرار GitHub
+          NEXT_PUBLIC_SUPABASE_URL: https://xtdrkziyndkvaxkxvfqx.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_-MsvXS3OevPwi4bbRSyNJw_O29W7-1i
           NEXT_PUBLIC_APP_URL: https://iraqnow.pages.dev
           MEILISEARCH_HOST: https://ms-7fba9866c156-55153.par.meilisearch.io
           MEILISEARCH_SEARCH_KEY: 43adf2d3612dd385beb287cbb8bf065255f1ab0da6cb413cfd0c5bd8fb4c87e5

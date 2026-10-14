@@ -238,7 +238,7 @@ export default async function DataPage({ params }: { params: Promise<{ locale: s
             {t.sourcesTitle}
           </h3>
           <ul className="space-y-2">
-            {t.sourcesList.map((s, i) => (
+            {t.sourcesList.map((s: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-xs leading-relaxed text-[var(--muted)]">
                 <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold-500" />
                 {s}

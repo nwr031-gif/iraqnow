@@ -31,8 +31,8 @@ const metadata = {
   compatibility_flags: ['nodejs_compat'],
   bindings: [
     { type: 'ai', name: 'AI' },
-    { type: 'plain_text', name: 'SUPABASE_URL', text: 'https://afwbjyfnhchoqgqbqrfg.supabase.co' },
-    { type: 'plain_text', name: 'SUPABASE_KEY', text: 'sb_publishable_kLEM0R1eYNwEe9zZJrRL7A_E_Sh8CJh' },
+    { type: 'plain_text', name: 'SUPABASE_URL', text: 'https://xtdrkziyndkvaxkxvfqx.supabase.co' },
+    { type: 'plain_text', name: 'SUPABASE_KEY', text: 'sb_publishable_-MsvXS3OevPwi4bbRSyNJw_O29W7-1i' },
     { type: 'plain_text', name: 'AI_MODEL', text: '@cf/meta/llama-3.1-8b-instruct-fp8' },
     { type: 'plain_text', name: 'NIM_MODEL', text: 'nvidia/nemotron-3-super-120b-a12b' },
     { type: 'plain_text', name: 'SELF_TRIGGER_URL', text: 'https://iraqnow-ai.nwr04nwr04.workers.dev/trigger' },

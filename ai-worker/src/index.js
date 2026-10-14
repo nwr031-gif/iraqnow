@@ -516,8 +516,9 @@ ${story.fullText || item.desc || 'غير متوفر'}
 ${corroborating ? `\nتغطيات مصادر أخرى لنفس الحدث:\n${corroborating}\n` : '\nلا توجد تغطيات متقاطعة إضافية — اعتمد على المصدر الأساسي وحده، ولا تستنتج أي تفاصيل إضافية.\n'}
 
 /* الخطوة 3 — كتابة التقرير
-- عربي: 4-6 فقرات موجزة — فقرة افتتاحية قوية (ماذا/متى/أين/من) بصياغة جديدة لا تكرر عنوان الخبر حرفياً، ثم فقرات تفاصيل من النص الكامل ثم فقرة "لماذا يهم؟" تحليلية ثم فقرة "ما التالي؟" (نقاط المراقبة المستقبلية) وآخر سطر: "المصادر: <أسماء المصادر>"
-- الإنجليزية: 2-3 فقرات موجزة جداً، آخر سطر: "Sources: <names>"
+- عربي: 4-6 فقرات موجزة — فقرة افتتاحية قوية (ماذا/متى/أين/من) بصياغة جديدة لا تكرر عنوان الخبر حرفياً، ثم فقرات تفاصيل من النص الكامل ثم فقرة "لماذا يهم؟" تحليلية ثم فقرة "ما التالي؟" (نقاط المراقبة المستقبلية)
+- الإنجليزية: 2-3 فقرات موجزة جداً
+- ممنوع منعاً باتاً إضافة أي سطر مصادر في نهاية التقرير (مثل "المصادر:" أو "Sources:") — التقرير ينتهي بآخر فقرة محتوى
 - النص عادي فقط، الفقرات مفصولة بـ \\n. ممنوع HTML وMarkdown والتعداد النقطي.
 - دقة مطلقة: كل جملة تستند إلى المواد أعلاه حصراً.
 - أسلوب صحفي طبيعي: لا تعلق أبداً على جودة المصادر أو نقص المعلومات، ولا تكتب جملاً مثل "لم يذكر المصدر" أو "لم يتوفر تاريخ". إن كانت معلومة غير متوفرة ببساطة تجاوزها. إن كانت المواد قليلة اجعل التقرير أقصر دون أي تعليق على ذلك.
@@ -659,20 +660,15 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
   const enTitle = String((g.en && g.en.title) || arTitle).slice(0, 180)
   const kuTitle = arTitle
 
-  let arContent = cleanContent(g.ar.content)
-  let enContent = cleanContent(g.en && g.en.content) || arContent
-  const kuContent = arContent
+  /* إزالة أي سطر مصادر أضافه النموذج رغم التعليمات */
+  const stripSources = (t) => String(t || '')
+    .replace(/^[ \t]*(المصادر|المصدر|Sources?|سەرچاوەکان)\s*:[^\n]*\n?/gim, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
 
-  /* فرض نسب المصادر إن غاب سطر النسب */
-  const sourcesLine = [...new Set([item.sourceName, ...story.corroborating.map((c) => c.sourceName)])].join('، ')
-  const hasArSources = arContent.split('\n').some((l) => /^\s*(المصادر|المصدر)\s*:/.test(l))
-  const hasEnSources = enContent.split('\n').some((l) => /^\s*sources?\s*:/i.test(l))
-  if (arContent && !hasArSources) {
-    arContent += `\nالمصادر: ${sourcesLine}`
-  }
-  if (enContent && !hasEnSources) {
-    enContent += `\nSources: ${sourcesLine}`
-  }
+  const arContent = stripSources(cleanContent(g.ar.content))
+  const enContent = stripSources(cleanContent(g.en && g.en.content)) || arContent
+  const kuContent = arContent
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
   const category = validCategory(g.category) || classifyByKeywords(arTitle, String(g.ar.excerpt || ''))

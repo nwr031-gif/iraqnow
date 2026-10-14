@@ -180,7 +180,29 @@ const KEYWORD_IMAGES = [
   { re: /تكنولوج|ذكاء اصطناعي|تطبيق|هاتف|رقمي|إنترنت|انترنت/i, id: 'photo-1518770660439-4636190af475' },
 ]
 
-function pickImage(item, category, searchText, ogImage, memberImages) {
+/* صورة مطابقة للموضوع من Wikimedia Commons — مجانية وحرّة الاستخدام */
+const COMMONS_BAD = /(map|logo|icon|diagram|flag|coat_of_arms|chart|graph|seal|emblem|poster|bookcover|signature|banknote|stamp)/i
+
+async function commonsImage(query) {
+  try {
+    const q = String(query || '').trim().slice(0, 90)
+    if (!q) return ''
+    const api = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent('filetype:bitmap ' + q)}&gsrlimit=6&gsrnamespace=6&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=1200&format=json`
+    const res = await fetch(api, { headers: { 'User-Agent': UA, Accept: 'application/json' }, cf: { cacheTtl: 3600 } })
+    if (!res.ok) return ''
+    const j = await res.json()
+    const pages = (j.query && j.query.pages) || {}
+    const cands = Object.values(pages)
+      .map((p) => p.imageinfo && p.imageinfo[0])
+      .filter(Boolean)
+      .filter((ii) => (ii.width || 0) >= 640 && !COMMONS_BAD.test(ii.thumburl || ''))
+      .sort((a, b) => (b.width || 0) - (a.width || 0))
+    const pick = cands[0]
+    return pick ? (pick.thumburl || pick.url || '') : ''
+  } catch { return '' }
+}
+
+async function pickImage(item, category, searchText, ogImage, memberImages, imageQuery, altQueries) {
   /* مضيفات قد تكون محجوبة جغرافياً — نتجنبها كلياً */
   const UNRELIABLE = /russiatoday|rt\.com|sputnik/i
   const usable = (u) => {
@@ -202,7 +224,14 @@ function pickImage(item, category, searchText, ogImage, memberImages) {
     if (m) return m
   }
 
-  /* 4) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
+  /* 4) بحث صورة مطابقة للموضوع في ويكيميديا كومنز (وصف النموذج ثم الوسوم) */
+  const queries = [imageQuery, ...(altQueries || [])].map((x) => String(x || '').trim()).filter(Boolean).slice(0, 3)
+  for (const q of queries) {
+    const c = await commonsImage(q)
+    if (c) return c
+  }
+
+  /* 5) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
   const text = `${searchText || ''}`
   for (const k of KEYWORD_IMAGES) {
     if (k.re.test(text)) {
@@ -210,7 +239,7 @@ function pickImage(item, category, searchText, ogImage, memberImages) {
     }
   }
 
-  /* 5) صورة القسم */
+  /* 6) صورة القسم */
   const cid = (CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world).split('?')[0]
   return `https://images.unsplash.com/${cid}?auto=format&fit=crop&w=1200&q=75`
 }
@@ -468,9 +497,10 @@ ${corroborating ? `\nتغطيات مصادر أخرى لنفس الحدث:\n${co
 - أسلوب صحفي طبيعي: لا تعلق أبداً على جودة المصادر أو نقص المعلومات، ولا تكتب جملاً مثل "لم يذكر المصدر" أو "لم يتوفر تاريخ". إن كانت معلومة غير متوفرة ببساطة تجاوزها. إن كانت المواد قليلة اجعل التقرير أقصر دون أي تعليق على ذلك.
 - ممنوع بدأ أي فقرة بحرف العطف "و" — نوّع بادئات الفقرات والجمل (قال، أعلن، أشار، في سياق متصل، على صعيد...).
 - "slug_hint": كلمات إنجليزية فعلية مستمدة من العنوان الإنجليزي مفصولة بشرطات (مثال: "iraq-central-bank-gold" أو "gaza-ceasefire-talks") — لا تكتب نصاً توضيحياً.
+- "imageQuery": 2-4 كلمات إنجليزية تصف صورة إخبارية مطابقة لموضوع التقرير (أشخاص/مكان/شيء محدد في الخبر — مثال: "NATO warship Black Sea" أو "Iraqi parliament session" أو "olive harvest farmer") — بدون أسماء علامات تجارية.
 
 أعد JSON فقط دون أي نص خارجي بهذا الشكل:
-{"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":true|false,"tags":["كلمة","كلمة","كلمة"],"slug_hint":"real-english-slug","ar":{"title":"...","excerpt":"سطر أو سطران","content":"..."},"en":{"title":"...","excerpt":"...","content":"..."}}`
+{"category":"politics|economy|security|society|culture|sports|technology|health|education|environment|local|world","governorate":"baghdad|basra|erbil|mosul|najaf|karbala|kirkuk|sulaymaniyah|anbar|duhok أو null","breaking":true|false,"tags":["كلمة","كلمة","كلمة"],"slug_hint":"real-english-slug","imageQuery":"english photo keywords","ar":{"title":"...","excerpt":"سطر أو سطران","content":"..."},"en":{"title":"...","excerpt":"...","content":"..."}}`
 }
 
 async function generateArticle(env, story, diag) {
@@ -620,7 +650,7 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
   const category = validCategory(g.category) || classifyByKeywords(arTitle, String(g.ar.excerpt || ''))
-  const image = pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`, story.ogImage, story.memberImages)
+  const image = await pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`, story.ogImage, story.memberImages, g.imageQuery, Array.isArray(g.tags) ? g.tags.slice(0, 2) : [])
 
   const nowIso = new Date().toISOString()
   const row = {

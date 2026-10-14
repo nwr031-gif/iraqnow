@@ -25,32 +25,10 @@ const UI: Record<Locale, any> = {
   },
 }
 
-const STATS: Record<Locale, { value: string; label: string }[]> = {
-  ar: [
-    { value: '19', label: 'محافظة' },
-    { value: '2', label: 'لغتان' },
-    { value: '24/7', label: 'تغطية مستمرة' },
-    { value: '12', label: 'قسماً إخبارياً' },
-  ],
-  ku: [
-    { value: '19', label: 'پارێزگا' },
-    { value: '2', label: 'زمان' },
-    { value: '24/7', label: 'پەخشی بەردەوام' },
-    { value: '12', label: 'بەشی هەواڵی' },
-  ],
-  en: [
-    { value: '19', label: 'Governorates' },
-    { value: '2', label: 'Languages' },
-    { value: '24/7', label: 'Live Coverage' },
-    { value: '12', label: 'News Sections' },
-  ],
-}
-
 export function HeroSection({ locale }: { locale: Locale }) {
   const t = UI[locale]
   const dir = locale === 'en' ? 'ltr' : 'rtl'
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight
-  const stats = STATS[locale]
 
   return (
     <section className="relative overflow-hidden border-b border-line bg-[var(--background)] text-[var(--foreground)]" dir={dir} id="top">
@@ -107,18 +85,6 @@ export function HeroSection({ locale }: { locale: Locale }) {
               <MapPin className="h-4 w-4" />
               {t.map}
             </Link>
-          </div>
-        </Reveal>
-
-        {/* شريط الإحصائيات */}
-        <Reveal delay={200}>
-          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-y-6 border-t border-line pt-8 sm:gap-y-8 sm:pt-10 lg:grid-cols-4">
-            {stats.map((stat, i) => (
-              <div key={i} className="text-center">
-                <p className="font-kufi text-2xl font-bold text-[var(--foreground)] sm:text-3xl lg:text-4xl">{stat.value}</p>
-                <p className="mt-1.5 text-xs text-[var(--muted)]">{stat.label}</p>
-              </div>
-            ))}
           </div>
         </Reveal>
       </div>

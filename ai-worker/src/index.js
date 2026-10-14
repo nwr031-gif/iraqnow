@@ -83,7 +83,7 @@ const MAX_FEED_BYTES = 150000
 const MAX_ARTICLE_BYTES = 300000
 const MAX_FULLTEXT_CHARS = 4200
 const MAX_ARTICLE_AGE_MS = 8 * 3600_000
-const MIN_HOOK_INTERVAL_MS = 15 * 60_000
+const MIN_HOOK_INTERVAL_MS = 60_000 /* نشر شبه فوري: إعادة بناء بعد كل جولة نشر */
 const SAFETY_HOOK_INTERVAL_MS = 12 * 3600_000
 
 /* كلمات وقف للعربية والإنجليزية (لتجميع القصص المتشابهة) */
@@ -180,7 +180,7 @@ const KEYWORD_IMAGES = [
   { re: /تكنولوج|ذكاء اصطناعي|تطبيق|هاتف|رقمي|إنترنت|انترنت/i, id: 'photo-1518770660439-4636190af475' },
 ]
 
-function pickImage(item, category, searchText) {
+function pickImage(item, category, searchText, ogImage) {
   /* مضيفات قد تكون محجوبة جغرافياً — نتجنبها كلياً */
   const UNRELIABLE = /russiatoday|rt\.com|sputnik/i
 
@@ -188,7 +188,11 @@ function pickImage(item, category, searchText) {
   const upgraded = upgradeImageUrl(item.image)
   if (upgraded && !UNRELIABLE.test(upgraded)) return upgraded
 
-  /* 2) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
+  /* 2) صورة الخبر الأصلية من صفحة الناشر (og:image) */
+  const og = upgradeImageUrl(ogImage || '')
+  if (og && !UNRELIABLE.test(og)) return og
+
+  /* 3) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
   const text = `${searchText || ''}`
   for (const k of KEYWORD_IMAGES) {
     if (k.re.test(text)) {
@@ -196,7 +200,7 @@ function pickImage(item, category, searchText) {
     }
   }
 
-  /* 3) صورة القسم */
+  /* 4) صورة القسم */
   const cid = (CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world).split('?')[0]
   return `https://images.unsplash.com/${cid}?auto=format&fit=crop&w=1200&q=75`
 }
@@ -325,7 +329,7 @@ async function fetchFullText(url) {
       headers: { 'User-Agent': UA, Accept: 'text/html,application/xhtml+xml' },
       cf: { cacheTtl: 600 },
     })
-    if (res.status !== 200) return ''
+    if (res.status !== 200) return { text: '', image: '' }
     const html = await readCapped(res, MAX_ARTICLE_BYTES)
 
     /* صفحات جوجل الإخبارية قد تحوّل عبر meta refresh */
@@ -334,11 +338,32 @@ async function fetchFullText(url) {
       if (refresh) return fetchFullText(refresh[2])
       const canon = html.match(/<a[^>]+href=["'](https?:\/\/(?!news\.google)[^"']+)["'][^>]*>\s*<h[23]/i)
       if (canon) return fetchFullText(canon[1])
-      return ''
+      return { text: '', image: '' }
     }
 
     const full = extractParagraphs(html)
-    return full.length > 200 ? full.slice(0, MAX_FULLTEXT_CHARS) : ''
+    return {
+      text: full.length > 200 ? full.slice(0, MAX_FULLTEXT_CHARS) : '',
+      image: extractOgImage(html, url),
+    }
+  } catch { return { text: '', image: '' } }
+}
+
+/* صورة الخبر الأصلية من صفحة الناشر — الأكثر تطابقاً مع المحتوى */
+function extractOgImage(html, baseUrl) {
+  try {
+    const m = html.match(/<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i)
+      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url)?["']/i)
+      || html.match(/<meta[^>]+name=["']twitter:image(?::src)?["'][^>]+content=["']([^"']+)["']/i)
+    if (!m) return ''
+    const raw = decodeEntities(m[1]).trim()
+    if (!raw || /^data:/i.test(raw)) return ''
+    const u = new URL(raw, baseUrl)
+    if (!/^https?:$/.test(u.protocol)) return ''
+    if (/news\.google\.com/.test(u.hostname)) return ''
+    /* تجاهل الشعارات والأيقونات الصغيرة غالباً */
+    if (/(logo|sprite|icon|favicon)/i.test(u.pathname)) return ''
+    return u.href
   } catch { return '' }
 }
 
@@ -585,7 +610,7 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
   const category = validCategory(g.category) || classifyByKeywords(arTitle, String(g.ar.excerpt || ''))
-  const image = pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`)
+  const image = pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`, story.ogImage)
 
   const nowIso = new Date().toISOString()
   const row = {
@@ -688,15 +713,21 @@ async function runEngine(env, trigger) {
       for (const c of story.corroborating) seen[c.hash] = now
     }
 
-    /* البحث المكثف: النص الكامل من أول مصدر مباشر (تجنب روابط جوجل المحمية) */
+    /* البحث المكثف: النص الكامل + صورة الخبر الأصلية من أول مصدر مباشر */
     for (const story of batch) {
       story.corroborating = story.corroborating.slice(0, 4)
       const members = [story.primary, ...story.corroborating]
       const direct = members.find((c) => !/news\.google\.com/.test(c.link))
-      story.fullText = await fetchFullText((direct || story.primary).link)
+      let ft = await fetchFullText((direct || story.primary).link)
+      story.fullText = ft.text
+      story.ogImage = ft.image || ''
       if (!story.fullText) {
         const alt = members.find((c) => c !== (direct || story.primary) && !/news\.google\.com/.test(c.link))
-        if (alt) story.fullText = await fetchFullText(alt.link)
+        if (alt) {
+          ft = await fetchFullText(alt.link)
+          story.fullText = ft.text
+          if (!story.ogImage) story.ogImage = ft.image || ''
+        }
       }
     }
 

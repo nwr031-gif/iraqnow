@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requirePermission, isErrorResponse } from '@/lib/rbac'
 import { createArticle, updateArticleFull, updateArticleStatus, deleteArticle } from '@/lib/content-service'
 import { logAudit } from '@/lib/audit'
+import { triggerSiteRebuild } from '@/lib/deploy-hook'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://iraqnow.pages.dev'
 
@@ -38,8 +39,10 @@ export async function POST(request: NextRequest) {
       readingTime: body.readingTime,
     })
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
-    return NextResponse.json({ success: true, id: result.id, demo: result.mock })
     await logAudit('create', 'article', result.id)
+    /* نشر فوري: إعادة بناء الموقع عند إنشاء مقال منشور مباشرة */
+    if (body.status === 'PUBLISHED') triggerSiteRebuild('admin-create').catch(() => {})
+    return NextResponse.json({ success: true, id: result.id, demo: result.mock })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
@@ -53,8 +56,11 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const result = await updateArticleFull(body.id, body.data || body)
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
+    if ((body.data?.status || body.status) === 'PUBLISHED') {
+      triggerSiteRebuild('author-publish').catch(() => {})
+    }
+    await logAudit('update', 'article', body.id)
     return NextResponse.json({ success: true, demo: result.mock })
-    await logAudit('update', 'article')
   }
 
   try {
@@ -63,23 +69,25 @@ export async function PATCH(request: NextRequest) {
     if (body.action === 'status' && body.id) {
       const result = await updateArticleStatus(body.id, body.status)
       if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
-      /* فهرسة فورية عند النشر */
-      if (body.status === 'PUBLISHED' && body.slug) {
-        pingIndexNow(body.slug).catch(() => {})
+      /* فهرسة فورية + إعادة بناء فورية عند النشر */
+      if (body.status === 'PUBLISHED') {
+        if (body.slug) pingIndexNow(body.slug).catch(() => {})
+        triggerSiteRebuild('admin-publish').catch(() => {})
       }
+      await logAudit('update', 'article', body.id)
       return NextResponse.json({ success: true, demo: result.mock })
-    await logAudit('update', 'article')
     }
 
     if (body.id) {
       const result = await updateArticleFull(body.id, body.data || body)
       if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
-      /* فهرسة فورية عند التعديل والنشر */
-      if ((body.data?.status || body.status) === 'PUBLISHED' && (body.data?.slug || body.slug)) {
-        pingIndexNow(body.data?.slug || body.slug).catch(() => {})
+      /* فهرسة فورية + إعادة بناء فورية عند التعديل والنشر */
+      if ((body.data?.status || body.status) === 'PUBLISHED') {
+        if (body.data?.slug || body.slug) pingIndexNow(body.data?.slug || body.slug).catch(() => {})
+        triggerSiteRebuild('admin-update').catch(() => {})
       }
+      await logAudit('update', 'article', body.id)
       return NextResponse.json({ success: true, demo: result.mock })
-    await logAudit('update', 'article')
     }
 
     return NextResponse.json({ error: 'معرف المقال مطلوب' }, { status: 400 })
@@ -98,6 +106,6 @@ export async function DELETE(request: NextRequest) {
 
   const result = await deleteArticle(id)
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 })
+  await logAudit('delete', 'article', id)
   return NextResponse.json({ success: true, demo: result.mock })
-    await logAudit('update', 'article')
 }

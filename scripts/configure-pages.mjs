@@ -30,6 +30,9 @@ const ENV_VARS = {
   NEWS_FROM_EMAIL: { value: 'onboarding@resend.dev' },
   ADMIN_PASSWORD: { value: process.env.ADMIN_PW || '' },
   ADMIN_COOKIE_SECRET: { value: 'iqn-admin-cookie-9c4547f9065d' },
+  /* نشر فوري: إعادة بناء الموقع عند النشر من الإدارة */
+  GITHUB_TOKEN: { value: process.env.GH_TOKEN || '' },
+  GITHUB_REPO: { value: 'nwr031-gif/iraqnow' },
 }
 
 async function api(path, method = 'GET', body) {

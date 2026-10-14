@@ -235,25 +235,26 @@ async function pickImage(item, category, searchText, ogImage, memberImages, imag
     return up && !UNRELIABLE.test(up) ? up : ''
   }
 
-  /* 1) صورة الخبر من مصدر موثوق — الأكثر صلة */
-  const upgraded = usable(item.image)
-  if (upgraded) return upgraded
+  /* 1) الأسبقية المطلقة: صورة مطابقة لموضوع المقال (وصف النموذج ← الوسوم)
+     — بعض الناشرين يستخدمون بطاقات رسومية (قالب «عاجل») بدل الصور الحقيقية */
+  const queries = [imageQuery, ...(altQueries || [])].map((x) => String(x || '').trim()).filter(Boolean).slice(0, 3)
+  for (const q of queries) {
+    const c = await topicalImage(q)
+    if (c) return c
+  }
 
   /* 2) صورة الخبر الأصلية من صفحة الناشر (og:image) */
   const og = usable(ogImage)
   if (og) return og
 
-  /* 3) صور من باقي مصادر القصة نفسها */
+  /* 3) صورة الخبر من الخلاصة */
+  const upgraded = usable(item.image)
+  if (upgraded) return upgraded
+
+  /* 4) صور من باقي مصادر القصة نفسها */
   for (const mi of memberImages || []) {
     const m = usable(mi)
     if (m) return m
-  }
-
-  /* 4) بحث صورة مطابقة للموضوع حصراً: وصف النموذج ← الوسوم (كومنز ثم Openverse) */
-  const queries = [imageQuery, ...(altQueries || [])].map((x) => String(x || '').trim()).filter(Boolean).slice(0, 3)
-  for (const q of queries) {
-    const c = await topicalImage(q)
-    if (c) return c
   }
 
   /* 5) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */

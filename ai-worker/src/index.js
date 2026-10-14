@@ -180,19 +180,29 @@ const KEYWORD_IMAGES = [
   { re: /تكنولوج|ذكاء اصطناعي|تطبيق|هاتف|رقمي|إنترنت|انترنت/i, id: 'photo-1518770660439-4636190af475' },
 ]
 
-function pickImage(item, category, searchText, ogImage) {
+function pickImage(item, category, searchText, ogImage, memberImages) {
   /* مضيفات قد تكون محجوبة جغرافياً — نتجنبها كلياً */
   const UNRELIABLE = /russiatoday|rt\.com|sputnik/i
+  const usable = (u) => {
+    const up = upgradeImageUrl(u)
+    return up && !UNRELIABLE.test(up) ? up : ''
+  }
 
   /* 1) صورة الخبر من مصدر موثوق — الأكثر صلة */
-  const upgraded = upgradeImageUrl(item.image)
-  if (upgraded && !UNRELIABLE.test(upgraded)) return upgraded
+  const upgraded = usable(item.image)
+  if (upgraded) return upgraded
 
   /* 2) صورة الخبر الأصلية من صفحة الناشر (og:image) */
-  const og = upgradeImageUrl(ogImage || '')
-  if (og && !UNRELIABLE.test(og)) return og
+  const og = usable(ogImage)
+  if (og) return og
 
-  /* 3) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
+  /* 3) صور من باقي مصادر القصة نفسها */
+  for (const mi of memberImages || []) {
+    const m = usable(mi)
+    if (m) return m
+  }
+
+  /* 4) مطابقة الكلمات المفتاحية مع مسبح الصور الموثق */
   const text = `${searchText || ''}`
   for (const k of KEYWORD_IMAGES) {
     if (k.re.test(text)) {
@@ -200,7 +210,7 @@ function pickImage(item, category, searchText, ogImage) {
     }
   }
 
-  /* 4) صورة القسم */
+  /* 5) صورة القسم */
   const cid = (CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world).split('?')[0]
   return `https://images.unsplash.com/${cid}?auto=format&fit=crop&w=1200&q=75`
 }
@@ -610,7 +620,7 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
   const category = validCategory(g.category) || classifyByKeywords(arTitle, String(g.ar.excerpt || ''))
-  const image = pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`, story.ogImage)
+  const image = pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`, story.ogImage, story.memberImages)
 
   const nowIso = new Date().toISOString()
   const row = {
@@ -721,6 +731,7 @@ async function runEngine(env, trigger) {
       let ft = await fetchFullText((direct || story.primary).link)
       story.fullText = ft.text
       story.ogImage = ft.image || ''
+      story.memberImages = members.map((c) => c.image).filter(Boolean).slice(0, 5)
       if (!story.fullText) {
         const alt = members.find((c) => c !== (direct || story.primary) && !/news\.google\.com/.test(c.link))
         if (alt) {

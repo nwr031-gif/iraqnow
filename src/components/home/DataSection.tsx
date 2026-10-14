@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Database, Download, TrendingUp, ArrowLeft, ArrowRight, ChartColumn, FileText, ExternalLink } from 'lucide-react'
-import { Reveal } from '@/components/ui/Reveal'
+import { Database, Users, MapPin, TrendingUp, Coins, ArrowLeft, ArrowRight } from 'lucide-react'
+import { Reveal, CountUp } from '@/components/ui/Reveal'
+import { IRAQ_FACTS } from '@/lib/iraq-data'
 
 type Locale = 'ar' | 'ku' | 'en'
 
@@ -10,46 +11,43 @@ const UI: Record<Locale, any> = {
   ar: {
     badge: 'صحافة البيانات',
     title: 'العراق بالأرقام',
-    subtitle: 'بيانات مفتوحة ورسوم تفاعلية لفهم ما يجري — للباحثين والصحفيين والمواطنين',
-    explore: 'تصفح مكتبة البيانات',
-    download: 'تحميل CSV',
-    sources: 'المصادر: الجهاز المركزي للإحصاء، البنك المركزي العراقي، وزارة التخطيط',
-    updated: 'آخر تحديث',
-    datasets: 'قاعدة بيانات',
-    investigations: 'تحقيق بياناتي',
+    subtitle: 'مؤشرات الدولة من مصادر رسمية ودولية موثقة — كل رقم بمصدره وتاريخه',
+    explore: 'مركز البيانات الكامل',
+    kpis: [
+      { icon: Users, value: IRAQ_FACTS.population, unit: 'مليون نسمة', label: 'السكان (تعداد 2024)' },
+      { icon: MapPin, value: IRAQ_FACTS.area, unit: 'كم²', label: 'المساحة الكلية' },
+      { icon: TrendingUp, value: IRAQ_FACTS.gdp, unit: 'مليار دولار', label: 'الناتج المحلي (البنك الدولي 2023)' },
+      { icon: Coins, value: IRAQ_FACTS.oilReserves, unit: 'مليار برميل', label: 'الاحتياطي النفطي (أوبك)' },
+    ],
+    sources: 'المصادر: الجهاز المركزي للإحصاء (تعداد 2024)، البنك الدولي، أوبك، البنك المركزي العراقي',
   },
   ku: {
-    badge: 'رۆژنامەوانی داتا',
+    badge: 'ڕۆژنامەوانی داتا',
     title: 'عێراق بە ژمارەکان',
-    subtitle: 'داتای کراوە و نەخشەی کارلێکەر بۆ تێگەیشتنی ڕووداوەکان',
-    explore: 'کتێبخانەی داتا ببینە',
-    download: 'CSV دابەزێنە',
-    sources: 'سەرچاوەکان: دەستەی ناوەندی ئامار، بانکی ناوەندی عێراق',
-    updated: 'دوایین نوێکردنەوە',
-    datasets: 'بنکەدراوە',
-    investigations: 'لێکۆڵینەوەی داتا',
+    subtitle: 'نیشاندەرەکانی وڵات لە سەرچاوە فەرمی و متمانەپێکراوەکانەوە',
+    explore: 'ناوەندی تەواوی داتا',
+    kpis: [
+      { icon: Users, value: IRAQ_FACTS.population, unit: 'ملیون کەس', label: 'دانیشتووان (سەرژمێری 2024)' },
+      { icon: MapPin, value: IRAQ_FACTS.area, unit: 'کم²', label: 'ڕووبەری گشتی' },
+      { icon: TrendingUp, value: IRAQ_FACTS.gdp, unit: 'ملیار دۆلار', label: 'بەرهەمی ناوخۆیی' },
+      { icon: Coins, value: IRAQ_FACTS.oilReserves, unit: 'ملیار بەرمیل', label: 'یەدەگی نەوت' },
+    ],
+    sources: 'سەرچاوەکان: دەستەی ناوەندی ئامار، بانکی جیهانی، ئۆپێک',
   },
   en: {
     badge: 'Data Journalism',
     title: 'Iraq in Numbers',
-    subtitle: 'Open data and interactive charts to understand what\'s happening — for researchers, journalists and citizens',
-    explore: 'Browse Data Library',
-    download: 'Download CSV',
-    sources: 'Sources: Central Statistical Organization, Central Bank of Iraq, Ministry of Planning',
-    updated: 'Last updated',
-    datasets: 'Datasets',
-    investigations: 'Data Investigations',
+    subtitle: 'Country indicators from official and international sources — every figure with its source and date',
+    explore: 'Full Data Center',
+    kpis: [
+      { icon: Users, value: IRAQ_FACTS.population, unit: 'million people', label: 'Population (2024 census)' },
+      { icon: MapPin, value: IRAQ_FACTS.area, unit: 'km²', label: 'Total Area' },
+      { icon: TrendingUp, value: IRAQ_FACTS.gdp, unit: 'billion USD', label: 'GDP (World Bank 2023)' },
+      { icon: Coins, value: IRAQ_FACTS.oilReserves, unit: 'billion barrels', label: 'Oil Reserves (OPEC)' },
+    ],
+    sources: 'Sources: Central Statistical Organization (2024 census), World Bank, OPEC, Central Bank of Iraq',
   },
 }
-
-const DATASETS = [
-  { id: 'inflation', name: { ar: 'التضخم الشهري', ku: 'هەڵاوسانی مانگانە', en: 'Monthly Inflation' }, value: '4.2%', trend: '+0.3', format: 'percent' },
-  { id: 'oil', name: { ar: 'صادرات النفط', ku: 'هەناردەکردنی نەوت', en: 'Oil Exports' }, value: '3.4M', trend: '+120K', format: 'barrels' },
-  { id: 'jobs', name: { ar: 'معدل البطالة', ku: 'ڕێژەی بێکاری', en: 'Unemployment' }, value: '15.5%', trend: '-1.2', format: 'percent' },
-  { id: 'electricity', name: { ar: 'ساعات تجهيز الكهرباء', ku: 'کاتژمێری کارەبا', en: 'Electricity Hours' }, value: '18.5h', trend: '+2.1', format: 'hours' },
-]
-
-const BARS = [42, 58, 35, 72, 61, 88, 54, 67, 79, 45, 92, 70]
 
 export function DataSection({ locale }: { locale: Locale }) {
   const t = UI[locale]
@@ -57,117 +55,46 @@ export function DataSection({ locale }: { locale: Locale }) {
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight
 
   return (
-    <section className="relative overflow-hidden py-14 lg:py-20" dir={dir} aria-labelledby="data-heading">
-      {/* خلفية داكنة زجاجية */}
-      <div className="absolute inset-0 bg-gradient-to-br from-lapis-900 via-lapis-950 to-ink-950" aria-hidden="true" />
-      <div className="absolute inset-0 ishtar-grid opacity-30" aria-hidden="true" />
-
-      <div className="container-main relative text-white">
-        <Reveal>
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <span className="badge border border-line bg-white/5 text-white/70 mb-3">
-                <Database className="h-3.5 w-3.5" />
-                {t.badge}
-              </span>
-              <h2 id="data-heading" className="font-kufi text-3xl font-bold lg:text-4xl">
-                {t.title}
-              </h2>
-              <p className="mt-2 max-w-lg text-sm text-white/60">{t.subtitle}</p>
-            </div>
-            <Link
-              href={`/${locale}/data`}
-              className="group flex items-center gap-2 rounded-xl border border-line px-5 py-2.5 text-sm font-semibold text-white/70 transition-all duration-300 hover:bg-white hover:text-black"
-            >
-              {t.explore}
-              <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-            </Link>
+    <section className="border-t border-line bg-cream py-14 sm:py-16 lg:py-24" dir={dir} aria-labelledby="data-heading">
+      <div className="container-main">
+        <Reveal className="mb-10 flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-xl">
+            <p className="eyebrow mb-3">
+              <Database className="h-3.5 w-3.5" />
+              {t.badge}
+            </p>
+            <h2 id="data-heading" className="section-title text-3xl lg:text-4xl">
+              {t.title}
+            </h2>
+            <p className="mt-3 text-[15px] text-[var(--muted)]">{t.subtitle}</p>
           </div>
+          <Link
+            href={`/${locale}/data`}
+            className="group flex items-center gap-2 rounded-full border border-line bg-[var(--card-bg)] px-5 py-2.5 text-sm font-semibold text-[var(--foreground)] transition-all duration-300 hover:border-line-strong hover:shadow-[var(--shadow-card)]"
+          >
+            {t.explore}
+            <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+          </Link>
         </Reveal>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* الرسم البياني */}
-          <Reveal className="lg:col-span-2">
-            <div className="glass-card h-full p-6">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white/70">
-                    <ChartColumn className="h-5 w-5" />
-                  </span>
-                  <div>
-                    <h3 className="font-kufi text-sm font-bold">
-                      {locale === 'en' ? 'Monthly Oil Revenue (Billions USD)' : locale === 'ku' ? 'داهاتی مانگانەی نەوت' : 'الإيرادات النفطية الشهرية (مليار دولار)'}
-                    </h3>
-                    <p className="text-[11px] text-white/50">
-                      {t.updated}: {new Date().toLocaleDateString(locale === 'ar' ? 'ar-IQ' : locale === 'ku' ? 'ckb-IQ' : 'en-US', { month: 'long', year: 'numeric' })}
-                    </p>
-                  </div>
-                </div>
-                <button className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[11px] font-semibold text-white/70 transition-colors hover:bg-white/5">
-                  <Download className="h-3.5 w-3.5" />
-                  {t.download}
-                </button>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {t.kpis.map((kpi: any, i: number) => (
+            <Reveal key={i} delay={(i % 4) * 60}>
+              <div className="group h-full rounded-2xl border border-line bg-[var(--card-bg)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[var(--shadow-card)] sm:p-5">
+                <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-cream-deep text-lapis-700">
+                  <kpi.icon className="h-5 w-5" />
+                </span>
+                <p className="font-kufi text-xl font-bold tabular-nums text-[var(--foreground)] sm:text-2xl">
+                  <CountUp end={kpi.value} suffix="" />
+                </p>
+                <p className="mt-0.5 text-[11px] font-semibold text-lapis-700">{kpi.unit}</p>
+                <p className="mt-1.5 text-[11px] leading-snug text-[var(--muted)]">{kpi.label}</p>
               </div>
-
-              {/* أعمدة */}
-              <div className="flex h-48 items-end justify-between gap-2">
-                {BARS.map((h, i) => (
-                  <div key={i} className="group flex flex-1 flex-col items-center gap-2">
-                    <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] font-bold text-white/70 opacity-0 transition-opacity group-hover:opacity-100">
-                      {h}
-                    </span>
-                    <div
-                      className="w-full rounded-t-md bg-gradient-to-t from-lapis-600 to-gold-500/80 transition-all duration-500 group-hover:from-gold-600 group-hover:to-gold-400"
-                      style={{ height: `${h}%` }}
-                    />
-                    <span className="text-[9px] text-white/40">
-                      {['ك2', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'ت1', 'ت2', 'ك1'][i]}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <p className="mt-5 border-t border-white/10 pt-3 text-[10px] text-white/40">{t.sources}</p>
-            </div>
-          </Reveal>
-
-          {/* مؤشرات سريعة */}
-          <div className="flex flex-col gap-4">
-            {DATASETS.map((ds, i) => (
-              <Reveal key={ds.id} delay={i * 80}>
-                <div className="glass-card group flex items-center justify-between p-4 transition-all duration-300 hover:border-line-strong">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-lapis-700/60 text-white/70">
-                      <TrendingUp className="h-4.5 w-4.5" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-medium text-white/70">{ds.name[locale]}</p>
-                      <p className="font-kufi text-lg font-bold text-white">{ds.value}</p>
-                    </div>
-                  </div>
-                  <span className={`rounded-lg px-2 py-1 text-[10px] font-bold ${ds.trend.startsWith('+') ? 'bg-[var(--foreground)]/15 text-white/70' : 'bg-[var(--foreground)]/15 text-white/80'}`}>
-                    {ds.trend}
-                  </span>
-                </div>
-              </Reveal>
-            ))}
-
-            <Reveal delay={320}>
-              <Link
-                href={`/${locale}/data/library`}
-                className="group flex items-center justify-between rounded-2xl border border-line bg-white/5 p-4 transition-all duration-300 hover:bg-white/10"
-              >
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-white/70" />
-                  <span className="text-sm font-semibold text-white/70">
-                    {locale === 'en' ? '142 open datasets' : locale === 'ku' ? '١٤٢ بنکەدراوەی کراوە' : '142 قاعدة بيانات مفتوحة'}
-                  </span>
-                </div>
-                <ExternalLink className="h-4 w-4 text-white/70 transition-transform group-hover:translate-x-0.5" />
-              </Link>
             </Reveal>
-          </div>
+          ))}
         </div>
+
+        <p className="mt-5 text-center text-[11px] leading-relaxed text-[var(--muted)]">{t.sources}</p>
       </div>
     </section>
   )

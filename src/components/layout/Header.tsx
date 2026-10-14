@@ -80,6 +80,13 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
     if (searchOpen) setTimeout(() => searchInput.current?.focus(), 100)
   }, [searchOpen])
 
+  useEffect(() => {
+    if (!searchOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSearchOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [searchOpen])
+
   const switchLocale = (code: Locale) => {
     const segments = pathname.split('/')
     segments[1] = code
@@ -200,17 +207,17 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
             : 'border-transparent bg-[var(--background)]'
         )}
       >
-        <div className="container-main flex h-[68px] items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
+        <div className="container-main flex h-[68px] items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-4 lg:gap-6">
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden rounded-full p-2 text-[var(--foreground)] transition-colors hover:bg-cream-deep"
+              className="lg:hidden shrink-0 rounded-full p-2 text-[var(--foreground)] transition-colors hover:bg-cream-deep"
               aria-label={t.menu}
             >
               <Menu className="h-5 w-5" />
             </button>
 
-            <Link href={`/${locale}`} aria-label="Iraq Now">
+            <Link href={`/${locale}`} aria-label="Iraq Now" className="shrink-0">
               <Logo locale={locale} />
             </Link>
           </div>
@@ -284,10 +291,10 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-[var(--foreground)] sm:w-auto sm:gap-2 sm:px-3.5 sm:rounded-full sm:border sm:border-line"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-cream-deep hover:text-[var(--foreground)] sm:w-auto sm:gap-2 sm:px-3.5 sm:rounded-full sm:border sm:border-line"
               aria-label={t.search}
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-4.5 w-4.5" />
               <span className="hidden text-xs sm:inline">{t.search}</span>
             </button>
           </div>
@@ -297,7 +304,7 @@ export function Header({ locale: rawLocale }: { locale: 'ar' | 'ku' | 'en' }) {
       {/* البحث */}
       {searchOpen && (
         <div
-          className="fixed inset-0 z-[60] flex items-start justify-center bg-ink-950/40 p-4 pt-24 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-[80] flex items-start justify-center bg-ink-950/40 p-4 pt-24 backdrop-blur-sm animate-fade-in"
           onClick={() => setSearchOpen(false)}
         >
           <form

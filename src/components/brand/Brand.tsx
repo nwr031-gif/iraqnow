@@ -73,7 +73,7 @@ export function Logo({ locale = 'ar', variant = 'default', className, showTaglin
         <span
           className={cn(
             'font-kufi font-bold leading-none tracking-tight',
-            locale === 'en' ? 'text-xl tracking-[0.15em]' : 'text-2xl',
+            locale === 'en' ? 'text-base tracking-[0.15em] sm:text-xl' : 'text-lg sm:text-2xl',
             isLight ? 'text-white' : 'text-[var(--foreground)]'
           )}
         >
@@ -81,7 +81,7 @@ export function Logo({ locale = 'ar', variant = 'default', className, showTaglin
         </span>
         <span
           className={cn(
-            'mt-1 text-[10px] font-medium tracking-wider',
+            'mt-1 hidden text-[10px] font-medium tracking-wider sm:block',
             isLight ? 'text-white/60' : 'text-[var(--muted)]'
           )}
           dir={locale === 'en' ? 'rtl' : 'ltr'}

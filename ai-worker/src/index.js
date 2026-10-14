@@ -523,6 +523,8 @@ ${corroborating ? `\nتغطيات مصادر أخرى لنفس الحدث:\n${co
 - دقة مطلقة: كل جملة تستند إلى المواد أعلاه حصراً.
 - أسلوب صحفي طبيعي: لا تعلق أبداً على جودة المصادر أو نقص المعلومات، ولا تكتب جملاً مثل "لم يذكر المصدر" أو "لم يتوفر تاريخ". إن كانت معلومة غير متوفرة ببساطة تجاوزها. إن كانت المواد قليلة اجعل التقرير أقصر دون أي تعليق على ذلك.
 - ممنوع بدأ أي فقرة بحرف العطف "و" — نوّع بادئات الفقرات والجمل (قال، أعلن، أشار، في سياق متصل، على صعيد...).
+- قاعدة اللغة الحاسمة: اكتب النص العربي **بحروف عربية حصراً** — انقح كل الأسماء والكيانات الأجنبية إلى العربية (مثال: Rodion Miroshnik → روديون ميروشنيك). يُمنع منعاً باتاً ترك أي كلمة لاتينية في العنوان أو النص العربي، ويُمنع نسخ كلمات إنجليزية مثل "amid" — استبدلها بمرادفها (وسط، إبّان، في خضم). إن لم تتقن نقحرة اسمٍ فوصف صاحبه بالمنصب بدلاً من الاسم.
+- لا تستخدم أبداً حرف الاستبدال المكسور (�) — إن كان المصدر يحوي كلمة تالفة فاكتب الكلمة الصحيحة من السياق.
 - "slug_hint": كلمات إنجليزية فعلية مستمدة من العنوان الإنجليزي مفصولة بشرطات (مثال: "iraq-central-bank-gold" أو "gaza-ceasefire-talks") — لا تكتب نصاً توضيحياً.
 - "imageQuery": 2-4 كلمات إنجليزية تصف صورة إخبارية مطابقة لموضوع التقرير (أشخاص/مكان/شيء محدد في الخبر — مثال: "NATO warship Black Sea" أو "Iraqi parliament session" أو "olive harvest farmer") — بدون أسماء علامات تجارية.
 
@@ -666,6 +668,23 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
     .replace(/\n{3,}/g, '\n\n')
     .trim()
 
+  /* بوابة جودة اللغة: رفض النص العربي المعيب (لاتيني غير منقحر / أحرف مكسورة) */
+  const qualityFail = (title, text) => {
+    if (/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(title)) return 'أحرف مكسورة في العنوان'
+    if (/[\uFFFD]/.test(text)) return 'أحرف مكسورة في المحتوى'
+    if (/[A-Za-z]{4,}/.test(title)) return 'كلمات لاتينية في العنوان'
+    const latinWords = text.match(/[A-Za-z]{5,}/g) || []
+    if (latinWords.length >= 2) return `كلمات لاتينية في المحتوى (${latinWords.slice(0, 3).join(',')})`
+    return null
+  }
+
+  const arTitleRaw = String(g.ar.title)
+  const qFail = qualityFail(arTitleRaw, g.ar.content)
+  if (qFail) {
+    diag.qualityFail = qFail
+    return null
+  }
+
   const arContent = stripSources(cleanContent(g.ar.content))
   const enContent = stripSources(cleanContent(g.en && g.en.content)) || arContent
   const kuContent = arContent
@@ -714,6 +733,7 @@ async function runEngine(env, trigger) {
   try {
     const state = (await loadState(env)) || {}
     const seen = state.seen || {}
+    const qfails = state.qfails || {}
     const today = new Date().toISOString().slice(0, 10)
     const daily = state.daily && state.daily.day === today ? state.daily : { day: today, used: 0 }
     const maxPerRun = parseInt(env.MAX_PER_RUN || '1', 10)
@@ -800,7 +820,13 @@ async function runEngine(env, trigger) {
       const gen = await generateArticle(env, story, result)
       const published = gen ? await publishFromGenerated(env, gen, story, story.primary.hash, result) : null
       if (published) { result.published.push(published); daily.used++ }
-      else result.skipped++
+      else {
+        result.skipped++
+        /* فشل جودة اللغة: أعِد المحاولة لاحقاً (حتى مرتين) بدل هدر القصة */
+        const h = story.primary.hash
+        qfails[h] = (qfails[h] || 0) + 1
+        if (qfails[h] < 3) delete seen[h]
+      }
     }
 
     /* تشذيب القائمة القديمة */
@@ -842,7 +868,7 @@ async function runEngine(env, trigger) {
       }
     }
 
-    await saveState(env, { seen, daily, lastHook: state.lastHook || 0 })
+    await saveState(env, { seen, daily, lastHook: state.lastHook || 0, qfails })
   } catch (e) {
     result.error = String(e && e.message || e)
   }

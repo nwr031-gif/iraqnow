@@ -187,19 +187,44 @@ async function commonsImage(query) {
   try {
     const q = String(query || '').trim().slice(0, 90)
     if (!q) return ''
-    const api = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent('filetype:bitmap ' + q)}&gsrlimit=6&gsrnamespace=6&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=1200&format=json`
+    const api = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent('filetype:bitmap ' + q)}&gsrlimit=8&gsrnamespace=6&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=1200&format=json`
     const res = await fetch(api, { headers: { 'User-Agent': UA, Accept: 'application/json' }, cf: { cacheTtl: 3600 } })
     if (!res.ok) return ''
     const j = await res.json()
     const pages = (j.query && j.query.pages) || {}
+    /* ترشيح صارم: يجب أن يذكر اسم الملف كلمة من الاستعلام (تطابق موضوعي حقيقي) */
+    const words = q.toLowerCase().split(/\s+/).filter((w) => w.length > 2)
     const cands = Object.values(pages)
-      .map((p) => p.imageinfo && p.imageinfo[0])
-      .filter(Boolean)
-      .filter((ii) => (ii.width || 0) >= 640 && !COMMONS_BAD.test(ii.thumburl || ''))
-      .sort((a, b) => (b.width || 0) - (a.width || 0))
-    const pick = cands[0]
-    return pick ? (pick.thumburl || pick.url || '') : ''
+      .map((p) => ({ ii: p.imageinfo && p.imageinfo[0], title: String(p.title || '') }))
+      .filter((x) => x.ii && (x.ii.width || 0) >= 640 && !COMMONS_BAD.test(x.title) && !COMMONS_BAD.test(x.ii.thumburl || ''))
+      .map((x) => ({ ...x, score: words.filter((w) => x.title.toLowerCase().includes(w)).length }))
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score || (b.ii.width || 0) - (a.ii.width || 0))
+    return cands[0] ? (cands[0].ii.thumburl || cands[0].ii.url || '') : ''
   } catch { return '' }
+}
+
+/* Openverse — صور حرة (ملكية عامة CC0/PDM) مطابقة للموضوع */
+async function openverseImage(query) {
+  try {
+    const q = String(query || '').trim().slice(0, 90)
+    if (!q) return ''
+    const api = `https://api.openverse.org/v1/images/?q=${encodeURIComponent(q)}&license=cc0,pdm&page_size=8&mature=false`
+    const res = await fetch(api, { headers: { 'User-Agent': UA, Accept: 'application/json' }, cf: { cacheTtl: 3600 } })
+    if (!res.ok) return ''
+    const j = await res.json()
+    const words = q.toLowerCase().split(/\s+/).filter((w) => w.length > 2)
+    const results = (j.results || [])
+      .filter((r) => (r.width || 0) >= 640 && !COMMONS_BAD.test(String(r.title || '')) && !COMMONS_BAD.test(String(r.url || '')))
+      .map((r) => ({ ...r, score: words.filter((w) => String(r.title || '').toLowerCase().includes(w)).length }))
+      .filter((r) => r.score > 0)
+      .sort((a, b) => b.score - a.score || (b.width || 0) - (a.width || 0))
+    return results[0] ? results[0].url || '' : ''
+  } catch { return '' }
+}
+
+async function topicalImage(query) {
+  return (await commonsImage(query)) || (await openverseImage(query))
 }
 
 async function pickImage(item, category, searchText, ogImage, memberImages, imageQuery, altQueries) {
@@ -224,10 +249,10 @@ async function pickImage(item, category, searchText, ogImage, memberImages, imag
     if (m) return m
   }
 
-  /* 4) بحث صورة مطابقة للموضوع في ويكيميديا كومنز (وصف النموذج ثم الوسوم) */
+  /* 4) بحث صورة مطابقة للموضوع حصراً: وصف النموذج ← الوسوم (كومنز ثم Openverse) */
   const queries = [imageQuery, ...(altQueries || [])].map((x) => String(x || '').trim()).filter(Boolean).slice(0, 3)
   for (const q of queries) {
-    const c = await commonsImage(q)
+    const c = await topicalImage(q)
     if (c) return c
   }
 

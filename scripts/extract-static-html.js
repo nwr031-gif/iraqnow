@@ -108,6 +108,8 @@ const routesJson = {
     '/rss',
     '/rss.xml',
     '/feed.xml',
+    '/robots.txt',
+    '/news-sitemap.xml',
     /* صفحات لحظية: تُصنع عند الطلب (ظهور فوري للمقالات الجديدة) */
     '/ar/article/*',
     '/en/article/*',

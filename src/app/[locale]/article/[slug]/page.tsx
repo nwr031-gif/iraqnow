@@ -93,14 +93,31 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     dateModified: article.updatedAt,
     inLanguage: locale === 'ku' ? 'ckb' : locale,
     author: author ? { '@type': 'Person', name: author.name, url: `https://iraqnow.pages.dev/${locale}/author/${author.slug}` } : { '@type': 'Organization', name: 'Iraq Now' },
-    publisher: { '@type': 'NewsMediaOrganization', name: 'العراق الآن — Iraq Now' },
+    publisher: {
+      '@type': 'NewsMediaOrganization',
+      name: 'العراق الآن — Iraq Now',
+      logo: { '@type': 'ImageObject', url: 'https://iraqnow.pages.dev/icon.png' },
+    },
     mainEntityOfPage: `https://iraqnow.pages.dev/${locale}/article/${slug}`,
+    isAccessibleForFree: true,
+    keywords: ((article as any).tags || []).join(', '),
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: `https://iraqnow.pages.dev/${locale}` },
+      ...(category ? [{ '@type': 'ListItem', position: 2, name: catName, item: `https://iraqnow.pages.dev/${locale}/category/${category.slug}` }] : []),
+      { '@type': 'ListItem', position: category ? 3 : 2, name: title },
+    ],
   }
 
   return (
     <div dir={dir} className="min-h-screen bg-[var(--background)]">
       <ReadingProgress />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
       <article className="container-main max-w-4xl py-8 lg:py-12">
         {/* Breadcrumbs */}

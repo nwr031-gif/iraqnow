@@ -836,6 +836,26 @@ async function runEngine(env, trigger) {
       for (const h of sorted.slice(0, hashes.length - MAX_SEEN)) delete seen[h]
     }
 
+    /* فهرسة فورية Bing/Yandex عبر IndexNow — الأخبار تظهر في البحث خلال دقائق */
+    try {
+      const urls = result.published.flatMap((p) => [
+        `https://iraqnow.pages.dev/ar/article/${p.slug}`,
+        `https://iraqnow.pages.dev/en/article/${p.slug}`,
+      ])
+      if (urls.length) {
+        await fetch('https://api.indexnow.org/indexnow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({
+            host: 'iraqnow.pages.dev',
+            key: 'f60c98986db45620fc97ade3c65b3fcd',
+            keyLocation: 'https://iraqnow.pages.dev/api/indexnow',
+            urlList: urls.slice(0, 100),
+          }),
+        })
+      }
+    } catch { /* الفهرسة ليست حرجة */ }
+
     /* إشعار إعادة النشر */
     const lastHook = state.lastHook || 0
     const shouldHook =

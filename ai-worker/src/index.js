@@ -849,7 +849,7 @@ async function runEngine(env, trigger) {
           body: JSON.stringify({
             host: 'iraqnow.pages.dev',
             key: 'f60c98986db45620fc97ade3c65b3fcd',
-            keyLocation: 'https://iraqnow.pages.dev/api/indexnow',
+            keyLocation: 'https://iraqnow.pages.dev/f60c98986db45620fc97ade3c65b3fcd.txt',
             urlList: urls.slice(0, 100),
           }),
         })

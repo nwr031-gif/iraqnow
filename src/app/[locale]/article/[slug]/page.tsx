@@ -12,18 +12,8 @@ import { CuneiformDivider } from '@/components/brand/Brand'
 import { getArticleBySlug, getArticles, getAuthorById, getCategories } from '@/lib/data'
 import type { Locale } from '@/lib/mock-data'
 
-export const dynamic = 'force-static'
-export const revalidate = 3600
-
-export async function generateStaticParams() {
-  try {
-    const { getArticles } = await import('@/lib/data')
-    const { articles } = await getArticles({ limit: 100 })
-    return articles.map((a) => ({ slug: a.slug }))
-  } catch {
-    return []
-  }
-}
+/* ديناميكي: المقالة تُصنع لحظياً عند الطلب — ظهور فوري بعد النشر بلا انتظار بناء */
+export const dynamic = 'force-dynamic'
 
 const UI: Record<Locale, any> = {
   ar: {

@@ -95,7 +95,7 @@ const redirects = [
 ].join('\n') + '\n'
 fs.writeFileSync(path.join(DEST, '_redirects'), redirects)
 
-/* _routes.json — الـ Worker فقط للمسارات الديناميكية */
+/* _routes.json — الـ Worker للمسارات الديناميكية + الصفحات اللحظية */
 const routesJson = {
   version: 1,
   include: [
@@ -108,6 +108,11 @@ const routesJson = {
     '/rss',
     '/rss.xml',
     '/feed.xml',
+    /* صفحات لحظية: تُصنع عند الطلب (ظهور فوري للمقالات الجديدة) */
+    '/ar/article/*',
+    '/en/article/*',
+    '/ar/latest',
+    '/en/latest',
   ],
   exclude: [],
 }

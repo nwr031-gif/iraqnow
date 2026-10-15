@@ -6,8 +6,7 @@ import { Reveal } from '@/components/ui/Reveal'
 import { IshtarStar } from '@/components/brand/Brand'
 import { getArticles, getCategories } from '@/lib/data'
 
-export const dynamic = 'force-static'
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'آخر الأخبار',

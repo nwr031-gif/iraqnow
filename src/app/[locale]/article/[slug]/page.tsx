@@ -7,6 +7,7 @@ import { ArticleGallery, ReadingProgress, ShareButtons } from '@/components/arti
 import { SmartImage } from '@/components/ui/SmartImage'
 import { imageFallback } from '@/lib/image-fallbacks'
 import { GiscusComments } from '@/components/integrations/GiscusComments'
+import { ViewCounter } from '@/components/article/ViewCounter'
 import { Reveal } from '@/components/ui/Reveal'
 import { CuneiformDivider } from '@/components/brand/Brand'
 import { getArticleBySlug, getArticles, getAuthorById, getCategories } from '@/lib/data'
@@ -116,6 +117,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
   return (
     <div dir={dir} className="min-h-screen bg-[var(--background)]">
       <ReadingProgress />
+      <ViewCounter slug={slug} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 

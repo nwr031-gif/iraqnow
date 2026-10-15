@@ -1,53 +1,41 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 
-const LOCALES = ['ar', 'en'] as const
-const BASE_URL = 'https://iraqnow.iq'
+export const dynamic = 'force-dynamic'
 
-const CATEGORIES = [
-  'politics', 'economy', 'security', 'society', 'culture', 'sports',
-  'technology', 'health', 'education', 'environment', 'local', 'world',
-]
+const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SB_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const BASE = 'https://iraqnow.pages.dev'
 
-const STATIC_PAGES = ['', '/latest', '/map', '/data', '/podcasts', '/trending']
+const CATEGORIES = ['politics', 'economy', 'security', 'society', 'culture', 'sports', 'technology', 'health', 'education', 'environment', 'local', 'world']
+const GOVS = ['baghdad', 'basra', 'mosul', 'erbil', 'sulaymaniyah', 'duhok', 'halabja', 'najaf', 'karbala', 'anbar', 'diyala', 'kirkuk', 'salahuddin', 'babylon', 'wasit', 'maysan', 'dhi-qar', 'muthanna', 'qadisiya']
+const PAGES = ['', 'latest', 'data', 'map', 'podcasts', 'search', 'about', 'editorial-policy', 'contact', 'privacy', 'terms', 'fact-check', 'corrections', 'advertise', 'team']
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const urls: MetadataRoute.Sitemap = []
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const entries: MetadataRoute.Sitemap = []
   const now = new Date()
 
-  for (const locale of LOCALES) {
-    const languages = {
-      ar: `${BASE_URL}/ar`,
-      en: `${BASE_URL}/en`,
-      'x-default': `${BASE_URL}/ar`,
-    }
-
-    /* الصفحات الثابتة */
-    for (const page of STATIC_PAGES) {
-      urls.push({
-        url: `${BASE_URL}/${locale}${page}`,
-        lastModified: now,
-        changeFrequency: page === '' || page === '/latest' ? 'hourly' : 'daily',
-        priority: page === '' ? 1 : 0.8,
-        alternates: { languages },
-      })
-    }
-
-    /* صفحات الأقسام */
-    for (const cat of CATEGORIES) {
-      urls.push({
-        url: `${BASE_URL}/${locale}/category/${cat}`,
-        lastModified: now,
-        changeFrequency: 'hourly',
-        priority: 0.9,
-        alternates: {
-          languages: {
-            ar: `${BASE_URL}/ar/category/${cat}`,
-            en: `${BASE_URL}/en/category/${cat}`,
-          },
-        },
-      })
-    }
+  /* الصفحات الأساسية × اللغتين */
+  for (const loc of ['ar', 'en']) {
+    for (const p of PAGES) entries.push({ url: `${BASE}/${loc}${p ? '/' + p : ''}`, lastModified: now, changeFrequency: 'hourly', priority: p === '' ? 1 : 0.8 })
+    for (const c of CATEGORIES) entries.push({ url: `${BASE}/${loc}/category/${c}`, lastModified: now, changeFrequency: 'hourly', priority: 0.7 })
+    for (const g of GOVS) entries.push({ url: `${BASE}/${loc}/governorate/${g}`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 })
   }
 
-  return urls
+  /* كل المقالات المنشورة × اللغتين */
+  try {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/articles?select=slug,updated_at&status=eq.PUBLISHED&order=updated_at.desc&limit=1000`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } as Record<string, string>, cache: 'no-store' },
+    )
+    if (res.ok) {
+      const rows = (await res.json()) as { slug: string; updated_at: string }[]
+      for (const a of rows) {
+        for (const loc of ['ar', 'en']) {
+          entries.push({ url: `${BASE}/${loc}/article/${a.slug}`, lastModified: new Date(a.updated_at), changeFrequency: 'daily', priority: 0.9 })
+        }
+      }
+    }
+  } catch { /* نكمل ببقية المدخلات */ }
+
+  return entries
 }

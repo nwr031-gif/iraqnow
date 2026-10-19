@@ -283,7 +283,9 @@ export async function storePublishedArticles(query: StoreArticleQuery): Promise<
   }
   await ensureSeeded()
 
-  const params = new URLSearchParams({ select: '*' })
+  /* حقول خفيفة للقوائم — بدون نصوص المحتوى (تسريع هائل للصفحات الديناميكية) */
+  const LIGHT_FIELDS = 'id,slug,status,breaking,featured,published_at,created_at,updated_at,view_count,reading_time,author_id,author_name,category_slug,governorate_slug,image,gallery,tags,title_ar,title_ku,title_en,excerpt_ar,excerpt_ku,excerpt_en'
+  const params = new URLSearchParams({ select: LIGHT_FIELDS })
   if (query.authorId) params.set('author_id', `eq.${query.authorId}`)
   if (query.governorateSlug) params.set('governorate_slug', `eq.${query.governorateSlug}`)
   if (query.excludeId) params.set('id', `neq.${query.excludeId}`)

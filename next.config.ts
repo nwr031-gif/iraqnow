@@ -34,6 +34,19 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        /* صفحات لحظية: كاش طرفي 60 ثانية + تحديث خلفي — سريعة + حديثة */
+        source: '/:locale(ar|en)/article/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=300, max-age=0' },
+        ],
+      },
+      {
+        source: '/:locale(ar|en)/latest',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=300, max-age=0' },
+        ],
+      },
+      {
         source: '/:path*',
         headers: [
           { key: 'X-DNS-Prefetch-Control', value: 'on' },

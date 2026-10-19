@@ -668,18 +668,17 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
     .replace(/\n{3,}/g, '\n\n')
     .trim()
 
-  /* بوابة جودة اللغة: رفض النص العربي المعيب (لاتيني غير منقحر / أحرف مكسورة) */
-  const qualityFail = (title, text) => {
-    if (/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(title)) return 'أحرف مكسورة في العنوان'
-    if (/[\uFFFD]/.test(text)) return 'أحرف مكسورة في المحتوى'
-    if (/[A-Za-z]{4,}/.test(title)) return 'كلمات لاتينية في العنوان'
-    const latinWords = text.match(/[A-Za-z]{5,}/g) || []
-    if (latinWords.length >= 2) return `كلمات لاتينية في المحتوى (${latinWords.slice(0, 3).join(',')})`
+  /* بوابة جودة اللغة: رفض النص العربي المعيب — تفحص العنوان والملخص والمحتوى */
+  const qualityFail = () => {
+    const fields = [String(g.ar.title || ''), String(g.ar.excerpt || ''), String(g.ar.content || '')]
+    if (fields.some((f) => /[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(f))) return 'أحرف مكسورة في النص'
+    if (/[A-Za-z]{4,}/.test(String(g.ar.title || ''))) return 'كلمات لاتينية في العنوان'
+    const latinInContent = (String(g.ar.content || '').match(/[A-Za-z]{5,}/g) || []).length
+    if (latinInContent >= 2) return 'كلمات لاتينية في المحتوى'
     return null
   }
 
-  const arTitleRaw = String(g.ar.title)
-  const qFail = qualityFail(arTitleRaw, g.ar.content)
+  const qFail = qualityFail()
   if (qFail) {
     diag.qualityFail = qFail
     return null

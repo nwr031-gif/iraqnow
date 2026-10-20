@@ -568,6 +568,62 @@ async function generateArticle(env, story, diag) {
   return null
 }
 
+/* إزالة الإيموجي والاستبدالات المكسورة — الإيموجي المقصوص بـ slice يتحول FFFD في PostgreSQL */
+const stripNonBMP = (s) => String(s || '')
+  .replace(/[\uD800-\uDFFF]/g, '')
+  .replace(/\uFFFD/g, '')
+  .trim()
+
+/* ═══════════ منع التكرار + تحليل الصور بالرؤية ═══════════ */
+
+const AR_STOP = new Set(['في', 'من', 'على', 'الى', 'إلى', 'عن', 'مع', 'هذا', 'هذه', 'ذلك', 'التي', 'الذي', 'بعد', 'قبل', 'بين', 'أن', 'إن', 'او', 'أو', 'و', 'ما', 'لا', 'هو', 'هي', 'كان', 'كانت', 'قد', 'كل', 'خلال', 'ضد', 'حول', 'بشأن', 'بسبب', 'حتى', 'ثم', 'كما', 'عند', 'عندما', 'بينما'])
+
+function titleTokens(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !AR_STOP.has(w))
+}
+
+function jaccard(a, b) {
+  if (!a.length || !b.length) return 0
+  const A = new Set(a)
+  let shared = 0
+  for (const t of new Set(b)) if (A.has(t)) shared++
+  return shared / (new Set([...A, ...b]).size || 1)
+}
+
+/* Llama 3.2 11B Vision — هل الصورة فوتوغرافية مطابقة؟ + وصف عربي */
+async function visionCheck(env, imageUrl, title) {
+  try {
+    const r = await fetch(imageUrl, { cf: { cacheTtl: 3600 } })
+    if (!r.ok) return { ok: true, alt: '' }
+    const buf = await r.arrayBuffer()
+    if (buf.byteLength > 1500000 || buf.byteLength < 3000) return { ok: true, alt: '' }
+    let bin = ''
+    const bytes = new Uint8Array(buf)
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000))
+    const dataUri = 'data:image/jpeg;base64,' + btoa(bin)
+
+    const res = await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct', {
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'text', text: 'صورة مرشحة لخبر بعنوان: "' + String(title).slice(0, 150) + '". هل هي صورة فوتوغرافية حقيقية متعلقة بالموضوع؟ مرفوض تماماً: بطاقة نصية أو جرافيك أو شعار أو خلفية جاهزة تحمل كلمة "عاجل". أجب بسطر واحد: "نعم: <وصف قصير بالعربية>" أو "لا: <السبب>".' },
+          { type: 'image_url', image_url: { url: dataUri } },
+        ],
+      }],
+      max_tokens: 220,
+    })
+    const text = String((res && (res.response || res.description)) || '').trim()
+    const bad = /^لا/.test(text)
+    const alt = text.replace(/^\s*(نعم|لا)\s*[:،\-]?\s*/, '').slice(0, 200)
+    if (/[A-Za-z]{4,}/.test(alt)) return { ok: !bad, alt: '' }
+    return { ok: !bad, alt: bad ? '' : alt }
+  } catch { return { ok: true, alt: '' } }
+}
+
 /* ═══════════ بناء صف المقال ونشره ═══════════ */
 
 function slugify(s) {
@@ -632,7 +688,7 @@ function countWords(...texts) {
 }
 
 function cleanContent(s) {
-  let out = (s || '')
+  let out = stripNonBMP(s)
     .replace(/<[^>]*>/g, '')
     .replace(/\\n/g, '\n')
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n')
@@ -658,8 +714,8 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
   if (slugBase.length > 60) slugBase = slugBase.slice(0, 60).replace(/-[^-]*$/, '')
   const slug = `${slugBase}-${shortHash}`
 
-  const arTitle = String(g.ar.title).slice(0, 180)
-  const enTitle = String((g.en && g.en.title) || arTitle).slice(0, 180)
+  const arTitle = stripNonBMP(String(g.ar.title).slice(0, 180))
+  const enTitle = stripNonBMP(String((g.en && g.en.title) || arTitle).slice(0, 180))
   const kuTitle = arTitle
 
   /* إزالة أي سطر مصادر أضافه النموذج رغم التعليمات */
@@ -690,7 +746,20 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
 
   const readingTime = Math.max(2, Math.round(countWords(arContent) / 200))
   const category = validCategory(g.category) || classifyByKeywords(arTitle, String(g.ar.excerpt || ''))
-  const image = await pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`, story.ogImage, story.memberImages, g.imageQuery, Array.isArray(g.tags) ? g.tags.slice(0, 2) : [])
+  let image = await pickImage(item, category, `${arTitle} ${g.ar.excerpt || ''} ${(g.tags || []).join(' ')}`, story.ogImage, story.memberImages, g.imageQuery, Array.isArray(g.tags) ? g.tags.slice(0, 2) : [])
+  /* تحقق الرؤية (للمصادر الخارجية فقط): بطاقة "عاجل" أو جرافيك → بديل موثوق + وصف عربي */
+  let imageAlt = ''
+  if (image && /^https:/.test(image) && !/wikimedia|unsplash/.test(image)) {
+    const v = await visionCheck(env, image, arTitle)
+    imageAlt = v.alt || ''
+    if (!v.ok) {
+      const q2 = (g.imageQuery || (Array.isArray(g.tags) ? g.tags[0] : '') || '').trim()
+      const topical = q2 ? await topicalImage(q2) : ''
+      const cid = (CATEGORY_IMAGES[category] || CATEGORY_IMAGES.world).split('?')[0]
+      image = topical || `https://images.unsplash.com/${cid}?auto=format&fit=crop&w=1200&q=75`
+      imageAlt = ''
+    }
+  }
 
   const nowIso = new Date().toISOString()
   const row = {
@@ -710,11 +779,12 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
     governorate_slug: validGovernorate(g.governorate),
     image,
     gallery: [],
-    tags: Array.isArray(g.tags) ? g.tags.slice(0, 8).map((t) => String(t).slice(0, 40)) : [],
     title_ar: arTitle, title_ku: kuTitle, title_en: enTitle,
-    excerpt_ar: String(g.ar.excerpt || '').slice(0, 500),
-    excerpt_ku: String(g.ar.excerpt || '').slice(0, 500),
-    excerpt_en: String((g.en && g.en.excerpt) || g.ar.excerpt || '').slice(0, 500),
+    excerpt_ar: stripNonBMP(String(g.ar.excerpt || '').slice(0, 500)),
+    excerpt_ku: stripNonBMP(String(g.ar.excerpt || '').slice(0, 500)),
+    excerpt_en: stripNonBMP(String((g.en && g.en.excerpt) || g.ar.excerpt || '').slice(0, 500)),
+    tags: Array.isArray(g.tags) ? g.tags.slice(0, 8).map((t) => stripNonBMP(String(t).slice(0, 40))) : [],
+    image_alt: imageAlt,
     content_ar: arContent, content_ku: kuContent, content_en: enContent,
   }
 
@@ -815,10 +885,25 @@ async function runEngine(env, trigger) {
 
     /* التحليل والكتابة والنشر */
     await ensureAuthor(env)
+    /* عناوين آخر 150 مقالة منشورة — منع التكرار عبر الجولات */
+    let recentTitles = []
+    try {
+      const dbRes = await fetch(`${env.SUPABASE_URL}/rest/v1/articles?select=title_ar&status=eq.PUBLISHED&order=published_at.desc&limit=150`, { headers: sbHeaders(env) })
+      if (dbRes.ok) recentTitles = (await dbRes.json()).map((r) => titleTokens(r.title_ar))
+    } catch { /* نكمل بلا حماية قديمة */ }
+
     for (const story of batch) {
       const gen = await generateArticle(env, story, result)
+      /* حارس التكرار: تشابه عنوان ≥ 55% مع منشور حديث → تخطَّ */
+      const genTokens = gen && gen.data && gen.data.ar ? titleTokens(gen.data.ar.title) : []
+      if (genTokens.length && recentTitles.some((rt) => jaccard(genTokens, rt) > 0.55)) {
+        result.skipped++
+        result.dedup = (result.dedup || 0) + 1
+        seen[story.primary.hash] = now
+        continue
+      }
       const published = gen ? await publishFromGenerated(env, gen, story, story.primary.hash, result) : null
-      if (published) { result.published.push(published); daily.used++ }
+      if (published) { result.published.push(published); daily.used++; recentTitles.push(genTokens) }
       else {
         result.skipped++
         /* فشل جودة اللغة: أعِد المحاولة لاحقاً (حتى مرتين) بدل هدر القصة */

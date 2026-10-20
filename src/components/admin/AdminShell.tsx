@@ -6,7 +6,7 @@ import { useState } from 'react'
 import {
   LayoutDashboard, Newspaper, FolderTree, Mic, MessageSquare, Mail,
   Users, Image as ImageIcon, Settings, UserCircle, LogOut, ExternalLink,
-  Menu, X, ChevronDown, Shield, PenSquare, Zap,
+  Menu, X, ChevronDown, Shield, PenSquare, Zap, BrainCircuit,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { IshtarStar } from '@/components/brand/Brand'
@@ -28,6 +28,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'نظرة عامة', icon: LayoutDashboard, permission: 'dashboard.view', exact: true },
+  { href: '/admin/ops', label: 'غرفة العمليات AI', icon: BrainCircuit, permission: 'dashboard.view' },
   { href: '/admin/articles', label: 'المقالات', icon: Newspaper, permission: 'articles.view.own' },
   { href: '/admin/categories', label: 'الأقسام', icon: FolderTree, permission: 'categories.manage' },
   { href: '/admin/podcasts', label: 'البودكاست', icon: Mic, permission: 'podcasts.manage' },

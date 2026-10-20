@@ -33,6 +33,8 @@ const ENV_VARS = {
   /* نشر فوري: إعادة بناء الموقع عند النشر من الإدارة */
   GITHUB_TOKEN: { value: process.env.GH_TOKEN || '' },
   GITHUB_REPO: { value: 'nwr031-gif/iraqnow' },
+  NIM_KEY: { value: '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' },
+  NIM_MODEL: { value: 'nvidia/nemotron-3.5-lightning-30b-a3b' },
 }
 
 async function api(path, method = 'GET', body) {

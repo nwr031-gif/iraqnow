@@ -10,7 +10,8 @@
     "lint": "next lint",
     "search:setup": "tsx scripts/setup-meilisearch.ts",
     "search:index": "tsx scripts/index-articles.ts",
-    "postinstall": "node scripts/patch-opennext.js"
+    "postinstall": "node scripts/patch-opennext.js",
+    "deploy:verified": "node scripts/deploy-verified.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

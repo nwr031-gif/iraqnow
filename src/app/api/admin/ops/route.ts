@@ -127,10 +127,25 @@ async function gatherStats() {
   }
 }
 
+/* nim + استخراج JSON مع إعادة محاولة عند فشل الصيغة */
+async function nimJson(prompt: string, maxTokens = 6000): Promise<any> {
+  let lastErr: any = null
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const raw = await nim(prompt + (attempt ? '\n\nمهم جداً: أخرج JSON صالحاً حصراً بلا أي نص خارج الأقواس.' : ''), maxTokens)
+      return extractJson(raw)
+    } catch (e: any) {
+      lastErr = e
+      await new Promise((x) => setTimeout(x, 2500))
+    }
+  }
+  throw lastErr || new Error('فشل JSON')
+}
+
 /* ═══ الإجراءات ═══ */
 async function actionAnalyze() {
   const stats = await gatherStats()
-  const raw = await nim(`أنت مدير تحرير رقمي خبير ينمي مواقع الأخبار العراقية. حلل بيانات الموقع التالية وأعد خطة عملية.
+  const parsed = await nimJson(`أنت مدير تحرير رقمي خبير ينمي مواقع الأخبار العراقية. حلل بيانات الموقع التالية وأعد خطة عملية.
 
 البيانات:
 - مقالات منشورة: ${stats.totalPublished} (آخر 24 ساعة: ${stats.last24h}، آخر أسبوع: ${stats.last7d})
@@ -139,7 +154,7 @@ async function actionAnalyze() {
 - الأكثر قراءة: ${JSON.stringify(stats.topViewed.slice(0, 5))}
 
 ممنوع علامة الاقتباس المزدوجة داخل أي قيمة — استخدم «» عند الحاجة. أعد JSON فقط: {"summary":"جملتان عن الوضع","strengths":["نقطة قوة"],"problems":["مشكلة مع حلها"],"actions":[{"title":"إجراء","detail":"كيف تنفذه بدقة","impact":"عالي|متوسط|منخفض"}],"trending":["3 مواضيع ساخنة يستحق التغطية الآن للعراقيين"]}`)
-  const parsed = extractJson(raw)
+  
   return { kind: 'analyze', stats: { totalPublished: stats.totalPublished, last24h: stats.last24h, last7d: stats.last7d, totalViews: stats.totalViews }, ...parsed }
 }
 
@@ -150,12 +165,12 @@ async function actionOptimize() {
   const changes: { id: string; before: string; after: string }[] = []
   /* دفعة واحدة: حتى 8 مقالات */
   const batch = weak.slice(0, 8)
-  const raw = await nim(`أنت خبير SEO وصناغ عناوين إخبارية عراقي. لكل مقالة ضعيفة المشاهدات أعد عنواناً جذاباً بصياغة عربية قوية (بدون clickbait كاذب، حافظ على المعنى الحرفي للخبر) وملخصاً محسّناً (سطر واحد يبرز الأهم).
+  const parsed = await nimJson(`أنت خبير SEO وصناغ عناوين إخبارية عراقي. لكل مقالة ضعيفة المشاهدات أعد عنواناً جذاباً بصياغة عربية قوية (بدون clickbait كاذب، حافظ على المعنى الحرفي للخبر) وملخصاً محسّناً (سطر واحد يبرز الأهم).
 
 المقالات: ${JSON.stringify(batch.map((w) => ({ id: w.id, title: w.title, category: w.category })))}
 
 ممنوع علامة الاقتباس المزدوجة داخل أي قيمة — استخدم «» عند الحاجة. أعد JSON فقط: {"items":[{"id":"...","title":"العنوان المحسن","excerpt":"الملخص المحسن"}]}`)
-  const parsed = extractJson(raw)
+  
   for (const it of parsed.items || []) {
     const orig = batch.find((w) => w.id === it.id)
     if (!orig || !it.title || /[A-Za-z]{4,}/.test(it.title) || /[\uFFFD]/.test(it.title)) continue
@@ -175,10 +190,10 @@ async function actionOptimize() {
 
 async function actionGrowth() {
   const stats = await gatherStats()
-  const raw = await nim(`أنت استراتيجي نمو لموقع "العراق الآن" الإخباري. بناءً على أداء الأقسام التالي: ${JSON.stringify(stats.byCategory)}، والأكثر قراءة: ${JSON.stringify(stats.topViewed.slice(0, 5))} — صمم خطة نمو للمشاهدات لأسبوع.
+  const parsed = await nimJson(`أنت استراتيجي نمو لموقع "العراق الآن" الإخباري. بناءً على أداء الأقسام التالي: ${JSON.stringify(stats.byCategory)}، والأكثر قراءة: ${JSON.stringify(stats.topViewed.slice(0, 5))} — صمم خطة نمو للمشاهدات لأسبوع.
 
 ممنوع علامة الاقتباس المزدوجة داخل أي قيمة — استخدم «» عند الحاجة. أعد JSON فقط: {"plan":[{"day":"اليوم","focus":"محور التغطية","why":"سبب مبني على البيانات","expected":"النتيجة المتوقعة"}],"viralIdeas":["3 أفكار مواضيع قابلة للانتشار الواسع لدى الجمهور العراقي"],"seoTips":["نصيحتان تقنيتان محددتان"]}`)
-  return { kind: 'growth', ...extractJson(raw) }
+  return { kind: 'growth', ...parsed }
 }
 
 export async function POST(request: NextRequest) {

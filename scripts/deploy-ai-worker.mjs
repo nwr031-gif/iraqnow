@@ -34,7 +34,7 @@ const metadata = {
     { type: 'plain_text', name: 'SUPABASE_URL', text: 'https://xtdrkziyndkvaxkxvfqx.supabase.co' },
     { type: 'plain_text', name: 'SUPABASE_KEY', text: 'sb_publishable_-MsvXS3OevPwi4bbRSyNJw_O29W7-1i' },
     { type: 'plain_text', name: 'AI_MODEL', text: '@cf/meta/llama-3.1-8b-instruct-fp8' },
-    { type: 'plain_text', name: 'NIM_MODEL', text: 'nvidia/nemotron-3-super-120b-a12b' },
+    { type: 'plain_text', name: 'NIM_MODEL', text: 'nvidia/nemotron-3.5-lightning-30b-a3b' },
     { type: 'plain_text', name: 'SELF_TRIGGER_URL', text: 'https://iraqnow-ai.nwr04nwr04.workers.dev/trigger' },
     { type: 'plain_text', name: 'MAX_PER_RUN', text: '2' },
     { type: 'plain_text', name: 'MAX_AI_PER_DAY', text: '220' },

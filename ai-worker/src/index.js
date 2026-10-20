@@ -466,7 +466,7 @@ function extractJson(text) {
 }
 
 async function callNIM(env, messages, maxTokens) {
-  const model = env.NIM_MODEL || 'nvidia/nemotron-3-super-120b-a12b'
+  const model = env.NIM_MODEL || 'nvidia/nemotron-3.5-lightning-30b-a3b'
   const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -728,6 +728,8 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
   const qualityFail = () => {
     const fields = [String(g.ar.title || ''), String(g.ar.excerpt || ''), String(g.ar.content || '')]
     if (fields.some((f) => /[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(f))) return 'أحرف مكسورة في النص'
+    /* حروف خاصة كردية/فارسية لا توجد في العربية الفصحى */
+    if (fields.some((f) => /[ەێڕڵۆ]/.test(f))) return 'نص كردي في حقل العربية'
     if (/[A-Za-z]{4,}/.test(String(g.ar.title || ''))) return 'كلمات لاتينية في العنوان'
     const latinInContent = (String(g.ar.content || '').match(/[A-Za-z]{5,}/g) || []).length
     if (latinInContent >= 2) return 'كلمات لاتينية في المحتوى'
@@ -790,7 +792,7 @@ async function publishFromGenerated(env, gen, story, hash, diag) {
 
   const ok = await insertArticle(env, row, diag)
   if (!ok) return null
-  return { id: row.id, slug: row.slug, title: arTitle, category, breaking: row.breaking, engine: gen.engine, sources: sourcesLine }
+  return { id: row.id, slug: row.slug, title: arTitle, category, breaking: row.breaking, engine: gen.engine }
 }
 
 /* ═══════════ المحرك الرئيسي ═══════════ */
